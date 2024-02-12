@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<!--
+    Template JJeopardy game file.
+
+    Rules:
+      * A game name must be provided;
+      * Categories:
+        - Category name should ideally be 1-2 words;
+        - Maximum number of categories - 7;
+        - Minimum number of categories - 3;
+      * Questions:
+        - Maximum number of questions in a category - 7;
+        - Minimum number of questions in a category - 3;
+        - Every category must have the same number of questions.
+
+    You can also provide up to 10 bonus questions, which are offered to players in random order
+    (every player is offered to answer 1 bonus question at the end of the game).
+    Example of a bonus question entry:
+
+      <entry key="bonus.question.points">300</entry>
+      <entry key="bonus.1.question">What?</entry>
+      <entry key="bonus.1.answer">It</entry>
+
+    You can also provide a list of players - minimum 2 players is required, maximum number is 6.
+    Example of players entry:
+
+      <entry key="player.1.name">One</entry>
+      <entry key="player.2.name">Two</entry>
+
+-->
+<properties>
+    <entry key="game.name">JJeopardy </entry>
+
+    <entry key="question.1.points">100</entry>
+    <entry key="question.2.points">200</entry>
+    <entry key="question.3.points">300</entry>
+    <entry key="question.4.points">400</entry>
+    <entry key="question.5.points">500</entry>
+
+    <entry key="category.1.name"></entry>
+    <entry key="category.1.question.1"></entry>
+    <entry key="category.1.answer.1"></entry>
+    <entry key="category.1.question.2"></entry>
+    <entry key="category.1.answer.2"></entry>
+    <entry key="category.1.question.3"></entry>
+    <entry key="category.1.answer.3"></entry>
+    <entry key="category.1.question.4"></entry>
+    <entry key="category.1.answer.4"></entry>
+    <entry key="category.1.question.5"></entry>
+    <entry key="category.1.answer.5"></entry>
+    <entry key="category.2.name"></entry>
+    <entry key="category.2.question.1"></entry>
+    <entry key="category.2.answer.1"></entry>
+    <entry key="category.2.question.2"></entry>
+    <entry key="category.2.answer.2"></entry>
+    <entry key="category.2.question.3"></entry>
+    <entry key="category.2.answer.3"></entry>
+    <entry key="category.2.question.4"></entry>
+    <entry key="category.2.answer.4"></entry>
+    <entry key="category.2.question.5"></entry>
+    <entry key="category.2.answer.5"></entry>
+    <entry key="category.3.name"></entry>
+    <entry key="category.3.question.1"></entry>
+    <entry key="category.3.answer.1"></entry>
+    <entry key="category.3.question.2"></entry>
+    <entry key="category.3.answer.2"></entry>
+    <entry key="category.3.question.3"></entry>
+    <entry key="category.3.answer.3"></entry>
+    <entry key="category.3.question.4"></entry>
+    <entry key="category.3.answer.4"></entry>
+    <entry key="category.3.question.5"></entry>
+    <entry key="category.3.answer.5"></entry>
+    <entry key="category.4.name"></entry>
+    <entry key="category.4.question.1"></entry>
+    <entry key="category.4.answer.1"></entry>
+    <entry key="category.4.question.2"></entry>
+    <entry key="category.4.answer.2"></entry>
+    <entry key="category.4.question.3"></entry>
+    <entry key="category.4.answer.3"></entry>
+    <entry key="category.4.question.4"></entry>
+    <entry key="category.4.answer.4"></entry>
+    <entry key="category.4.question.5"></entry>
+    <entry key="category.4.answer.5"></entry>
+</properties>
