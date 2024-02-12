@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<!--
+    JJeopardy The Big Great World
+-->
+<properties>
+    <entry key="game.name">The Big Great World JJeopardy</entry>
+
+    <entry key="question.1.points">100</entry>
+    <entry key="question.2.points">200</entry>
+    <entry key="question.3.points">300</entry>
+    <entry key="question.4.points">400</entry>
+    <entry key="question.5.points">500</entry>
+
+    <entry key="category.1.name">World Capitals</entry>
+    <entry key="category.1.question.1">This city is the capital of France.</entry>
+    <entry key="category.1.answer.1">What is Paris?</entry>
+    <entry key="category.1.question.2">This city is the capital of Japan.</entry>
+    <entry key="category.1.answer.2">What is Tokyo?</entry>
+    <entry key="category.1.question.3">Canberra is the capital of this country.</entry>
+    <entry key="category.1.answer.3">What is Australia?</entry>
+    <entry key="category.1.question.4">Known as the “Eternal City,” it’s the capital of Italy.</entry>
+    <entry key="category.1.answer.4">What is Rome?</entry>
+    <entry key="category.1.question.5">This Canadian city is the country’s capital.</entry>
+    <entry key="category.1.answer.5">What is Ottawa?</entry>
+    <entry key="category.2.name">Global Landmarks</entry>
+    <entry key="category.2.question.1">This South American landmark is known as “The Lost City of the Incas.”</entry>
+    <entry key="category.2.answer.1">What is Machu Picchu?</entry>
+    <entry key="category.2.question.2">Located in Jordan, this ancient city is known for its rock-cut architecture.</entry>
+    <entry key="category.2.answer.2">What is Petra?</entry>
+    <entry key="category.2.question.3">This is the longest wall in the world, extending over 13,000 miles.</entry>
+    <entry key="category.2.answer.3">What is the Great Wall of China?</entry>
+    <entry key="category.2.question.4">This ancient temple complex in Cambodia is the largest religious monument in the world.</entry>
+    <entry key="category.2.answer.4">What is Angkor Wat?</entry>
+    <entry key="category.2.question.5">This tower in Italy is famous for its unintended tilt.</entry>
+    <entry key="category.2.answer.5">What is the Leaning Tower of Pisa?</entry>
+    <entry key="category.3.name">World Leaders</entry>
+    <entry key="category.3.question.1">This Queen ruled over the United Kingdom from 1837 to 1901, the longest reign of any British monarch at the time.</entry>
+    <entry key="category.3.answer.1">Who was Queen Victoria?</entry>
+    <entry key="category.3.question.2">He was the first Emperor of France, crowned in 1804.</entry>
+    <entry key="category.3.answer.2">Who was Napoleon Bonaparte?</entry>
+    <entry key="category.3.question.3">Known as the “Father of India,” he led the country to independence through nonviolent protest.</entry>
+    <entry key="category.3.answer.3">Who was Mahatma Gandhi?</entry>
+    <entry key="category.3.question.4">This leader’s reform policies of Glasnost and Perestroika led to the end of the Cold War and the breakup of the Soviet Union.</entry>
+    <entry key="category.3.answer.4">Who was Mikhail Gorbachev?</entry>
+    <entry key="category.3.question.5">She became the first female Prime Minister of the United Kingdom in 1979.</entry>
+    <entry key="category.3.answer.5">Who was Margaret Thatcher?</entry>
+    <entry key="category.4.name">International Cuisine</entry>
+    <entry key="category.4.question.1">This Japanese dish is a type of fermented soybean.</entry>
+    <entry key="category.4.answer.1">What is natto?</entry>
+    <entry key="category.4.question.2">Originating from India, this is a popular spiced, creamy tomato sauce dish.</entry>
+    <entry key="category.4.answer.2">What is butter chicken?</entry>
+    <entry key="category.4.question.3">This national dish of Spain is a rice dish typically made with saffron and seafood.</entry>
+    <entry key="category.4.answer.3">What is paella?</entry>
+    <entry key="category.4.question.4">A traditional dish of Ethiopia, typically made from teff flour.</entry>
+    <entry key="category.4.answer.4">What is injera?</entry>
+    <entry key="category.4.question.5">This French soup is made from onions and beef stock, usually served with cheese-topped croutons.</entry>
+    <entry key="category.4.answer.5">What is French onion soup?</entry>
+    <entry key="category.5.name">World Literature</entry>
+    <entry key="category.5.question.1">This Russian author wrote “War and Peace.”</entry>
+    <entry key="category.5.answer.1">Who is Leo Tolstoy?</entry>
+    <entry key="category.5.question.2">Known for his magical realism, this Colombian wrote “One Hundred Years of Solitude.”</entry>
+    <entry key="category.5.answer.2">Who is Gabriel García Márquez?</entry>
+    <entry key="category.5.question.3">This French novelist is famous for “Les Misérables.”</entry>
+    <entry key="category.5.answer.3">Who is Victor Hugo?</entry>
+    <entry key="category.5.question.4">“The Trial” and “The Metamorphosis” are works by this Czech author.</entry>
+    <entry key="category.5.answer.4">Who is Franz Kafka?</entry>
+    <entry key="category.5.question.5">He is known as the national poet of Scotland, often celebrated on January 25th.</entry>
+    <entry key="category.5.answer.5">Who is Robert Burns?</entry>
+    <entry key="category.6.name">World Art</entry>
+    <entry key="category.6.question.1">This artist painted the “Mona Lisa” and “The Last Supper.”</entry>
+    <entry key="category.6.answer.1">Who was Leonardo da Vinci?</entry>
+    <entry key="category.6.question.2">Known for his impressionist works, this artist painted “Water Lilies.”</entry>
+    <entry key="category.6.answer.2">Who was Claude Monet?</entry>
+    <entry key="category.6.question.3">This Dutch artist is famous for his works “The Starry Night” and “Sunflowers.”</entry>
+    <entry key="category.6.answer.3">Who was Vincent van Gogh?</entry>
+    <entry key="category.6.question.4">This Renaissance sculptor created the “David” and painted the Sistine Chapel’s ceiling.</entry>
+    <entry key="category.6.answer.4">Who was Michelangelo?</entry>
+    <entry key="category.6.question.5">She was an influential Baroque painter known for her dramatic use of light and subject matter, such as “Judith Slaying Holofernes.”</entry>
+    <entry key="category.6.answer.5">Who was Artemisia Gentileschi?</entry>
+    <entry key="category.7.name">World Music</entry>
+    <entry key="category.7.question.1">This composer’s works include “The Magic Flute” and “The Marriage of Figaro.”</entry>
+    <entry key="category.7.answer.1">Who is Wolfgang Amadeus Mozart?</entry>
+    <entry key="category.7.question.2">Known as the “March King,” he composed “The Stars and Stripes Forever.”</entry>
+    <entry key="category.7.answer.2">Who is John Philip Sousa?</entry>
+    <entry key="category.7.question.3">This German composer is famous for his nine symphonies and “Moonlight Sonata.”</entry>
+    <entry key="category.7.answer.3">Who is Ludwig van Beethoven?</entry>
+    <entry key="category.7.question.4">Known for his “Four Seasons,” this Italian composer was a virtuoso violinist.</entry>
+    <entry key="category.7.answer.4">Who is Antonio Vivaldi?</entry>
+    <entry key="category.7.question.5">This Russian composer’s works include “The Nutcracker” and “Swan Lake.”</entry>
+    <entry key="category.7.answer.5">Who is Pyotr Ilyich Tchaikovsky?</entry>
+</properties>

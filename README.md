@@ -11,7 +11,8 @@ The application is written in Java and requires Java runtime to run.
 Games are loaded from prepared text (xml) files, which could be created by anyone with basic
 text editor skills. A template game data file can be found here:
 
-[template.xml](https://github.com/mrzhenya/jjeopardy/blob/main/template.xml).
+[template.xml](https://github.com/mrzhenya/jjeopardy/blob/main/game-files/template.xml). A few sample
+games files could be found here: [game-files](https://github.com/mrzhenya/jjeopardy/blob/main/game-files/)
 
 Here is a sample of the main game field:
 

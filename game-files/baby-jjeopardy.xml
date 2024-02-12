@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<!--
+    Copyright - SimpleDigitalCards - https://www.etsy.com/shop/SimpleDigitalCards
+-->
+<properties>
+    <entry key="game.name">Baby JJeopardy</entry>
+
+    <entry key="question.1.points">100</entry>
+    <entry key="question.2.points">200</entry>
+    <entry key="question.3.points">300</entry>
+    <entry key="question.4.points">400</entry>
+
+    <entry key="category.1.name">Baby Items</entry>
+    <entry key="category.1.question.1">A container that babies can drink milk from.</entry>
+    <entry key="category.1.answer.1">What is bottle?</entry>
+    <entry key="category.1.question.2">The thing that hangs over a baby’s crib.</entry>
+    <entry key="category.1.answer.2">What is mobile?</entry>
+    <entry key="category.1.question.3">A wheeled device for transporting a baby.</entry>
+    <entry key="category.1.answer.3">What is stroller?</entry>
+    <entry key="category.1.question.4">A baby’s liquid food to substitute breast milk.</entry>
+    <entry key="category.1.answer.4">What is tormula?</entry>
+    <entry key="category.2.name">Newborn Feelings</entry>
+    <entry key="category.2.question.1">The colour that babies recognise first when their colour vision begins to develop.</entry>
+    <entry key="category.2.answer.1">What is red?</entry>
+    <entry key="category.2.question.2">Babies can do this from birth, but socially, they begin it when they're around six to eight weeks old.</entry>
+    <entry key="category.2.answer.2">What is smile?</entry>
+    <entry key="category.2.question.3">The first sense that a baby acquires after birth.</entry>
+    <entry key="category.2.answer.3">What is sense of touch?</entry>
+    <entry key="category.2.question.4">Babies from birth feel sweet tastes. But they begin to feel this taste from 6 months.</entry>
+    <entry key="category.2.answer.4">What is salt?</entry>
+    <entry key="category.3.name">Nursery Rhyme</entry>
+    <entry key="category.3.question.1">Mary had a little...</entry>
+    <entry key="category.3.answer.1">What is lamb?</entry>
+    <entry key="category.3.question.2">It was picnic time for them.</entry>
+    <entry key="category.3.answer.2">What are teddy bears?</entry>
+    <entry key="category.3.question.3">The itsy bitsy spider crawled up on it</entry>
+    <entry key="category.3.answer.3">What is water spout?</entry>
+    <entry key="category.3.question.4">Couldn't get it back together.</entry>
+    <entry key="category.3.answer.4">What is Humpty Dumpty?</entry>
+    <entry key="category.4.name">Pregnancy Conventions</entry>
+    <entry key="category.4.question.1">Regular pregnancy period in months</entry>
+    <entry key="category.4.answer.1">What are 9 months?</entry>
+    <entry key="category.4.question.2">Trimester of pregnancy when baby start to move and kick</entry>
+    <entry key="category.4.answer.2">What is second trimester?</entry>
+    <entry key="category.4.question.3">The period of pregnancy at which the doctor can identify the gender of the baby</entry>
+    <entry key="category.4.answer.3">What are 18-20 weeks?</entry>
+    <entry key="category.4.question.4">Diagnostic method with high frequency sound waves to help check the normal growth of the fetus</entry>
+    <entry key="category.4.answer.4">What is ultrasound?</entry>
+    <entry key="category.5.name">About Mom-to-be</entry>
+    <entry key="category.5.question.1">The month in which the mom-to-be found out she was pregnant</entry>
+    <entry key="category.5.answer.1">What is_________?</entry>
+    <entry key="category.5.question.2">The month in which the mom-to-be is due to give birth</entry>
+    <entry key="category.5.answer.2">What is_________?</entry>
+    <entry key="category.5.question.3">Kind of food is mom- to-be craving during the pregnancy</entry>
+    <entry key="category.5.answer.3">What is_________?</entry>
+    <entry key="category.5.question.4">The first item that mom-to-be purchase for a baby</entry>
+    <entry key="category.5.answer.4">What is_________?</entry>
+</properties>
