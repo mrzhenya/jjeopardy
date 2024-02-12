@@ -1,0 +1,102 @@
+/*
+ * Copyright 2024 Yevgeny Nyden
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package net.curre.jjeopardy.ui.dialog;
+
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.images.ImageEnum;
+import net.curre.jjeopardy.service.FileParsingResult;
+import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.ui.laf.LafService;
+import net.curre.jjeopardy.ui.laf.theme.LafTheme;
+
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.Component;
+import java.awt.Font;
+
+/**
+ * Dialog to display file parsing results.
+ *
+ * @author Yevgeny Nyden
+ */
+public class ParsingResultDialog extends BasicDialog {
+
+  /** Game file parsing result. */
+  private final FileParsingResult result;
+
+  /**
+   * Creates an instance of a dialog to show results of parsing a game file.
+   * @param result file parsing result
+   */
+  public ParsingResultDialog(FileParsingResult result) {
+    this.result = result;
+    ImageEnum icon = result.isGameDataUsable() ? ImageEnum.SUCCESS_64 : ImageEnum.FAILURE_64;
+    this.initializeDialog(
+      result.getResulTitleShort(), LocaleService.getString("jj.dialog.button.ok"), icon);
+  }
+
+  @Override
+  public Component getHeaderComponent() {
+    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    JPanel headerPanel = new JPanel(new TableLayout(new double[][] {
+      {TableLayout.PREFERRED}, {TableLayout.PREFERRED, TableLayout.PREFERRED}}));
+    final JLabel label1 = new JLabel(this.result.getResulTitleLong());
+    label1.setFont(lafTheme.getDialogHeaderFont());
+    headerPanel.add(label1, new TableLayoutConstraints(
+      0, 0, 0, 0, TableLayout.CENTER, TableLayout.CENTER));
+    final JLabel label2 = new JLabel(this.result.getFileName());
+    label2.setFont(lafTheme.getDialogHeaderFont());
+    headerPanel.add(label2, new TableLayoutConstraints(
+      0, 1, 0, 1, TableLayout.CENTER, TableLayout.CENTER));
+    return headerPanel;
+  }
+
+  @Override
+  public Component getContentComponent() {
+    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    JPanel contentPane = new JPanel();
+    contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
+    Font textFont = lafTheme.getDialogTextFont();
+    for (String msg : this.result.getErrorMessages()) {
+      contentPane.add(this.createLabelWithIcon(msg, textFont, ImageEnum.ERROR_24));
+    }
+    for (String msg : this.result.getWarningMessages()) {
+      contentPane.add(this.createLabelWithIcon(msg, textFont, ImageEnum.WARN_24));
+    }
+    for (String msg : this.result.getInfoMessages()) {
+      contentPane.add(this.createLabelWithIcon(msg, textFont, ImageEnum.INFO_24));
+    }
+    contentPane.add(new JLabel("\n\n")); // add a couple extra new lines
+    return contentPane;
+  }
+
+  /**
+   * Creates a label for a parsing result message.
+   * @param text message text
+   * @param font font to use
+   * @param icon icon to show next to the label
+   * @return created label component
+   */
+  private JLabel createLabelWithIcon(String text, Font font, ImageEnum icon) {
+    JLabel label = new JLabel(icon.toImageIcon());
+    label.setFont(font);
+    label.setText(text);
+    return label;
+  }
+}
