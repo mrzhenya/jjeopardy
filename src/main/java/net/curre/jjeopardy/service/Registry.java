@@ -48,6 +48,12 @@ public interface Registry {
   GameDataService getGameDataService();
 
   /**
+   * Gets the game settings service.
+   * @return a reference to the game settings service
+   */
+  SettingsService getSettingsService();
+
+  /**
    * Gets a reference to the game data.
    * @return a reference to the game data
    */

@@ -102,7 +102,10 @@ public class LocaleService {
       Locale prevLocale = Locale.getDefault();
       Locale locale = findLocaleById(localeId);
       Locale.setDefault(locale);
-      SettingsService.saveSettings();
+
+      SettingsService settingsService = AppRegistry.getInstance().getSettingsService();
+      settingsService.getSettings().setLocaleId(Locale.getDefault().toString());
+      settingsService.persistSettings();
       if (!localeId.equals(prevLocale.toString()) && showDialog) {
         UiService.getInstance().showRestartGameDialog();
       }

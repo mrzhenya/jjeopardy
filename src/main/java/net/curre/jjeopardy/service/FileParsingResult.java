@@ -106,7 +106,7 @@ public class FileParsingResult {
      * Ctor.
      * @param propertyName property name for this message
      */
-    private Message(String propertyName) {
+    Message(String propertyName) {
       this.propertyName = propertyName;
     }
   }

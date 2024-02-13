@@ -54,7 +54,7 @@ public class GameDataServiceTest {
    */
   @Before
   public void init() {
-    gameService = new GameDataService();
+    this.gameService = new GameDataService();
   }
 
   /**

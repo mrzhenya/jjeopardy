@@ -30,8 +30,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This is a service bean that assists with
- * handling application settings.
+ * Settings service that assists with handling application settings.
+ * Application settings stored on disk are loaded at service creation time or
+ * initialized to default if no settings file exists.<br><br>
+ *
+ * To change settings, modify the settings object obtained via #getSettings
+ * and persist them to disk via the #persistSettings method.<br><br>
+ *
+ * Settings file is stored in a platform specific directory,
+ * <ul>
+ *   <li>on Mac, it's - 'UserHome' / Library / Application Support / JJeopardy /</li>
+ *   <li>on Windows, it's - 'UserHome' / AppData / Local / Temp / JJeopardy /</li>
+ *   <li>on others, it's - 'UserHome' / temp / JJeopardy /</li>
+ * </ul>
  *
  * @author Yevgeny Nyden
  */
@@ -47,30 +58,76 @@ public class SettingsService {
   private static final Logger LOGGER = Logger.getLogger(SettingsService.class.getName());
 
   /** Reference to the settings object. */
-  private static final Settings settings;
+  private final Settings settings;
 
-  static {
-    // initializing the settings object
-    settings = loadSettings();
+  /** Absolute path to the settings file. */
+  private final String settingsFilePath;
+
+  /**
+   * Ctor.
+   * @param settingsFilePath path to the settings file (for test) or null if default should be used
+   */
+  public SettingsService(String settingsFilePath) {
+    if (settingsFilePath == null) {
+      settingsFilePath = getVerifiedSettingsFilePath();
+    }
+    this.settingsFilePath = settingsFilePath;
+    this.settings = loadSettings(settingsFilePath);
   }
 
   /**
    * Returns application settings (current settings).
-   * @return Reference to the application settings bean
+   * @return Reference to the application settings
    */
-  public static Settings getSettings() {
-    return settings;
+  public Settings getSettings() {
+    return this.settings;
+  }
+
+  /** Persists the current settings. */
+  public void persistSettings() {
+    try {
+      File file = new File(this.settingsFilePath);
+      FileOutputStream fStream = new FileOutputStream(file);
+      ObjectOutputStream oStream = new ObjectOutputStream(fStream);
+      oStream.writeObject(this.settings);
+    } catch (Exception e) {
+      LOGGER.log(Level.WARNING, "Unable to save the settings!", e);
+    }
+  }
+
+  /**
+   * Saves the last known current directory in the settings.
+   * @param absolutePath last known current directory
+   */
+  public void saveLastCurrentDirectory(String absolutePath) {
+    this.settings.setLastCurrentDirectory(absolutePath);
+  }
+
+  /**
+   * Saves the main game window size in the settings if it's not
+   * smaller than the default game table size.
+   * @param width the table width
+   * @param height the table height
+   */
+  public void updateMainWindowSize(int width, int height) {
+    if (width >= LafService.DEFAULT_GAME_TABLE_WIDTH) {
+      this.settings.setMainFrameWidth(width);
+    }
+    if (height >= LafService.GAME_TABLE_MIN_ROW_HEIGHT) {
+      this.settings.setMainFrameHeight(height);
+    }
   }
 
   /**
    * Method to load settings stored on disk.
+   * @param settingsFilePath path to the settings file
    * @return Settings, loaded from the settings file,
    *         or a new <code>Settings</code> object if no settings file is found
    */
-  public static Settings loadSettings() {
+  private static Settings loadSettings(String settingsFilePath) {
     // Try loading the settings file.
     try {
-      File file = new File(getVerifiedSettingsFilePath());
+      File file = new File(settingsFilePath);
       if (file.exists()) {
         FileInputStream fStream = new FileInputStream(file);
         ObjectInputStream oStream = new ObjectInputStream(fStream);
@@ -88,86 +145,22 @@ public class SettingsService {
   }
 
   /**
-   * Method to save user settings. Application settings are
-   * saved in the place and under the name specified in the AppRegistry bean.
-   */
-  public static void saveSettings() {
-    settings.setLocaleId(Locale.getDefault().toString());
-
-    // Saving the LAF theme.
-    settings.setLafThemeId(LafService.getInstance().getCurrentLafThemeId());
-
-    // settings LAF should be already set
-    persistSettings();
-  }
-
-  /**
-   * Method to reset user settings.
-   * The settings are recreated and saved.
-   * @throws ServiceException If there was an error when resetting settings
-   */
-  public static void resetSettings() throws ServiceException {
-    persistSettings();
-  }
-
-  /**
-   * Method to persist the current settings.
-   */
-  public static void persistSettings() {
-    try {
-      File file = new File(getVerifiedSettingsFilePath());
-      FileOutputStream fStream = new FileOutputStream(file);
-      ObjectOutputStream oStream = new ObjectOutputStream(fStream);
-      oStream.writeObject(settings);
-    } catch (Exception e) {
-      LOGGER.log(Level.WARNING, "Unable to save the settings!", e);
-    }
-  }
-
-  /**
-   * Saves the last known current directory in the settings.
-   * @param absolutePath last known current directory
-   */
-  public static void saveLastCurrentDirectory(String absolutePath) {
-    settings.setLastCurrentDirectory(absolutePath);
-    SettingsService.persistSettings();
-  }
-
-  /**
-   * Saves the main game window size in the settings if it's not
-   * smaller than the default game table size.
-   * @param width the table width
-   * @param height the table height
-   */
-  public static void updateMainWindowSize(int width, int height) {
-    if (width >= LafService.DEFAULT_GAME_TABLE_WIDTH) {
-      settings.setMainFrameWidth(width);
-    }
-    if (height >= LafService.GAME_TABLE_MIN_ROW_HEIGHT) {
-      settings.setMainFrameHeight(height);
-    }
-    SettingsService.persistSettings();
-  }
-
-  /**
    * Returns a platform specific absolute path to the settings file including
    * the file name. All custom directories in the path that don't exist,
    * will be created.
    * @return Absolute path to the settings file including the file name
    */
   private static String getVerifiedSettingsFilePath() {
-    StringBuilder path = new StringBuilder();
+    StringBuilder path = new StringBuilder(System.getProperties().getProperty("user.home"));
     switch (Utilities.getPlatformType()) {
       case MAC_OS:
-        path.append(System.getProperties().getProperty("user.home")).
-          append(File.separatorChar).append("Library").
-          append(File.separatorChar).append("Application Support");
+        path.append(File.separatorChar).append("Library").
+            append(File.separatorChar).append("Application Support");
         break;
       case WINDOWS:
-        path.append(System.getProperties().getProperty("user.home")).
-          append(File.separatorChar).append("AppData").
-          append(File.separatorChar).append("Local").
-          append(File.separatorChar).append("Temp");
+        path.append(File.separatorChar).append("AppData").
+            append(File.separatorChar).append("Local").
+            append(File.separatorChar).append("Temp");
         break;
       default:
         path.append(File.separatorChar).append("temp");

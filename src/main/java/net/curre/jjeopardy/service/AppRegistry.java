@@ -42,6 +42,9 @@ public class AppRegistry implements Registry {
   /** Reference to the game data service. */
   private final GameDataService gameDataService;
 
+  /** Reference to the game settings service. */
+  private final SettingsService settingsService;
+
   /** Reference to the question dialog. */
   private QuestionDialog questionDialog;
 
@@ -75,8 +78,8 @@ public class AppRegistry implements Registry {
    * the result of the getSettingsFilePathHelper() method.
    */
   public AppRegistry() {
-
     this.gameDataService = new GameDataService();
+    this.settingsService = new SettingsService(null);
   }
 
   /**
@@ -101,6 +104,14 @@ public class AppRegistry implements Registry {
    */
   public GameDataService getGameDataService() {
     return this.gameDataService;
+  }
+
+  /**
+   * Gets the game settings service.
+   * @return a reference to the game settings service
+   */
+  public SettingsService getSettingsService() {
+    return this.settingsService;
   }
 
   /**

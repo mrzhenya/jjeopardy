@@ -49,7 +49,8 @@ public class App {
     LafService.getInstance().initialize();
 
     // Then, load and activate the stored settings (LAF theme, locale, game board size).
-    Settings settings = SettingsService.getSettings();
+    SettingsService settingsService = AppRegistry.getInstance().getSettingsService();
+    Settings settings = settingsService.getSettings();
     LafService.getInstance().activateLafTheme(settings.getLafThemeId());
     LocaleService.setCurrentLocale(settings.getLocaleId(), false);
 

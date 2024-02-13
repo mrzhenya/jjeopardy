@@ -16,11 +16,7 @@
 
 package net.curre.jjeopardy.ui;
 
-import net.curre.jjeopardy.service.AppRegistry;
-import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.service.MainService;
-import net.curre.jjeopardy.service.SettingsService;
-import net.curre.jjeopardy.service.UiService;
+import net.curre.jjeopardy.service.*;
 import net.curre.jjeopardy.ui.laf.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafThemeInterface;
 
@@ -60,8 +56,11 @@ public class LandingUiMenu extends JMenuBar {
       themeItem.addActionListener(evt -> {
         try {
           lafService.activateLafTheme(lafTheme.getId());
-          SettingsService.saveSettings();
-          AppRegistry.getInstance().getLandingUi().updateLandingUi();
+          Registry registry = AppRegistry.getInstance();
+          SettingsService settingsService = registry.getSettingsService();
+          settingsService.getSettings().setLafThemeId(LafService.getInstance().getCurrentLafThemeId());
+          settingsService.persistSettings();
+          registry.getLandingUi().updateLandingUi();
           UiService.getInstance().showRestartGameDialog();
         } catch (Exception e) {
           LOGGER.log(Level.WARNING, "Unable to save settings.", e);

@@ -27,7 +27,6 @@ import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.MainService;
 import net.curre.jjeopardy.service.Registry;
-import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.service.SoundService;
 import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.sounds.SoundEnum;
@@ -78,7 +77,7 @@ public class MainWindow extends JFrame {
     LOGGER.info("Creating the main Game UI.");
     this.gameTable = new GameTable();
 
-    final Settings settings = SettingsService.getSettings();
+    final Settings settings = AppRegistry.getInstance().getSettingsService().getSettings();
     this.setPreferredSize(new Dimension(settings.getMainFrameWidth(), settings.getMainFrameHeight()));
     this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     this.addWindowListener(new GameWindowListener());

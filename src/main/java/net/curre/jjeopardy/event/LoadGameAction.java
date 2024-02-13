@@ -16,12 +16,7 @@
 
 package net.curre.jjeopardy.event;
 
-import net.curre.jjeopardy.bean.Settings;
-import net.curre.jjeopardy.service.AppRegistry;
-import net.curre.jjeopardy.service.FileParsingResult;
-import net.curre.jjeopardy.service.GameDataService;
-import net.curre.jjeopardy.service.SettingsService;
-import net.curre.jjeopardy.service.UiService;
+import net.curre.jjeopardy.service.*;
 import net.curre.jjeopardy.ui.LandingUi;
 
 import javax.swing.AbstractAction;
@@ -79,14 +74,16 @@ public class LoadGameAction extends AbstractAction implements KeyListener {
    */
   private void showLoadGameDialog() {
     LOGGER.info("Handling the Load button action.");
+    Registry registry = AppRegistry.getInstance();
+    SettingsService settingsService = registry.getSettingsService();
     JFileChooser fileChooser = new JFileChooser();
-    Settings settings = SettingsService.getSettings();
-    fileChooser.setCurrentDirectory(new File(settings.getLastCurrentDirectory()));
+    fileChooser.setCurrentDirectory(new File(settingsService.getSettings().getLastCurrentDirectory()));
     final int result = fileChooser.showOpenDialog(landingUi);
-    SettingsService.saveLastCurrentDirectory(fileChooser.getCurrentDirectory().getAbsolutePath());
+    settingsService.saveLastCurrentDirectory(fileChooser.getCurrentDirectory().getAbsolutePath());
+    settingsService.persistSettings();
     if (result == JFileChooser.APPROVE_OPTION) {
       File selectedFile = fileChooser.getSelectedFile();
-      GameDataService gameDataService = AppRegistry.getInstance().getGameDataService();
+      GameDataService gameDataService = registry.getGameDataService();
       FileParsingResult parsingResults = gameDataService.loadGameData(selectedFile.getAbsolutePath());
       UiService.getInstance().showParsingResult(parsingResults, this.landingUi);
 

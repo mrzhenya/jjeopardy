@@ -40,10 +40,9 @@ public class GameWindowListener implements WindowListener {
     MainWindow mainWindow = registry.getMainWindow();
 
     // Saving dimensions of the main window.
-    SettingsService.updateMainWindowSize(
-      mainWindow.getWidth(),
-      mainWindow.getHeight()
-    );
+    SettingsService settingsService = registry.getSettingsService();
+    settingsService.updateMainWindowSize(mainWindow.getWidth(), mainWindow.getHeight());
+    settingsService.persistSettings();
 
     // Hide the main game window and show the landing UI.
     mainWindow.setVisible(false);

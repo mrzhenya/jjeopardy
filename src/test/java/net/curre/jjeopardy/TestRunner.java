@@ -18,10 +18,8 @@ package net.curre.jjeopardy;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.ui.laf.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
@@ -41,8 +39,6 @@ public class TestRunner {
 
   public static void main(final String[] args) {
     LafService.getInstance().initialize();
-    Settings settings = SettingsService.getSettings();
-    LafService.getInstance().activateLafTheme(settings.getLafThemeId());
 
     testDialog();
   }
