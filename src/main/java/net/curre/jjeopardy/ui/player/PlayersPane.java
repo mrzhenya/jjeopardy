@@ -18,6 +18,8 @@ package net.curre.jjeopardy.ui.player;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.GameDataService;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.BoxLayout;
@@ -25,9 +27,6 @@ import javax.swing.JPanel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
-import static net.curre.jjeopardy.service.GameDataService.MAX_NUMBER_OF_PLAYERS;
-import static net.curre.jjeopardy.service.GameDataService.MIN_NUMBER_OF_PLAYERS;
 
 /**
  * UI container for the player data - rows of items, each of which has
@@ -79,7 +78,7 @@ public class PlayersPane extends JPanel {
   protected void addNewPlayerItem(String playerNameOrNull) {
     // Redundant check to ensure we don't go above max players.
     int nextPlayerIndex = this.containerPane.getComponentCount();
-    if (nextPlayerIndex == MAX_NUMBER_OF_PLAYERS) {
+    if (nextPlayerIndex == AppRegistry.getInstance().getGameDataService().getMaxNumberOfPlayers()) {
       LOGGER.warning("Trying to add too many players, ignoring...");
       return;
     }
@@ -108,9 +107,11 @@ public class PlayersPane extends JPanel {
    * Prunes empty lines from the players pane.
    */
   protected void cleanEmptyPlayers() {
+    int minNumberOfPlayers = AppRegistry.getInstance().getGameDataService().getMinNumberOfPlayers();
     for (int ind = 0; ind < this.containerPane.getComponentCount(); ind++) {
       PlayerItem playerItem = (PlayerItem) this.containerPane.getComponent(ind);
-      if (StringUtils.isBlank(playerItem.getPlayerName()) && ind >= MIN_NUMBER_OF_PLAYERS) {
+      if (StringUtils.isBlank(playerItem.getPlayerName()) && ind >=
+              minNumberOfPlayers) {
         this.removePlayerItem(ind--);
       }
     }
@@ -121,7 +122,7 @@ public class PlayersPane extends JPanel {
    * @param playerNames list of player names
    */
   protected void updatePlayersPane(List<String> playerNames) {
-    if (playerNames.size() < MIN_NUMBER_OF_PLAYERS) {
+    if (playerNames.size() < AppRegistry.getInstance().getGameDataService().getMinNumberOfPlayers()) {
       LOGGER.warning("Provided too few players, ignoring.");
       if (this.containerPane.getComponentCount() == 0) {
         this.initDefaultPlayersPane();
@@ -151,7 +152,8 @@ public class PlayersPane extends JPanel {
    * Initializes the players pane with default empty player lines.
    */
   private void initDefaultPlayersPane() {
-    for (int ind = 0; ind < MIN_NUMBER_OF_PLAYERS; ind++) {
+    int minNumberOfPlayers = AppRegistry.getInstance().getGameDataService().getMinNumberOfPlayers();
+    for (int ind = 0; ind < minNumberOfPlayers; ind++) {
       this.addNewPlayerItem(null);
     }
   }
@@ -163,13 +165,17 @@ public class PlayersPane extends JPanel {
    */
   private void updateButtonState() {
     int numberOfPlayers = this.containerPane.getComponentCount();
+    GameDataService gameService = AppRegistry.getInstance().getGameDataService();
+    int maxNumberOfPlayers = gameService.getMaxNumberOfPlayers();
+    int minNumberOfPlayers = gameService.getMinNumberOfPlayers();
+
     for (int ind = 0; ind < numberOfPlayers; ind++) {
       PlayerItem playerItem = (PlayerItem) this.containerPane.getComponent(ind);
       // Add button is visible only on the last row.
       boolean addVisible = (ind + 1 == numberOfPlayers) &&
-        (ind + 1 < MAX_NUMBER_OF_PLAYERS);
+        (ind + 1 < maxNumberOfPlayers);
       // Remove buttons are visible only on the non-default rows.
-      boolean removeVisible = (ind >= MIN_NUMBER_OF_PLAYERS);
+      boolean removeVisible = (ind >= minNumberOfPlayers);
       playerItem.updateButtonState(addVisible, removeVisible);
     }
   }

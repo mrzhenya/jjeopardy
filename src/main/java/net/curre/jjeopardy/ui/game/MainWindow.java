@@ -107,7 +107,7 @@ public class MainWindow extends JFrame {
    * Prepares the game for a new round.
    */
   public void prepareGame() {
-    GameData gameData = AppRegistry.getInstance().getGameDataService().getGameFileData();
+    GameData gameData = AppRegistry.getInstance().getGameDataService().getGameData();
     this.setTitle(gameData.getGameName());
 
     this.gameTable.prepareGame();

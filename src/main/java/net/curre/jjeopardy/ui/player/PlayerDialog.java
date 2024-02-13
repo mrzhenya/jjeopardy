@@ -19,6 +19,7 @@ package net.curre.jjeopardy.ui.player;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.LandingUi;
@@ -35,8 +36,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.List;
 import java.util.logging.Logger;
-
-import static net.curre.jjeopardy.service.GameDataService.MIN_NUMBER_OF_PLAYERS;
 
 /**
  * Dialog to add or update players joining the game.
@@ -157,19 +156,22 @@ public class PlayerDialog extends JDialog {
      */
     public void actionPerformed(ActionEvent e) {
       LOGGER.info("Saving players.");
+      GameDataService gameService = AppRegistry.getInstance().getGameDataService();
+
       PlayerDialog.this.playersPane.cleanEmptyPlayers();
       List<String> playerNames = playersPane.getPlayerNames();
-      if (playerNames.size() < MIN_NUMBER_OF_PLAYERS) {
+      if (playerNames.size() < gameService.getMinNumberOfPlayers()) {
         LOGGER.info("Not enough non-blank player names");
         PlayerDialog.this.setVisible(false);
         UiService.getInstance().showWarningDialog(
           LocaleService.getString("jj.playerdialog.addplayers.warn.title"),
-          LocaleService.getString("jj.playerdialog.addplayers.warn.msg", String.valueOf(MIN_NUMBER_OF_PLAYERS)),
+          LocaleService.getString("jj.playerdialog.addplayers.warn.msg",
+                  String.valueOf(gameService.getMinNumberOfPlayers())),
           PlayerDialog.this);
         PlayerDialog.this.setVisible(true);
         return;
       }
-      AppRegistry.getInstance().getGameDataService().updatePlayersFromNames(playerNames);
+      gameService.updatePlayersFromNames(playerNames);
       PlayerDialog.this.landingUi.updateLandingUi();
       PlayerDialog.this.setVisible(false);
     }

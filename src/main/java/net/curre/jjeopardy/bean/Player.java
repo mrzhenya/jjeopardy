@@ -81,10 +81,10 @@ public class Player implements HasName {
   }
 
   /**
-   * Adjusts the player's current score.
+   * Adds a specified value to the player's current score.
    * @param value value to add to the current score
    */
-  public void adjustScore(int value) {
+  public void addScore(int value) {
     this.score = this.score + value; 
   }
 

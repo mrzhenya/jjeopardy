@@ -109,9 +109,9 @@ public class Question {
 
   /**
    * Gets the parent's name string (e.g. Category X or Player 3).
-   * @return parent's name string
+   * @return parent's name string or null if no parent is set
    */
   public String getParentName() {
-    return this.parentWithName.getNameString();
+    return this.parentWithName == null ? null : this.parentWithName.getNameString();
   }
 }

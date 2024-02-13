@@ -151,7 +151,7 @@ public class QuestionDialog extends JDialog {
   public void startAskingBonusQuestions() {
     this.currBonusPlayerIndex = 0;
     GameDataService gameService = AppRegistry.getInstance().getGameDataService();
-    this.currBonusQuestions = new ArrayList<>(gameService.getGameFileData().getBonusQuestions());
+    this.currBonusQuestions = new ArrayList<>(gameService.getGameData().getBonusQuestions());
     this.askBonusQuestion(this.currBonusPlayerIndex);
   }
 

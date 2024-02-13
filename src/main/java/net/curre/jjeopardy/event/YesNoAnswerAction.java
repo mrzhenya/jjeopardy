@@ -65,7 +65,7 @@ public class YesNoAnswerAction extends AbstractAction {
     final Registry registry = AppRegistry.getInstance();
     GameDataService dataService = registry.getGameDataService();
     final int cost = (this.isYes ? 1 : -1) * this.questionDialog.getCurrentQuestionCost();
-    dataService.adjustTeamScore(this.playerIndex, cost);
+    dataService.addToPlayerScore(this.playerIndex, cost);
     registry.getMainWindow().updateScores();
 
     this.questionDialog.hideQuestionDialog();

@@ -57,8 +57,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import static net.curre.jjeopardy.service.GameDataService.MIN_NUMBER_OF_PLAYERS;
-
 /**
  * Main landing UI that's shown to the user after application start.
  * @author Yevgeny Nyden
@@ -129,10 +127,10 @@ public class LandingUi extends JFrame {
    */
   public void updateUiWithLoadedGameFile() {
     GameDataService gameDataService = AppRegistry.getInstance().getGameDataService();
-    GameData gameFileData = gameDataService.getGameFileData();
+    GameData gameFileData = gameDataService.getGameData();
     final List<String> playerNames = gameFileData.getPlayerNames();
     // Updating game players from the ones parsed from the file.
-    if (playerNames.size() >= MIN_NUMBER_OF_PLAYERS) {
+    if (playerNames.size() >= gameDataService.getMinNumberOfPlayers()) {
       // Update the PlayerDialog values.
       this.playerDialog.updatePlayersPane(playerNames);
 
@@ -178,7 +176,7 @@ public class LandingUi extends JFrame {
 
     // Updating the game name label.
     GameDataService gameDataService = AppRegistry.getInstance().getGameDataService();
-    GameData gameFileData = gameDataService.getGameFileData();
+    GameData gameFileData = gameDataService.getGameData();
     if (gameFileData.haveEnoughGameData()) {
       this.currGameLabel.setText(gameFileData.getGameName());
       this.currGameLabel.setEnabled(true);

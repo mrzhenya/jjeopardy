@@ -108,7 +108,7 @@ public class AppRegistry implements Registry {
    * @return a reference to the game data
    */
   public GameData getGameData() {
-    return this.gameDataService.getGameFileData();
+    return this.gameDataService.getGameData();
   }
 
   /**

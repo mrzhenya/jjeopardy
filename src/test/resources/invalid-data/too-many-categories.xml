@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="game.name">invalid-too-many-categories</entry>
+
+    <entry key="question.1.points">10</entry>
+    <entry key="question.2.points">20</entry>
+    <entry key="question.3.points">30</entry>
+
+    <entry key="category.1.name">Category 1</entry>
+    <entry key="category.1.question.1">Category 1, question 1</entry>
+    <entry key="category.1.answer.1">Category 1, answer 1</entry>
+    <entry key="category.1.question.2">Category 1, question 2</entry>
+    <entry key="category.1.answer.2">Category 1, answer 2</entry>
+    <entry key="category.1.question.3">Category 1, question 3</entry>
+    <entry key="category.1.answer.3">Category 1, answer 3</entry>
+
+    <entry key="category.2.name">Category 2</entry>
+    <entry key="category.2.question.1">Category 2, question 1</entry>
+    <entry key="category.2.answer.1">Category 2, answer 1</entry>
+    <entry key="category.2.question.2">Category 2, question 2</entry>
+    <entry key="category.2.answer.2">Category 2, answer 2</entry>
+    <entry key="category.2.question.3">Category 2, question 3</entry>
+    <entry key="category.2.answer.3">Category 2, answer 3</entry>
+
+    <entry key="category.3.name">Category 3</entry>
+    <entry key="category.3.question.1">Category 3, question 1</entry>
+    <entry key="category.3.answer.1">Category 3, answer 1</entry>
+    <entry key="category.3.question.2">Category 3, question 2</entry>
+    <entry key="category.3.answer.2">Category 3, answer 2</entry>
+    <entry key="category.3.question.3">Category 3, question 3</entry>
+    <entry key="category.3.answer.3">Category 3, answer 3</entry>
+
+    <entry key="category.4.name">Category 4</entry>
+    <entry key="category.4.question.1">Category 4, question 1</entry>
+    <entry key="category.4.answer.1">Category 4, answer 1</entry>
+    <entry key="category.4.question.2">Category 4, question 2</entry>
+    <entry key="category.4.answer.2">Category 4, answer 2</entry>
+    <entry key="category.4.question.3">Category 4, question 3</entry>
+    <entry key="category.4.answer.3">Category 4, answer 3</entry>
+
+    <entry key="category.5.name">Category 5</entry>
+    <entry key="category.5.question.1">Category 5, question 1</entry>
+    <entry key="category.5.answer.1">Category 5, answer 1</entry>
+    <entry key="category.5.question.2">Category 5, question 2</entry>
+    <entry key="category.5.answer.2">Category 5, answer 2</entry>
+    <entry key="category.5.question.3">Category 5, question 3</entry>
+    <entry key="category.5.answer.3">Category 5, answer 3</entry>
+
+    <entry key="category.6.name">Category 6</entry>
+    <entry key="category.6.question.1">Category 6, question 1</entry>
+    <entry key="category.6.answer.1">Category 6, answer 1</entry>
+    <entry key="category.6.question.2">Category 6, question 2</entry>
+    <entry key="category.6.answer.2">Category 6, answer 2</entry>
+    <entry key="category.6.question.3">Category 6, question 3</entry>
+    <entry key="category.6.answer.3">Category 6, answer 3</entry>
+
+    <entry key="category.7.name">Category 7</entry>
+    <entry key="category.7.question.1">Category 7, question 1</entry>
+    <entry key="category.7.answer.1">Category 7, answer 1</entry>
+    <entry key="category.7.question.2">Category 7, question 2</entry>
+    <entry key="category.7.answer.2">Category 7, answer 2</entry>
+    <entry key="category.7.question.3">Category 7, question 3</entry>
+    <entry key="category.7.answer.3">Category 7, answer 3</entry>
+
+    <entry key="category.8.name">Category 8</entry>
+    <entry key="category.8.question.1">Category 8, question 1</entry>
+    <entry key="category.8.answer.1">Category 8, answer 1</entry>
+    <entry key="category.8.question.2">Category 8, question 2</entry>
+    <entry key="category.8.answer.2">Category 8, answer 2</entry>
+    <entry key="category.8.question.3">Category 8, question 3</entry>
+    <entry key="category.8.answer.3">Category 8, answer 3</entry>
+</properties>

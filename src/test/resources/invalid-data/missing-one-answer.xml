@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="game.name">invalid-missing-one-answer</entry>
+
+    <entry key="question.1.points">10</entry>
+    <entry key="question.2.points">20</entry>
+    <entry key="question.3.points">30</entry>
+
+    <entry key="category.1.name">Category 1</entry>
+    <entry key="category.1.question.1">Category 1, question 1</entry>
+    <entry key="category.1.answer.1">Category 1, answer 1</entry>
+    <entry key="category.1.question.2">Category 1, question 2</entry>
+
+    <entry key="category.1.question.3">Category 1, question 3</entry>
+    <entry key="category.1.answer.3">Category 1, answer 3</entry>
+
+    <entry key="category.2.name">Category 2</entry>
+    <entry key="category.2.question.1">Category 2, question 1</entry>
+    <entry key="category.2.answer.1">Category 2, answer 1</entry>
+    <entry key="category.2.question.2">Category 2, question 2</entry>
+    <entry key="category.2.answer.2">Category 2, answer 2</entry>
+    <entry key="category.2.question.3">Category 2, question 3</entry>
+    <entry key="category.2.answer.3">Category 2, answer 3</entry>
+
+    <entry key="category.3.name">Category 3</entry>
+    <entry key="category.3.question.1">Category 3, question 1</entry>
+    <entry key="category.3.answer.1">Category 3, answer 1</entry>
+    <entry key="category.3.question.2">Category 3, question 2</entry>
+    <entry key="category.3.answer.2">Category 3, answer 2</entry>
+    <entry key="category.3.question.3">Category 3, question 3</entry>
+    <entry key="category.3.answer.3">Category 3, answer 3</entry>
+</properties>

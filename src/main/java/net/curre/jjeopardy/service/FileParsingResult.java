@@ -40,6 +40,15 @@ public class FileParsingResult {
     /** Name is not specified error. */
     MSG_NAME_NOT_FOUND("jj.file.msg.error.name.notfound"),
 
+    /** Blank category name error. */
+    MSG_BLANK_CATEGORY_NAME("jj.file.msg.error.category.name.empty"),
+
+    /** Blank question error. */
+    MSG_BLANK_QUESTION("jj.file.msg.error.question.empty"),
+
+    /** Blank question error. */
+    MSG_BLANK_ANSWER("jj.file.msg.error.answer.empty"),
+
     /** Empty categories error. */
     MSG_NO_CATEGORIES("jj.file.msg.error.categories.empty"),
 
@@ -66,6 +75,9 @@ public class FileParsingResult {
 
     /** Not enough players warning message. */
     MSG_TOO_FEW_PLAYERS("jj.file.msg.warn.player.toofew"),
+
+    /** Too many players warning message. */
+    MSG_TOO_MANY_PLAYERS("jj.file.msg.warn.player.toomany"),
 
     /** Not enough bonus questions warning message. */
     MSG_TOO_FEW_BONUS_QUESTIONS("jj.file.msg.warn.bonusquestions.toofew"),

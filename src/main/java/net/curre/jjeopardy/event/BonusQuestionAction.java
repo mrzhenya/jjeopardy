@@ -86,7 +86,7 @@ public class BonusQuestionAction extends AbstractAction implements KeyListener {
     final Registry registry = AppRegistry.getInstance();
     final int cost = (this.isYes ? 1 : -1) * this.questionDialog.getCurrentQuestionCost();
     GameDataService dataService = registry.getGameDataService();
-    dataService.adjustTeamScore(this.questionDialog.getCurrentBonusPlayerIndex(), cost);
+    dataService.addToPlayerScore(this.questionDialog.getCurrentBonusPlayerIndex(), cost);
     registry.getMainWindow().updateScores();
     try {
       Thread.sleep(500);
