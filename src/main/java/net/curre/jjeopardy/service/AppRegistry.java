@@ -45,6 +45,9 @@ public class AppRegistry implements Registry {
   /** Reference to the game settings service. */
   private final SettingsService settingsService;
 
+  /** Reference to the locale service. */
+  private final LocaleService localeService;
+
   /** Reference to the question dialog. */
   private QuestionDialog questionDialog;
 
@@ -80,6 +83,7 @@ public class AppRegistry implements Registry {
   public AppRegistry() {
     this.gameDataService = new GameDataService();
     this.settingsService = new SettingsService(null);
+    this.localeService = new LocaleService();
   }
 
   /**
@@ -112,6 +116,14 @@ public class AppRegistry implements Registry {
    */
   public SettingsService getSettingsService() {
     return this.settingsService;
+  }
+
+  /**
+   * Gets the locale service.
+   * @return a reference to the locale service
+   */
+  public LocaleService getLocaleService() {
+    return this.localeService;
   }
 
   /**

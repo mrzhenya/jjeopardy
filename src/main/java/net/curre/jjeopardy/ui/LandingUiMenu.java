@@ -71,7 +71,8 @@ public class LandingUiMenu extends JMenuBar {
     // Creating the Locale menu.
     JMenu localeMenu = new JMenu(LocaleService.getString("jj.landing.menu.item.locales"));
     ButtonGroup localesGroup = new ButtonGroup();
-    for (Locale locale : LocaleService.getAvailableLocales()) {
+    LocaleService localeService = AppRegistry.getInstance().getLocaleService();
+    for (Locale locale : localeService.getAvailableLocales()) {
       JRadioButtonMenuItem localeItem = new JRadioButtonMenuItem(locale.getDisplayName());
       if (locale.equals(Locale.getDefault())) {
         localeItem.setSelected(true);
@@ -79,7 +80,10 @@ public class LandingUiMenu extends JMenuBar {
       localesGroup.add(localeItem);
       localeMenu.add(localeItem);
       localeItem.addActionListener(evt -> {
-        LocaleService.setCurrentLocale(locale.toString(), true);
+        localeService.setCurrentLocale(locale.toString(), true);
+        SettingsService settingsService = AppRegistry.getInstance().getSettingsService();
+        settingsService.getSettings().setLocaleId(locale.toString());
+        settingsService.persistSettings();
       });
     }
 

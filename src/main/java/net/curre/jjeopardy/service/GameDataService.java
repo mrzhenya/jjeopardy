@@ -36,7 +36,8 @@ import static net.curre.jjeopardy.service.FileParsingResult.Message.*;
 
 /**
  * Service to assist with player handling, keeping game scores,
- * handling questions.
+ * handling questions.<br><br>
+ * An instance of this service object should be obtained from the AppRegistry.
  *
  * @author Yevgeny Nyden
  */

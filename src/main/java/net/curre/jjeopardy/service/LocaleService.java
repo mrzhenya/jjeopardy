@@ -16,6 +16,8 @@
 
 package net.curre.jjeopardy.service;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -25,6 +27,7 @@ import java.util.logging.Logger;
 
 /**
  * Service with locale related utilities.
+ * An instance of this service object should be obtained from the AppRegistry.
  *
  * @author Yevgeny Nyden
  */
@@ -33,24 +36,33 @@ public class LocaleService {
   /** Default locale (assume en_US). */
   public static final Locale DEFAULT_LOCALE = Locale.US;
 
-  /** Array of available locales in the application. */
-  private static final List<Locale> AVAILABLE_LOCALES;
-
   /** Private class logger. */
   private static final Logger LOGGER = Logger.getLogger(LocaleService.class.getName());
 
-  static {
-    AVAILABLE_LOCALES = new ArrayList<>();
-    AVAILABLE_LOCALES.add(DEFAULT_LOCALE);
-    String localesString = ResourceBundle.getBundle("locales").getString("jj.additional.locales");
-    for (String localeString : localesString.split("\\s*,\\s*")) {
-      String[] localeParts = localeString.split("_");
-      AVAILABLE_LOCALES.add(new Locale(localeParts[0], localeParts[1]));
-    }
-  }
+  /** List of available locales in the application. */
+  private final List<Locale> availableLocales;
 
   /** Ctor. */
-  private LocaleService() {}
+  protected LocaleService() {
+    this.availableLocales = new ArrayList<>();
+    this.availableLocales.add(DEFAULT_LOCALE);
+    String localesString = ResourceBundle.getBundle("default").getString("jj.additional.locales");
+    if (!StringUtils.isBlank(localesString)) {
+      for (String localeString : localesString.split("\\s*,\\s*")) {
+        String[] localeParts = localeString.split("_");
+        this.availableLocales.add(new Locale(localeParts[0], localeParts[1]));
+      }
+    }
+    Locale.setDefault(DEFAULT_LOCALE);
+  }
+
+  /**
+   * Gets all currently available locales.
+   * @return all available locales
+   */
+  public List<Locale> getAvailableLocales() {
+    return this.availableLocales;
+  }
 
   /**
    * Gets the string resource for the given key. If any keyArgs
@@ -85,27 +97,16 @@ public class LocaleService {
   }
 
   /**
-   * Gets all currently available locales.
-   * @return all available locales
-   */
-  public static List<Locale> getAvailableLocales() {
-    return AVAILABLE_LOCALES;
-  }
-
-  /**
    * Setter for the current locale.
    * @param localeId Identifier for the locale (Locale.toString())
    * @param showDialog true if show restart info dialog on change
    */
-  public static synchronized void setCurrentLocale(String localeId, boolean showDialog) {
+  public synchronized void setCurrentLocale(String localeId, boolean showDialog) {
     try {
       Locale prevLocale = Locale.getDefault();
       Locale locale = findLocaleById(localeId);
       Locale.setDefault(locale);
 
-      SettingsService settingsService = AppRegistry.getInstance().getSettingsService();
-      settingsService.getSettings().setLocaleId(Locale.getDefault().toString());
-      settingsService.persistSettings();
       if (!localeId.equals(prevLocale.toString()) && showDialog) {
         UiService.getInstance().showRestartGameDialog();
       }
@@ -122,8 +123,8 @@ public class LocaleService {
    * @return <code>LocaleExt</code> object given its corresponding language name (case-insensitive)
    * @throws RuntimeException if locale with the given ID is not found
    */
-  public static Locale findLocaleById(String localeId) {
-    for (Locale locale : AVAILABLE_LOCALES) {
+  public Locale findLocaleById(String localeId) {
+    for (Locale locale : this.availableLocales) {
       if (localeId.equals(locale.toString())) {
         return locale;
       }

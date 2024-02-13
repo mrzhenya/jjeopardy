@@ -54,6 +54,12 @@ public interface Registry {
   SettingsService getSettingsService();
 
   /**
+   * Gets the local service.
+   * @return reference to the locale service.
+   */
+  LocaleService getLocaleService();
+
+  /**
    * Gets a reference to the game data.
    * @return a reference to the game data
    */

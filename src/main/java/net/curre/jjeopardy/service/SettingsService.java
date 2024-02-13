@@ -32,7 +32,8 @@ import java.util.logging.Logger;
 /**
  * Settings service that assists with handling application settings.
  * Application settings stored on disk are loaded at service creation time or
- * initialized to default if no settings file exists.<br><br>
+ * initialized to default if no settings file exists. An instance of this service
+ * object should be obtained from the AppRegistry.<br><br>
  *
  * To change settings, modify the settings object obtained via #getSettings
  * and persist them to disk via the #persistSettings method.<br><br>
@@ -194,7 +195,8 @@ public class SettingsService {
       settings.setLafThemeId(LafService.getInstance().getDefaultLafThemeId());
     }
     if (settings.getLocaleId() == null) {
-      Locale locale = LocaleService.findLocaleById(Locale.getDefault().toString());
+      LocaleService localeService = AppRegistry.getInstance().getLocaleService();
+      Locale locale = localeService.findLocaleById(Locale.getDefault().toString());
       settings.setLocaleId(locale.toString());
     }
     if (settings.getLastCurrentDirectory() == null) {

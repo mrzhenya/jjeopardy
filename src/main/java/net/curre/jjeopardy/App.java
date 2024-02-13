@@ -18,7 +18,7 @@ package net.curre.jjeopardy;
 
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.service.AppRegistry;
-import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.ui.LandingUi;
 import net.curre.jjeopardy.ui.laf.LafService;
@@ -49,10 +49,11 @@ public class App {
     LafService.getInstance().initialize();
 
     // Then, load and activate the stored settings (LAF theme, locale, game board size).
-    SettingsService settingsService = AppRegistry.getInstance().getSettingsService();
+    Registry registry = AppRegistry.getInstance();
+    SettingsService settingsService = registry.getSettingsService();
     Settings settings = settingsService.getSettings();
     LafService.getInstance().activateLafTheme(settings.getLafThemeId());
-    LocaleService.setCurrentLocale(settings.getLocaleId(), false);
+    registry.getLocaleService().setCurrentLocale(settings.getLocaleId(), false);
 
     SwingUtilities.invokeLater(() -> {
       // Now, start the app by showing the landing UI.
