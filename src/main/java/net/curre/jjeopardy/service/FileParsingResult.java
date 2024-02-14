@@ -92,7 +92,7 @@ public class FileParsingResult {
     MSG_BONUS_QUESTIONS_PARSED("jj.file.msg.info.bonusquestions");
 
     /** Property name for this message. */
-    public final String propertyName;
+    private final String propertyName;
 
     /**
      * Gets the property name for this message.

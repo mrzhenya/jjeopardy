@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package net.curre.jjeopardy.ui.laf;
+package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.service.ServiceException;
+import net.curre.jjeopardy.ui.laf.LafThemeId;
 import net.curre.jjeopardy.ui.laf.theme.*;
 import net.curre.jjeopardy.util.Utilities;
 
@@ -29,33 +28,19 @@ import java.util.logging.Logger;
 
 /**
  * Service responsible for some common Look and Feel support.
- * Use #getInstance method to obtain an instance of this service, and
- * make sure to call #initialize before creating any UI.
  *
  * @author Yevgeny Nyden
  */
 public class LafService {
 
-  /** Default width for the table. */
-  public static final int DEFAULT_GAME_TABLE_WIDTH = 500;
-
-  /** Default height for the table. */
-  public static final int DEFAULT_GAME_TABLE_HEIGHT = 600;
-
-  /** Rows' height will not be smaller than this value. */
-  public static final double GAME_TABLE_MIN_ROW_HEIGHT = 50;
+  /** Default LAF theme. */
+  public static final LafThemeId DEFAULT_LAF_THEME_ID = LafThemeId.DEFAULT;
 
   /** Private class logger. */
   private static final Logger LOGGER = Logger.getLogger(LafService.class.getName());
 
-  /** Default LAF theme. */
-  public static final LafThemeId DEFAULT_LAF_THEME_ID = LafThemeId.FLAT_LIGHT;
-
-  /** Holds a reference to the singleton instance. */
-  private static final LafService INSTANCE = new LafService();
-
-  /** Array of available themes/skins. */
-  private static ArrayList<LafTheme> SUPPORTED_LAF_THEMES;
+  /** List of available themes/skins. */
+  private final ArrayList<LafTheme> supportedLafThemes;
 
   /** Current theme ID. */
   private LafThemeId currentLafThemeId;
@@ -64,47 +49,14 @@ public class LafService {
    * Reference to the known Window UI components, UI tree roots to update.
    * We handle it "manually" because Frame.getFrames doesn't have them all.
    */
-  private static final ArrayList<Window> componentsRegistry = new ArrayList<>();
+  private final ArrayList<Window> componentsRegistry;
 
-  /** Private constructor. */
-  private LafService() {
+  /** Ctor. */
+  protected LafService() {
     this.currentLafThemeId = DEFAULT_LAF_THEME_ID;
-  }
+    this.componentsRegistry = new ArrayList<>();
+    this.supportedLafThemes = new ArrayList<>();
 
-  /**
-   * Returns an instance of this class to use.
-   * @return singleton instance of this class to use
-   */
-  public static LafService getInstance() {
-    return INSTANCE;
-  }
-
-  /**
-   * Gets verified, supported LAF themes that could be used by the app.
-   * @return supported LAF themes
-   */
-  public ArrayList<LafTheme> getSupportedThemes() {
-    synchronized (this) {
-      if (SUPPORTED_LAF_THEMES == null) {
-        SUPPORTED_LAF_THEMES = new ArrayList<>();
-        SUPPORTED_LAF_THEMES.add(new DefaultTheme());
-        SUPPORTED_LAF_THEMES.add(new FlatLightTheme());
-        SUPPORTED_LAF_THEMES.add(new FlatDarkTheme());
-        if (this.systemLafThemePresent(NimbusTheme.LAF_CLASS_NAME)) {
-          SUPPORTED_LAF_THEMES.add(new NimbusTheme());
-        }
-        if (Utilities.isMacOs()) {
-          SUPPORTED_LAF_THEMES.add(new FlatMacDarkTheme());
-        }
-      }
-    }
-    return SUPPORTED_LAF_THEMES;
-  }
-
-  /**
-   * Initializes the service before any UI is rendered.
-   */
-  public void initialize() {
     // For Mac OS, do a few extra things.
     // https://www.formdev.com/flatlaf/macos/
     if (Utilities.isMacOs()) {
@@ -118,17 +70,24 @@ public class LafService {
   }
 
   /**
-   * Determines the default LAF theme based on the current OS.
-   * @return default LAF theme
+   * Gets verified, supported LAF themes that could be used by the app.
+   * @return supported LAF themes
    */
-  public LafThemeId getDefaultLafThemeId() {
-    LafThemeId lafThemeId = FlatLightTheme.LAF_THEME_ID;
-    if (Utilities.isMacOs()) {
-      if (this.systemLafThemePresent(DefaultTheme.LAF_CLASS_NAME)) {
-        lafThemeId = DefaultTheme.LAF_THEME_ID;
+  public ArrayList<LafTheme> getSupportedThemes() {
+    synchronized (this) {
+      if (this.supportedLafThemes.isEmpty()) {
+        this.supportedLafThemes.add(new DefaultTheme());
+        this.supportedLafThemes.add(new FlatLightTheme());
+        this.supportedLafThemes.add(new FlatDarkTheme());
+        if (this.systemLafThemePresent(NimbusTheme.LAF_CLASS_NAME)) {
+          this.supportedLafThemes.add(new NimbusTheme());
+        }
+        if (Utilities.isMacOs()) {
+          this.supportedLafThemes.add(new FlatMacDarkTheme());
+        }
       }
     }
-    return lafThemeId;
+    return this.supportedLafThemes;
   }
 
   /**
@@ -159,8 +118,8 @@ public class LafService {
    * LAF theme changes.
    * @param component window UI component to register
    */
-  public static void registerUITreeForUpdates(Window component) {
-    componentsRegistry.add(component);
+  public void registerUITreeForUpdates(Window component) {
+    this.componentsRegistry.add(component);
   }
 
   /**
@@ -175,7 +134,7 @@ public class LafService {
         this.currentLafThemeId = lafThemeId;
 
         // Updating the UI of registered components (fyi, Frame.getFrames doesn't have them all).
-         for (Window component : componentsRegistry) {
+         for (Window component : this.componentsRegistry) {
            SwingUtilities.updateComponentTreeUI(component);
            component.pack();
          }
@@ -204,11 +163,11 @@ public class LafService {
   /**
    * Returns the LAF theme given its ID.
    * @param lafThemeId theme ID
-   * @return The them with the given ID.
-   * @throws ServiceException If theme with given ID was not found.
+   * @return The theme with the given ID
+   * @throws ServiceException If theme with given ID was not found
    */
-  private static LafTheme findLafThemeById(LafThemeId lafThemeId) throws ServiceException {
-    for (LafTheme theme : LafService.getInstance().getSupportedThemes()) {
+  private LafTheme findLafThemeById(LafThemeId lafThemeId) throws ServiceException {
+    for (LafTheme theme : this.getSupportedThemes()) {
       if (theme.getId().equals(lafThemeId)) {
         return theme;
       }

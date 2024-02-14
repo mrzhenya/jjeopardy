@@ -56,7 +56,7 @@ public class SettingsServiceTest {
   /**
    * Reference to the game data service to test on each run.
    */
-  private SettingsService settingsService;
+  private SettingsService testSettingsService;
 
   /** Absolute path to the default test settings file. */
   private String testSettingsFilePath;
@@ -70,16 +70,16 @@ public class SettingsServiceTest {
     File testSettingsFile = new File(SETTINGS_PATH + "testFile.ser");
     this.testSettingsFilePath = testSettingsFile.getAbsolutePath();
     persistTestSettings(this.testSettingsFilePath);
-    this.settingsService = new SettingsService(this.testSettingsFilePath);
+    this.testSettingsService = new SettingsService(this.testSettingsFilePath);
   }
 
   /** Tests loading initial settings. */
   @Test
   public void testDefaultLoadSettings() {
-    Settings settings = this.settingsService.getSettings();
+    Settings settings = this.testSettingsService.getSettings();
     assertEquals("Wrong current directory", DEFAULT_LAST_CURRENT_DIR, settings.getLastCurrentDirectory());
-    assertEquals("Wrong main frame height", DEFAULT_MAIN_FRAME_HEIGHT, settings.getMainFrameHeight());
-    assertEquals("Wrong main frame width", DEFAULT_MAIN_FRAME_WIDTH, settings.getMainFrameWidth());
+    assertEquals("Wrong main frame height", DEFAULT_MAIN_FRAME_HEIGHT, settings.getGameWindowHeight());
+    assertEquals("Wrong main frame width", DEFAULT_MAIN_FRAME_WIDTH, settings.getGameWindowWidth());
     assertEquals("Wrong LAF theme ID", DEFAULT_MAIN_FRAME_LAF, settings.getLafThemeId());
     assertEquals("Wrong locale ID", DEFAULT_LOCAL_ID, settings.getLocaleId());
   }
@@ -87,22 +87,22 @@ public class SettingsServiceTest {
   /** Tests loading initial settings. */
   @Test
   public void testPersistSettings() {
-    Settings settings = this.settingsService.getSettings();
+    Settings settings = this.testSettingsService.getSettings();
 
     settings.setLastCurrentDirectory("test/directory/2/");
-    settings.setMainFrameHeight(345);
-    settings.setMainFrameWidth(456);
+    settings.setGameWindowHeight(345);
+    settings.setGameWindowWidth(456);
     settings.setLafThemeId(LafThemeId.FLAT_DARK);
     settings.setLocaleId("en_US");
 
-    this.settingsService.persistSettings();
-    assertEquals("Settings should not have changed", settings, this.settingsService.getSettings());
+    this.testSettingsService.persistSettings();
+    assertEquals("Settings should not have changed", settings, this.testSettingsService.getSettings());
     SettingsService settingsService2 = new SettingsService(this.testSettingsFilePath);
     Settings settings2 = settingsService2.getSettings();
 
     assertEquals("Wrong current directory", "test/directory/2/", settings2.getLastCurrentDirectory());
-    assertEquals("Wrong main frame height", 345, settings2.getMainFrameHeight());
-    assertEquals("Wrong main frame width", 456, settings2.getMainFrameWidth());
+    assertEquals("Wrong main frame height", 345, settings2.getGameWindowHeight());
+    assertEquals("Wrong main frame width", 456, settings2.getGameWindowWidth());
     assertEquals("Wrong LAF theme ID", LafThemeId.FLAT_DARK, settings2.getLafThemeId());
     assertEquals("Wrong locale ID", "en_US", settings2.getLocaleId());
   }
@@ -112,10 +112,10 @@ public class SettingsServiceTest {
    * @param settingsFilePath test settings file path
    */
   private static void persistTestSettings(String settingsFilePath) {
-    Settings settings = new Settings();
+    Settings settings = new Settings(0, 0);
     settings.setLastCurrentDirectory(DEFAULT_LAST_CURRENT_DIR);
-    settings.setMainFrameHeight(DEFAULT_MAIN_FRAME_HEIGHT);
-    settings.setMainFrameWidth(DEFAULT_MAIN_FRAME_WIDTH);
+    settings.setGameWindowHeight(DEFAULT_MAIN_FRAME_HEIGHT);
+    settings.setGameWindowWidth(DEFAULT_MAIN_FRAME_WIDTH);
     settings.setLafThemeId(DEFAULT_MAIN_FRAME_LAF);
     settings.setLocaleId(DEFAULT_LOCAL_ID);
 

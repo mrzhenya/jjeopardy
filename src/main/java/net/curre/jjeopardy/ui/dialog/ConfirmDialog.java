@@ -1,8 +1,8 @@
 package net.curre.jjeopardy.ui.dialog;
 
 import net.curre.jjeopardy.images.ImageEnum;
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.ui.laf.LafService;
 
 import javax.swing.JLabel;
 import java.awt.Component;
@@ -52,7 +52,7 @@ public class ConfirmDialog extends BasicDialog {
   @Override
   public Component getHeaderComponent() {
     JLabel label = new JLabel(this.title);
-    label.setFont(LafService.getInstance().getCurrentLafTheme().getDialogHeaderFont());
+    label.setFont(AppRegistry.getInstance().getLafService().getCurrentLafTheme().getDialogHeaderFont());
     return label;
   }
 

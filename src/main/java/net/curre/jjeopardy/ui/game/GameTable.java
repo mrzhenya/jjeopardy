@@ -19,8 +19,7 @@ package net.curre.jjeopardy.ui.game;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.event.GameTableListener;
-import net.curre.jjeopardy.ui.laf.LafService;
-import net.curre.jjeopardy.ui.laf.theme.LafTheme;
+import net.curre.jjeopardy.util.Utilities;
 
 import javax.swing.JTable;
 import javax.swing.ToolTipManager;
@@ -30,6 +29,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents the Game table.
@@ -40,25 +41,41 @@ import java.awt.RenderingHints;
  */
 public class GameTable extends JTable {
 
-  /** Reference to the table cell renderer. */
-  private final javax.swing.table.TableCellRenderer renderer;
+  /** Private class logger. */
+  private static final Logger LOGGER = Logger.getLogger(GameTable.class.getName());
 
-  /** Preferred table header height. */
-  private static final int PREFERRED_HEADER_HEIGHT = 86;
+  /** Reference to the table cell renderer. */
+  private final TableCellRenderer renderer;
+
+  /** Minimum table row height. */
+  private final int minRowHeight;
 
   /** Reference to the table data model. */
   private final GameTableModel model;
 
   /** Constructs a new game table. */
   public GameTable() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    // Loading essential default properties.
+    int rowHeight = 0, preferredHeaderHeight = 0, defaultTableWidth = 0, defaultTableHeight = 0;
+    try {
+      defaultTableWidth = Utilities.getDefaultIntProperty("jj.defaults.game.table.width");
+      defaultTableHeight = Utilities.getDefaultIntProperty("jj.defaults.game.table.height");
+      rowHeight = Utilities.getDefaultIntProperty("jj.defaults.min.row.height");
+      preferredHeaderHeight = Utilities.getDefaultIntProperty("jj.defaults.preferred.header.height");
+    } catch (Exception e) {
+      LOGGER.log(Level.SEVERE, "Unable to initialize default properties", e);
+      System.exit(1);
+    }
+    this.minRowHeight = rowHeight;
+
+    // Initializing game data.
     GameData data = AppRegistry.getInstance().getGameData();
     this.model = new GameTableModel(data);
     this.setModel(this.model);
 
+    // Creating renderer and setting up the UI.
     this.renderer = new GameTableCellRenderer(this.model);
-    setPreferredScrollableViewportSize(
-      new Dimension(LafService.DEFAULT_GAME_TABLE_WIDTH, LafService.DEFAULT_GAME_TABLE_HEIGHT));
+    setPreferredScrollableViewportSize(new Dimension(defaultTableWidth, defaultTableHeight));
 
     resizeAndRefreshTable();
 
@@ -66,22 +83,23 @@ public class GameTable extends JTable {
     this.setSurrendersFocusOnKeystroke(true);
     this.setRowSelectionAllowed(false);
 
-    // configuring the table header
+    // Configuring the table header.
     JTableHeader header = this.getTableHeader();
     Dimension size = header.getSize();
+    // TODO - remove extraneous size call to the header.
     size.setSize(size.getWidth(), 50);
     header.setPreferredSize(size);
     header.setReorderingAllowed(false);
     header.setResizingAllowed(false);
     header.setDefaultRenderer(new GameTableHeaderRenderer());
-    header.setPreferredSize(new Dimension(this.getColumnModel().getTotalColumnWidth(), PREFERRED_HEADER_HEIGHT));
+    header.setPreferredSize(new Dimension(this.getColumnModel().getTotalColumnWidth(), preferredHeaderHeight));
 
-    // adding resize and mouse-click listener
+    // Adding resize and mouse-click listener.
     final GameTableListener gtListener = new GameTableListener(this);
     this.addComponentListener(gtListener);
     this.addMouseListener(gtListener);
     
-    // ignoring the tooltips
+    // Ignore the tooltips.
     ToolTipManager.sharedInstance().unregisterComponent(this);
     ToolTipManager.sharedInstance().unregisterComponent(this.getTableHeader());
   }
@@ -107,7 +125,7 @@ public class GameTable extends JTable {
   public void resizeAndRefreshTable() {
     final double rowNum = this.model.getRowCount();
     final double height = this.getSize().getHeight() / rowNum;
-    final double heightToSet = Math.max(height, LafService.GAME_TABLE_MIN_ROW_HEIGHT);
+    final double heightToSet = Math.max(height, this.minRowHeight);
     for (int i = 0; i < rowNum; ++i) {
       setRowHeight(i, (int) heightToSet);
     }

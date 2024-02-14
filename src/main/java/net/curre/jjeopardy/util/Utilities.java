@@ -36,6 +36,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.util.Calendar;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 /**
@@ -63,6 +64,16 @@ public class Utilities {
 
   /** Helper object to be used in the printTime() method. */
   public static Calendar lastTime = Calendar.getInstance();
+
+  /**
+   * Gets a default int property value for the given message name.
+   * @param messageName message name
+   * @return default int property value
+   */
+  public static int getDefaultIntProperty(String messageName) {
+    ResourceBundle bundle = ResourceBundle.getBundle("default");
+    return Integer.parseInt(bundle.getString(messageName).trim());
+  }
 
   /**
    * Validates if the passed component value is valid.

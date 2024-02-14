@@ -27,10 +27,8 @@ import net.curre.jjeopardy.event.UpdatePlayersAction;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.service.MainService;
 import net.curre.jjeopardy.service.SoundService;
 import net.curre.jjeopardy.sounds.SoundEnum;
-import net.curre.jjeopardy.ui.laf.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.ui.player.PlayerDialog;
 import net.curre.jjeopardy.util.Utilities;
@@ -101,7 +99,7 @@ public class LandingUi extends JFrame {
       LandingUi.this.setVisible(true);
 
       // stating the intro music
-      final SoundService sound = SoundService.getInstance();
+      final SoundService sound = AppRegistry.getInstance().getSoundService();
       sound.startMusic(SoundEnum.OPENING, 1);
     });
     if (Utilities.isMacOs()) {
@@ -111,8 +109,8 @@ public class LandingUi extends JFrame {
 
     this.playerDialog = new PlayerDialog(this);
     this.playerDialog.setLocationRelativeTo(this);
-    LafService.registerUITreeForUpdates(this);
-    LafService.registerUITreeForUpdates(this.playerDialog);
+    AppRegistry.getInstance().getLafService().registerUITreeForUpdates(this);
+    AppRegistry.getInstance().getLafService().registerUITreeForUpdates(this.playerDialog);
   }
 
   /**
@@ -226,7 +224,7 @@ public class LandingUi extends JFrame {
    * @return initialized main content panel
    */
   private JPanel createMainContentPanel() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int padding = lafTheme.getPanelPadding();
     final int buttonSpacing = lafTheme.getButtonSpacing();
 
@@ -258,7 +256,7 @@ public class LandingUi extends JFrame {
    * @return initialized JPanel component
    */
   private JPanel createGamePanel() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int buttonSpacing = lafTheme.getButtonSpacing();
     final Font buttonFont = lafTheme.getButtonFont();
 
@@ -311,8 +309,8 @@ public class LandingUi extends JFrame {
         TableLayout.PREFERRED, 15, TableLayout.PREFERRED, TableLayout.FILL},  // columns
       {5, TableLayout.PREFERRED, 5}})); // rows
 
-    // Players list rendered as uneditable text pane.
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    // Players list rendered as un-editable text pane.
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     Component labelOrText;
     if (arePlayersSet) {
       JTextPane textPane = new JTextPane();
@@ -359,7 +357,7 @@ public class LandingUi extends JFrame {
     public void windowOpened(WindowEvent e) {}
 
     public void windowClosing(WindowEvent e) {
-      MainService.quitApp();
+      AppRegistry.getInstance().getMainService().quitApp();
     }
 
     public void windowClosed(WindowEvent e) {}

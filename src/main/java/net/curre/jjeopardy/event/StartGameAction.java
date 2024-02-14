@@ -16,8 +16,7 @@
 
 package net.curre.jjeopardy.event;
 
-import net.curre.jjeopardy.service.MainService;
-import net.curre.jjeopardy.service.SoundService;
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.ui.LandingUi;
 
 import javax.swing.AbstractAction;
@@ -76,9 +75,9 @@ public class StartGameAction extends AbstractAction implements KeyListener {
    */
   private void startGame() {
     LOGGER.info("Handling the Start Game button action.");
-    SoundService.getInstance().stopAllMusic();
+    AppRegistry.getInstance().getSoundService().stopAllMusic();
     landingUi.setVisible(false);
 
-    MainService.startGame();
+    AppRegistry.getInstance().getMainService().startGame();
   }
 }

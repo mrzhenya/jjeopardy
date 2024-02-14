@@ -20,6 +20,7 @@ import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Question;
+import net.curre.jjeopardy.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.InputStream;
@@ -28,7 +29,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -90,15 +90,15 @@ public class GameDataService {
     int playersMax = 0, playersMin = 0, categoriesMax = 0, categoriesMin = 0, questionsMax = 0,
             questionsMin = 0, questionsMultiplier = 0, bonusQuestionsMax = 0, bonusQuestionsPoints = 0;
     try {
-      playersMax = getDefaultIntProperty("jj.defaults.players.max");
-      playersMin = getDefaultIntProperty("jj.defaults.players.min");
-      categoriesMax = getDefaultIntProperty("jj.defaults.categories.max");
-      categoriesMin = getDefaultIntProperty("jj.defaults.categories.min");
-      questionsMax = getDefaultIntProperty("jj.defaults.questions.max");
-      questionsMin = getDefaultIntProperty("jj.defaults.questions.min");
-      questionsMultiplier = getDefaultIntProperty("jj.defaults.questions.multiplier");
-      bonusQuestionsMax = getDefaultIntProperty("jj.defaults.bonus.questions.max");
-      bonusQuestionsPoints = getDefaultIntProperty("jj.defaults.bonus.questions.points");
+      playersMax = Utilities.getDefaultIntProperty("jj.defaults.players.max");
+      playersMin = Utilities.getDefaultIntProperty("jj.defaults.players.min");
+      categoriesMax = Utilities.getDefaultIntProperty("jj.defaults.categories.max");
+      categoriesMin = Utilities.getDefaultIntProperty("jj.defaults.categories.min");
+      questionsMax = Utilities.getDefaultIntProperty("jj.defaults.questions.max");
+      questionsMin = Utilities.getDefaultIntProperty("jj.defaults.questions.min");
+      questionsMultiplier = Utilities.getDefaultIntProperty("jj.defaults.questions.multiplier");
+      bonusQuestionsMax = Utilities.getDefaultIntProperty("jj.defaults.bonus.questions.max");
+      bonusQuestionsPoints = Utilities.getDefaultIntProperty("jj.defaults.bonus.questions.points");
     } catch (Exception e) {
       LOGGER.log(Level.SEVERE, "Unable to initialize game default properties", e);
       System.exit(1);
@@ -472,10 +472,5 @@ public class GameDataService {
     } catch (NumberFormatException e) {
       throw new ServiceException("Int property \"" + propName + "\" is not an integer!");
     }
-  }
-
-  private static int getDefaultIntProperty(String messageName) {
-    ResourceBundle bundle = ResourceBundle.getBundle("default");
-    return Integer.parseInt(bundle.getString(messageName).trim());
   }
 }

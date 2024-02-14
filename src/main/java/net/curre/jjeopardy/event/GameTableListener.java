@@ -20,7 +20,6 @@ import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.Registry;
-import net.curre.jjeopardy.service.SoundService;
 import net.curre.jjeopardy.ui.game.GameTable;
 
 import java.awt.Point;
@@ -89,7 +88,7 @@ public class GameTableListener implements ComponentListener, MouseListener {
     GameDataService dataService = registry.getGameDataService();
     final Question question = dataService.getQuestion(catIndex, questIndex);
     if (!question.isHasBeenAsked()) {
-      SoundService.getInstance().stopAllMusic();
+      AppRegistry.getInstance().getSoundService().stopAllMusic();
 
       // marking the questions answered on the game board
       question.setHasBeenAsked();

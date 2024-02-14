@@ -16,27 +16,34 @@
 
 package net.curre.jjeopardy.service;
 
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 /**
- * Object of this class represents an app specific service exception.
+ * Tests for the main service.
  *
  * @author Yevgeny Nyden
  */
-public class ServiceException extends Exception {
+public class MainServiceTest {
+
+  /** Reference to the main service in test. */
+  private MainService testMainService;
 
   /**
-   * Ctor.
-   * @param message Exception message to set
+   * Initializes the state before each test run.
    */
-  public ServiceException(String message) {
-    super(message);
+  @Before
+  public void init() {
+    this.testMainService = new MainService();
   }
 
   /**
-   * Constructor that sets exception message and another exception to wrap.
-   * @param message Exception message to set
-   * @param e       Exception to wrap
+   * Nothing here yet.
    */
-  public ServiceException(String message, Exception e) {
-    super(message, e);
+  @Test
+  public void testDefault() {
+    assertNotNull(this.testMainService);
   }
 }

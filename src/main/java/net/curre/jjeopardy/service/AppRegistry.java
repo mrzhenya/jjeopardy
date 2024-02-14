@@ -24,7 +24,7 @@ import net.curre.jjeopardy.ui.game.MainWindow;
 import java.util.logging.Logger;
 
 /**
- * This is the central place for most of the app UI and data resources.
+ * This is the central registry place for most of the app UI frames/dialogs and service objects.
  *
  * @author Yevgeny Nyden
  */
@@ -33,11 +33,11 @@ public class AppRegistry implements Registry {
   /** Private class logger. */
   private static final Logger LOGGER = Logger.getLogger(AppRegistry.class.getName());
 
-  /** Reference to the singelton instance of this class. */
+  /** Reference to the singleton instance of this class. */
   private static Registry instance;
 
-  /** Reference to the main window. */
-  private MainWindow mainWindow;
+  /** Reference to the main service. */
+  private final MainService mainService;
 
   /** Reference to the game data service. */
   private final GameDataService gameDataService;
@@ -48,11 +48,23 @@ public class AppRegistry implements Registry {
   /** Reference to the locale service. */
   private final LocaleService localeService;
 
-  /** Reference to the question dialog. */
-  private QuestionDialog questionDialog;
+  /** Reference to the sound service. */
+  private final SoundService soundService;
+
+  /** Reference to the UI service. */
+  private final UiService uiService;
+
+  /** Reference to the Look and Feel service. */
+  private final LafService lafService;
 
   /** Reference to the main landing UI. */
   private LandingUi landingUi;
+
+  /** Reference to the main window. */
+  private MainWindow mainWindow;
+
+  /** Reference to the question dialog. */
+  private QuestionDialog questionDialog;
 
   /**
    * Returns the singleton instance of this class.
@@ -81,88 +93,96 @@ public class AppRegistry implements Registry {
    * the result of the getSettingsFilePathHelper() method.
    */
   public AppRegistry() {
+    this.mainService = new MainService();
     this.gameDataService = new GameDataService();
     this.settingsService = new SettingsService(null);
     this.localeService = new LocaleService();
+    this.soundService = new SoundService();
+    this.uiService = new UiService();
+    this.lafService = new LafService();
   }
 
-  /**
-   * Getter for the main window reference.
-   * @return The reference to the main window object
-   */
-  public MainWindow getMainWindow() {
-    return this.mainWindow;
+  /** {@inheritDoc} */
+  @Override
+  public MainService getMainService() {
+    return this.mainService;
   }
 
-  /**
-   * Setter for the main window reference.
-   * @param mainWindow Reference to the main window object
-   */
-  public void setMainWindow(MainWindow mainWindow) {
-    this.mainWindow = mainWindow;
-  }
-
-  /**
-   * Gets the game data service.
-   * @return a reference to the game data service
-   */
+  /** {@inheritDoc} */
+  @Override
   public GameDataService getGameDataService() {
     return this.gameDataService;
   }
 
-  /**
-   * Gets the game settings service.
-   * @return a reference to the game settings service
-   */
+  /** {@inheritDoc} */
+  @Override
   public SettingsService getSettingsService() {
     return this.settingsService;
   }
 
-  /**
-   * Gets the locale service.
-   * @return a reference to the locale service
-   */
+  /** {@inheritDoc} */
+  @Override
   public LocaleService getLocaleService() {
     return this.localeService;
   }
 
-  /**
-   * Gets a reference to the game data.
-   * @return a reference to the game data
-   */
+  /** {@inheritDoc} */
+  @Override
+  public SoundService getSoundService() {
+    return this.soundService;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public UiService getUiService() {
+    return this.uiService;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public LafService getLafService() {
+    return this.lafService;
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public GameData getGameData() {
     return this.gameDataService.getGameData();
   }
 
-  /**
-   * Gets a reference to the question dialog.
-   * @return a reference to the question dialog
-   */
-  public QuestionDialog getQuestionDialog() {
-    return this.questionDialog;
-  }
-
-  /**
-   * Sets the reference to the question dialog.
-   * @param questionDialog reference to the question dialog
-   */
-  public void setQuestionDialog(QuestionDialog questionDialog) {
-    this.questionDialog = questionDialog;
-  }
-
-  /**
-   * Gets a reference to the main Landing UI.
-   * @return a reference to the main Landing UI
-   */
+  /** {@inheritDoc} */
+  @Override
   public LandingUi getLandingUi() {
     return this.landingUi;
   }
 
-  /**
-   * Sets the reference to the main Landing UI.
-   * @param landingUi reference to the main landing UI
-   */
+  /** {@inheritDoc} */
+  @Override
   public void setLandingUi(LandingUi landingUi) {
     this.landingUi = landingUi;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public MainWindow getMainWindow() {
+    synchronized (this) {
+      // Lazy initialize the main game window UI when requested.
+      if (this.mainWindow == null) {
+        this.mainWindow = new MainWindow();
+      }
+    }
+    return this.mainWindow;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public QuestionDialog getQuestionDialog() {
+    return this.questionDialog;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void setQuestionDialog(QuestionDialog questionDialog) {
+    this.questionDialog = questionDialog;
   }
 }

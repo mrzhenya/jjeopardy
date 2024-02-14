@@ -16,9 +16,9 @@
 
 package net.curre.jjeopardy.ui.game;
 
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.SoundService;
 import net.curre.jjeopardy.sounds.SoundEnum;
-import net.curre.jjeopardy.ui.laf.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.JLabel;
@@ -53,7 +53,7 @@ public class TimerLabel extends JLabel implements Runnable {
 
   /** Constructs a new timer label object. */
   public TimerLabel() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.timerStartTime = QUESTION_TIME;
     super.setForeground(lafTheme.getTimerLabelColor());
     super.setFont(lafTheme.getTimerLabelFont());
@@ -104,7 +104,7 @@ public class TimerLabel extends JLabel implements Runnable {
 
       if (counter == 0) {
         this.keepRunning = false;
-        final SoundService sound = SoundService.getInstance();
+        final SoundService sound = AppRegistry.getInstance().getSoundService();
         sound.stopAllMusic();
         sound.startMusic(SoundEnum.TIMES_UP, 1);
         return;

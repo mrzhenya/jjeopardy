@@ -55,14 +55,14 @@ public class YesNoAnswerAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    final SoundService sService = SoundService.getInstance();
+    final Registry registry = AppRegistry.getInstance();
+    final SoundService soundService = registry.getSoundService();
     if (this.isYes) {
-      sService.startMusic(SoundEnum.getRandomHooray(), 1);
+      soundService.startMusic(SoundEnum.getRandomHooray(), 1);
     } else {
-      sService.startMusic(SoundEnum.getRandomBoo(), 1);
+      soundService.startMusic(SoundEnum.getRandomBoo(), 1);
     }
 
-    final Registry registry = AppRegistry.getInstance();
     GameDataService dataService = registry.getGameDataService();
     final int cost = (this.isYes ? 1 : -1) * this.questionDialog.getCurrentQuestionCost();
     dataService.addToPlayerScore(this.playerIndex, cost);

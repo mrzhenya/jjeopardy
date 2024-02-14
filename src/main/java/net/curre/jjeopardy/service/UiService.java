@@ -20,53 +20,21 @@ import net.curre.jjeopardy.ui.dialog.BasicDialog;
 import net.curre.jjeopardy.ui.dialog.ConfirmDialog;
 import net.curre.jjeopardy.ui.dialog.ParsingResultDialog;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.util.logging.Logger;
 
 /**
- * Service responsible for some common UI look and feel issues.
+ * Service responsible for common UI tasks like opening dialogs.
  *
  * @author Yevgeny Nyden
  */
 public class UiService {
 
-  /** Preferred width for the dialog. */
-  private static final int DIALOG_WIDTH = 400;
-
-  /** Preferred height for the dialog. */
-  private static final int DIALOG_HEIGHT = 450;
-
   /** Private class logger. */
   private static final Logger LOGGER = Logger.getLogger(UiService.class.getName());
 
-  /** This holds a reference to the singleton instance. */
-  private static final UiService INSTANCE = new UiService();
-
-  /** Private constructor. */
-  private UiService() {}
-
-  /**
-   * Returns an instance of this class to use.
-   *
-   * @return singleton instance of this class to use.
-   */
-  public static UiService getInstance() {
-    return INSTANCE;
-  }
-
-  /**
-   * Creates a new color that is darker than the
-   * passed color according to the passed int parameter.
-   * @param color    Model color
-   * @param decrease Value to be subtracted from the RGB channels of the model color
-   * @return New darker color
-   */
-  public static Color createDarkerColor(Color color, int decrease) {
-    return new Color(color.getRed() - decrease,
-      color.getGreen() - decrease,
-      color.getBlue() - decrease);
-  }
+  /** Ctor. */
+  protected UiService() {}
 
   /**
    * Displays a simple info dialog.
@@ -75,6 +43,7 @@ public class UiService {
    * @param parentComponent reference to the relative parent for component position
    */
   public void showInfoDialog(String title, String message, Component parentComponent) {
+    LOGGER.info("Showing info dialog: " + title);
     ConfirmDialog dialog = new ConfirmDialog(title, message, ConfirmDialog.Type.INFO);
     dialog.showDialog(parentComponent);
   }
@@ -86,6 +55,7 @@ public class UiService {
    * @param parentComponent reference to the relative parent for component position
    */
   public void showWarningDialog(String title, String message, Component parentComponent) {
+    LOGGER.info("Showing warning dialog: " + title);
     ConfirmDialog dialog = new ConfirmDialog(title, message, ConfirmDialog.Type.WARNING);
     dialog.showDialog(parentComponent);
   }
@@ -96,6 +66,7 @@ public class UiService {
    * @param message text content for the dialog
    */
   public void showEndGameDialog(String title, String message) {
+    LOGGER.info("Showing end game dialog: " + title);
     ConfirmDialog dialog = new ConfirmDialog(title, message, ConfirmDialog.Type.END);
     dialog.showDialog(null);
   }
@@ -106,6 +77,7 @@ public class UiService {
    * @param parent parent UI component to show this dialog relative to
    */
   public void showParsingResult(FileParsingResult result, Component parent) {
+    LOGGER.info("Showing parsing result dialog");
     BasicDialog dialog = new ParsingResultDialog(result);
     dialog.showDialog(parent);
   }
@@ -114,6 +86,7 @@ public class UiService {
    * Displays a dialog to tell the user to restart the app.
    */
   public void showRestartGameDialog() {
+    LOGGER.info("Showing restart game info dialog");
     this.showInfoDialog(
       LocaleService.getString("jj.dialog.restart.title"),
       LocaleService.getString("jj.dialog.restart.message"),

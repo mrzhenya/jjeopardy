@@ -24,8 +24,6 @@ import net.curre.jjeopardy.event.BonusQuestionAction;
 import net.curre.jjeopardy.event.YesNoAnswerAction;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.service.SoundService;
-import net.curre.jjeopardy.ui.laf.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.AbstractAction;
@@ -182,7 +180,7 @@ public class QuestionPane extends JPanel {
    * @return created and initialized JPanel
    */
   private JPanel createQuestionPanel() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     JPanel questionPanel = new JPanel();
     questionPanel.setLayout(new TableLayout(new double[][] {
       {TableLayout.FILL}, // columns
@@ -211,7 +209,7 @@ public class QuestionPane extends JPanel {
    * @return created and initialized JPanel
    */
   private JPanel createBonusIntroPanel() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final JPanel panel = new JPanel();
     panel.setLayout(new TableLayout(new double[][] {
       {TableLayout.FILL}, // columns
@@ -241,7 +239,7 @@ public class QuestionPane extends JPanel {
       {TEXT_PANE_V_PADDING, TableLayout.FILL, TEXT_PANE_V_PADDING, TableLayout.PREFERRED}})); // rows
 
     // ******* Answer text.
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.answerLabel = BasicDialog.createDefaultTextArea(lafTheme.getQuestionTextFont());
     answerPanel.add(answerLabel, new TableLayoutConstraints(
       0, 1, 0, 1, TableLayout.FULL, TableLayout.FULL));
@@ -272,7 +270,7 @@ public class QuestionPane extends JPanel {
    * @return bonus answer JPanel
    */
   private JPanel createBonusAnswerPanel() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final JPanel panel = new JPanel();
 
     // Creating panel layout.
@@ -336,7 +334,7 @@ public class QuestionPane extends JPanel {
    * @return created JPanel
    */
   private JPanel createYesNoAnswerPanel(Player player) {
-    final LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    final LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
 
     // Preparing the container and the layout.
     final JPanel panel = new JPanel();
@@ -411,7 +409,7 @@ public class QuestionPane extends JPanel {
 
     /** Performs the action. */
     private void performAction() {
-      SoundService.getInstance().stopAllMusic();
+      AppRegistry.getInstance().getSoundService().stopAllMusic();
       QuestionPane.this.questionDialog.stopTimer();
       if (QuestionPane.this.isBonusQuestionsRound) {
         QuestionPane.this.showBonusAnswer();

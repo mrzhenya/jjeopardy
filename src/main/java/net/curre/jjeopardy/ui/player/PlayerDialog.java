@@ -21,14 +21,10 @@ import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.service.UiService;
+import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.ui.LandingUi;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -156,14 +152,15 @@ public class PlayerDialog extends JDialog {
      */
     public void actionPerformed(ActionEvent e) {
       LOGGER.info("Saving players.");
-      GameDataService gameService = AppRegistry.getInstance().getGameDataService();
+      Registry registry = AppRegistry.getInstance();
+      GameDataService gameService = registry.getGameDataService();
 
       PlayerDialog.this.playersPane.cleanEmptyPlayers();
       List<String> playerNames = playersPane.getPlayerNames();
       if (playerNames.size() < gameService.getMinNumberOfPlayers()) {
         LOGGER.info("Not enough non-blank player names");
         PlayerDialog.this.setVisible(false);
-        UiService.getInstance().showWarningDialog(
+        registry.getUiService().showWarningDialog(
           LocaleService.getString("jj.playerdialog.addplayers.warn.title"),
           LocaleService.getString("jj.playerdialog.addplayers.warn.msg",
                   String.valueOf(gameService.getMinNumberOfPlayers())),

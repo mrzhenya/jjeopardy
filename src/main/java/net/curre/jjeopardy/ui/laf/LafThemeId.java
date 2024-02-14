@@ -22,6 +22,10 @@ package net.curre.jjeopardy.ui.laf;
  */
 public enum LafThemeId {
 
+  /** Game default theme based on the FlatLightLaf theme but with
+   * a more vibrant set of colors. */
+  DEFAULT,
+
   /** Based on javax.swing.plaf.nimbus.NimbusLookAndFeel. */
   NIMBUS,
 
@@ -30,9 +34,6 @@ public enum LafThemeId {
 
   /** Based on com.formdev.flatlaf.FlatDarkLaf. */
   FLAT_DARK,
-
-  /** Based on com.formdev.flatlaf.themes.FlatMacDarkLaf. */
-  MAC_DEFAULT,
 
   /** Based on com.formdev.flatlaf.themes.FlatMacDarkLaf. */
   FLAT_MAC_DARK

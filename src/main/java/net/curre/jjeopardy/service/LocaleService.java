@@ -108,7 +108,7 @@ public class LocaleService {
       Locale.setDefault(locale);
 
       if (!localeId.equals(prevLocale.toString()) && showDialog) {
-        UiService.getInstance().showRestartGameDialog();
+        AppRegistry.getInstance().getUiService().showRestartGameDialog();
       }
     } catch (Exception e) {
       LOGGER.log(Level.SEVERE, "Unable to set locale: " + localeId, e);

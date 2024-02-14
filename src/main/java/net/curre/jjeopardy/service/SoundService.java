@@ -23,18 +23,14 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Object of this class represents a sound service bean.
+ * Sound service responsible for playing sound clips.
  *
  * @see SoundEnum
  * @author Yevgeny Nyden
@@ -44,35 +40,20 @@ public class SoundService {
   /** Private class logger. */
   private static final Logger LOGGER = Logger.getLogger(SoundService.class.getName());
 
-  /** Reference to the static instance to the sound service bean. */
-  private static SoundService instance = new SoundService();
-
   /** Map to hold all currently opened clips. */
-  private Map<SoundEnum, Clip> currentClips;
+  private final Map<SoundEnum, Clip> currentClips;
 
-  /** Constant to indicate continuous playback mode. */
-  public static final int LOOP_CONTINUOUSLY = Clip.LOOP_CONTINUOUSLY;
-
-  /**
-   * Gets a static instance of the audio service.
-   * @return <code>SoundService</code> bean to use
-   */
-  public static SoundService getInstance() {
-    return instance;
-  }
-
-  /** Creates a new <code>SoundService</code> object. */
-  private SoundService() {
-    this.currentClips = new EnumMap<SoundEnum, Clip>(SoundEnum.class);
+  /** Ctor. */
+  protected SoundService() {
+    this.currentClips = new EnumMap<>(SoundEnum.class);
   }
 
   /**
-   * Starts a requested music file. The audio stream will be
-   * opened if it hasn't been already.
+   * Starts playing a requested music file. The audio stream will be
+   * opened if it hasn't been opened already.
    * @param soundEnum  what to start
-   * @param count the number of times clip should be played, or
-   *              <code>{@link #LOOP_CONTINUOUSLY}</code> to indicate that
-   *              looping should continue until interrupted
+   * @param count the number of times clip should be played, or Clip.LOOP_CONTINUOUSLY
+   *              to indicate that looping should continue until interrupted
    * @return true if the stream has been started successfully; false if otherwise
    */
   public boolean startMusic(SoundEnum soundEnum, int count) {
@@ -89,7 +70,7 @@ public class SoundService {
       }
 
       clip.setMicrosecondPosition(0L);
-      if (count == LOOP_CONTINUOUSLY) {
+      if (count == Clip.LOOP_CONTINUOUSLY) {
         clip.loop(Clip.LOOP_CONTINUOUSLY);
       } else if (count == 1) {
         clip.start();
@@ -127,8 +108,6 @@ public class SoundService {
    * @return opened clip
    */
   private Clip openAudioStreamHelper(SoundEnum soundEnum) {
-
-    String eName = "";
     try {
       InputStream inStream = soundEnum.getSoundFileStream();
       AudioInputStream stream = AudioSystem.getAudioInputStream(inStream);
@@ -140,22 +119,10 @@ public class SoundService {
       clip.open(stream); // may take some time
       return clip;
 
-    } catch (MalformedURLException e) {
-      eName = "MalformedURLException";
-      LOGGER.log(Level.SEVERE, "MalformedURLException for when opening audio stream \"" + soundEnum + "\"!", e);
-    } catch (IOException e) {
-      eName = "IOException";
-      LOGGER.log(Level.SEVERE, "IOException for when opening audio stream \"" + soundEnum + "\"!", e);
-    } catch (LineUnavailableException e) {
-      eName = "LineUnavailableException";
-      LOGGER.log(Level.SEVERE,
-        "LineUnavailableException for when opening audio stream \"" + soundEnum + "\"!", e);
-    } catch (UnsupportedAudioFileException e) {
-      eName = "UnsupportedAudioFileException";
-      LOGGER.log(Level.SEVERE,
-        "UnsupportedAudioFileException for when opening audio stream \"" + soundEnum + "\"!", e);
+    } catch (Exception e) {
+      LOGGER.log(Level.SEVERE, "Exception when opening audio stream \"" + soundEnum + "\"!", e);
+      throw new RuntimeException("Unable to open audio stream for file \"" + soundEnum + "\"!", e);
     }
-    throw new RuntimeException(eName + " - unable to open audio stream for file \"" + soundEnum + "\"!");
   }
 
   /** Stops all playing music if there is any. */
@@ -178,7 +145,7 @@ public class SoundService {
     try {
       Clip clip = this.currentClips.get(what);
       if (clip == null) {
-        LOGGER.warning("Audio stream for \"" + what + "\" hasn't beed opened!");
+        LOGGER.warning("Audio stream for \"" + what + "\" hasn't been opened!");
         return false;
       }
       if (!clip.isRunning()) {

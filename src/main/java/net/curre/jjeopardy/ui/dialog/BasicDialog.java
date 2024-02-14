@@ -19,7 +19,7 @@ package net.curre.jjeopardy.ui.dialog;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.images.ImageEnum;
-import net.curre.jjeopardy.ui.laf.LafService;
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.Utilities;
 
@@ -80,7 +80,7 @@ public abstract class BasicDialog extends JDialog {
    * @param iconOrNull icon image for the dialog or null is no icon should be displayed
    */
   public void initializeDialog(String title, String buttonText, ImageEnum iconOrNull) {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int padding = lafTheme.getPanelPadding();
 
     this.setTitle(title);
@@ -181,7 +181,7 @@ public abstract class BasicDialog extends JDialog {
    * @return created and initialized JTextArea component
    */
   protected JTextArea createTextArea(String message) {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final Font font = lafTheme.getDialogTextFont();
     JTextArea textArea = createDefaultTextArea(font);
     textArea.setText(message);
@@ -204,7 +204,7 @@ public abstract class BasicDialog extends JDialog {
   protected static JTextArea createDefaultTextArea(Font font) {
     JTextArea textArea = new JTextArea();
 
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final Color backgroundColor = lafTheme.getDefaultBackgroundColor();
 
     textArea.setEditable(false);

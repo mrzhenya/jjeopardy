@@ -20,7 +20,6 @@ import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.service.AppRegistry;
-import net.curre.jjeopardy.ui.laf.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.JLabel;
@@ -42,7 +41,7 @@ public class PlayerScoresPanel extends JPanel {
   /** Ctor. */
   public PlayerScoresPanel() {
     this.playerItems = new ArrayList<>();
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.setBackground(lafTheme.getGameTableScorePlayerBackground());
   }
 
@@ -53,7 +52,7 @@ public class PlayerScoresPanel extends JPanel {
     this.removeAll();
     List<Player> players = AppRegistry.getInstance().getGameDataService().getPlayers();
     final int playersCount = players.size();
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int padding = lafTheme.getPanelPadding();
 
     // Settings the main layout.
@@ -103,7 +102,7 @@ public class PlayerScoresPanel extends JPanel {
 
     /** Ctor. */
     public Item(Player player) {
-      LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+      LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
       this.setBackground(lafTheme.getGameTableScorePlayerBackground());
       this.setLayout(new TableLayout(new double[][] {
         {TableLayout.PREFERRED}, // columns

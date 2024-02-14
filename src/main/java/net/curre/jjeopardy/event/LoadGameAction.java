@@ -85,7 +85,7 @@ public class LoadGameAction extends AbstractAction implements KeyListener {
       File selectedFile = fileChooser.getSelectedFile();
       GameDataService gameDataService = registry.getGameDataService();
       FileParsingResult parsingResults = gameDataService.loadGameData(selectedFile.getAbsolutePath());
-      UiService.getInstance().showParsingResult(parsingResults, this.landingUi);
+      registry.getUiService().showParsingResult(parsingResults, this.landingUi);
 
       if (parsingResults.isGameDataUsable()) {
         // Game data is valid.

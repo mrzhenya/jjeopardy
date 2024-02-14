@@ -16,7 +16,7 @@
 
 package net.curre.jjeopardy.ui.game;
 
-import net.curre.jjeopardy.ui.laf.LafService;
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.JLabel;
@@ -60,7 +60,7 @@ public class TableCell extends JPanel {
 
   /** Ctor. */
   public TableCell() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
 
     this.setLayout(new BorderLayout());
     this.label = new JLabel();
@@ -93,7 +93,7 @@ public class TableCell extends JPanel {
   @Override
   protected void paintComponent(Graphics g) {
     this.label.repaint();
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
 
     // Hack to avoid first new image painted as black (ok not to be synchronized).
     if (firstPaint) {
@@ -120,7 +120,7 @@ public class TableCell extends JPanel {
    */
   protected void setToDefaultState() {
     this.label.setFont(defaultFont);
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.cellBackgroundImage = lafTheme.getGameTableCellBackgroundDefault();
   }
 
@@ -129,7 +129,7 @@ public class TableCell extends JPanel {
    */
   protected void setToHoveredState() {
     this.label.setFont(hoveredFont);
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.cellBackgroundImage = lafTheme.getGameTableCellBackgroundHover();
   }
 
@@ -138,7 +138,7 @@ public class TableCell extends JPanel {
    */
   protected void setToEmptyState() {
     this.label.setFont(defaultFont);
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.cellBackgroundImage = lafTheme.getGameTableCellBackgroundEmpty();
   }
 }

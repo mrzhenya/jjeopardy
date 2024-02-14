@@ -47,14 +47,14 @@ public class GameDataServiceTest {
   /**
    * Reference to the game data service to test on each run.
    */
-  private GameDataService gameService;
+  private GameDataService testGameService;
 
   /**
    * Initializes the state before each test run.
    */
   @Before
   public void init() {
-    this.gameService = new GameDataService();
+    this.testGameService = new GameDataService();
   }
 
   /**
@@ -62,12 +62,12 @@ public class GameDataServiceTest {
    */
   @Test
   public void initialRun() {
-    assertFalse("Game should not be ready", this.gameService.isGameReady());
-    List<Player> players = this.gameService.getPlayers();
+    assertFalse("Game should not be ready", this.testGameService.isGameReady());
+    List<Player> players = this.testGameService.getPlayers();
     assertNotNull("List of players should not be null", players);
     assertEquals("Players list should be empty", 0, players.size());
 
-    GameData gameData = this.gameService.getGameData();
+    GameData gameData = this.testGameService.getGameData();
     assertNotNull("Game data should not be null", gameData);
     assertNull("Game name should not be set", gameData.getGameName());
     assertNotNull("List of players should not be null", gameData.getPlayerNames());
@@ -84,20 +84,20 @@ public class GameDataServiceTest {
   @Test
   public void testUpdatePlayersFromNames() {
     List<String> playerNames = createDefaultPlayers();
-    this.gameService.updatePlayersFromNames(playerNames);
-    List<Player> players = this.gameService.getPlayers();
+    this.testGameService.updatePlayersFromNames(playerNames);
+    List<Player> players = this.testGameService.getPlayers();
     assertNotNull("List of players should not be null", players);
     assertEquals("Wrong number of players", 3, players.size());
     assertPlayer("Wrong player 0", players.get(0), 0, "One", 0);
     assertPlayer("Wrong player 1", players.get(1), 1, "Two", 0);
     assertPlayer("Wrong player 2", players.get(2), 2, "Three", 0);
-    assertFalse("Game should still not be ready", this.gameService.isGameReady());
+    assertFalse("Game should still not be ready", this.testGameService.isGameReady());
 
     // This should reset the players.
     playerNames = new ArrayList<>();
     playerNames.add("Four");
-    this.gameService.updatePlayersFromNames(playerNames);
-    players = this.gameService.getPlayers();
+    this.testGameService.updatePlayersFromNames(playerNames);
+    players = this.testGameService.getPlayers();
     assertNotNull("List of players should not be null", players);
     assertEquals("Wrong number of players", 1, players.size());
     assertPlayer("Wrong player 0", players.get(0), 0, "Four", 0);
@@ -109,24 +109,24 @@ public class GameDataServiceTest {
   @Test
   public void testAdjustingPlayerScores() {
     List<String> playerNames = createDefaultPlayers();
-    this.gameService.updatePlayersFromNames(playerNames);
-    this.gameService.addToPlayerScore(2, 222);
-    this.gameService.addToPlayerScore(1, 111);
-    this.gameService.addToPlayerScore(0, 0);
-    List<Player> players = this.gameService.getPlayers();
+    this.testGameService.updatePlayersFromNames(playerNames);
+    this.testGameService.addToPlayerScore(2, 222);
+    this.testGameService.addToPlayerScore(1, 111);
+    this.testGameService.addToPlayerScore(0, 0);
+    List<Player> players = this.testGameService.getPlayers();
     assertPlayer("Wrong player 0", players.get(0), 0, "One", 0);
     assertPlayer("Wrong player 1", players.get(1), 1, "Two", 111);
     assertPlayer("Wrong player 2", players.get(2), 2, "Three", 222);
 
     // Adding more.
-    this.gameService.addToPlayerScore(0, 10);
+    this.testGameService.addToPlayerScore(0, 10);
     assertPlayer("Wrong player 0", players.get(0), 0, "One", 10);
-    this.gameService.addToPlayerScore(1, 20);
+    this.testGameService.addToPlayerScore(1, 20);
     assertPlayer("Wrong player 1", players.get(1), 1, "Two", 131);
 
     // Testing full scores reset.
-    this.gameService.resetPlayerScores();
-    players = this.gameService.getPlayers();
+    this.testGameService.resetPlayerScores();
+    players = this.testGameService.getPlayers();
     assertPlayer("Wrong player 0", players.get(0), 0, "One", 0);
     assertPlayer("Wrong player 1", players.get(1), 1, "Two", 0);
     assertPlayer("Wrong player 2", players.get(2), 2, "Three", 0);
@@ -138,15 +138,15 @@ public class GameDataServiceTest {
   @Test
   public void testWinnerPlayer() {
     List<String> playerNames = createDefaultPlayers();
-    this.gameService.updatePlayersFromNames(playerNames);
-    this.gameService.addToPlayerScore(1, 101);
-    assertPlayer("Wrong winner 1", this.gameService.getWinner(), 1, "Two", 101);
+    this.testGameService.updatePlayersFromNames(playerNames);
+    this.testGameService.addToPlayerScore(1, 101);
+    assertPlayer("Wrong winner 1", this.testGameService.getWinner(), 1, "Two", 101);
 
-    this.gameService.addToPlayerScore(2, 202);
-    assertPlayer("Wrong winner 2", this.gameService.getWinner(), 2, "Three", 202);
+    this.testGameService.addToPlayerScore(2, 202);
+    assertPlayer("Wrong winner 2", this.testGameService.getWinner(), 2, "Three", 202);
 
-    this.gameService.addToPlayerScore(1, 200);
-    assertPlayer("Wrong winner 1", this.gameService.getWinner(), 1, "Two", 301);
+    this.testGameService.addToPlayerScore(1, 200);
+    assertPlayer("Wrong winner 1", this.testGameService.getWinner(), 1, "Two", 301);
   }
 
   /**
@@ -165,11 +165,11 @@ public class GameDataServiceTest {
     assertFalse("Long result message should not be blank", StringUtils.isBlank(result.getResulTitleLong()));
 
     // There should still be no players.
-    List<Player> players = this.gameService.getPlayers();
+    List<Player> players = this.testGameService.getPlayers();
     assertNotNull("List of players should not be null", players);
     assertEquals("Wrong number of players", 0, players.size());
 
-    GameData gameData = this.gameService.getGameData();
+    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-default",
             10, 20, 30, 0, 0);
   }
@@ -183,7 +183,7 @@ public class GameDataServiceTest {
     assertThreeInfoMessages(result.getInfoMessages(), 3, 9, 0, 0);
 
     // The same default data is expected but question points should be initialized to defaults.
-    GameData gameData = this.gameService.getGameData();
+    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-no-scores",
             50, 100, 150, 0, 0);
   }
@@ -196,7 +196,7 @@ public class GameDataServiceTest {
     assertResultMessageNumbers(result, 0, 0, 3);
     assertThreeInfoMessages(result.getInfoMessages(), 3, 9, 3, 0);
 
-    GameData gameData = this.gameService.getGameData();
+    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-with-enough-players",
             10, 20, 30, 3, 0);
     List<String> playerNames = gameData.getPlayerNames();
@@ -214,7 +214,7 @@ public class GameDataServiceTest {
     assertGeneralInfoMessage(result.getInfoMessages().get(0), 3, 9);
     assertBonusQuestionsInfoMessage(result.getInfoMessages().get(1), 0);
 
-    GameData gameData = this.gameService.getGameData();
+    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-not-enough-players",
             10, 20, 30, 0, 0);
   }
@@ -228,7 +228,7 @@ public class GameDataServiceTest {
     assertThreeInfoMessages(result.getInfoMessages(), 3, 9, 6, 0);
 
     // Extra players are ignored.
-    GameData gameData = this.gameService.getGameData();
+    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-too-many-players",
             10, 20, 30, 6, 0);
     List<String> playerNames = gameData.getPlayerNames();
@@ -249,7 +249,7 @@ public class GameDataServiceTest {
     assertThreeInfoMessages(result.getInfoMessages(), 3, 9, 4, 0);
 
     // Extra players are ignored.
-    GameData gameData = this.gameService.getGameData();
+    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-lots-of-whitespace",
             10, 20, 30, 4, 0);
     List<String> playerNames = gameData.getPlayerNames();
@@ -267,7 +267,7 @@ public class GameDataServiceTest {
     assertResultMessageNumbers(result, 0, 0, 3);
     assertThreeInfoMessages(result.getInfoMessages(), 3, 9, 0, 3);
 
-    GameData gameData = this.gameService.getGameData();
+    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-with-enough-bonus-questions",
             10, 20, 30, 0, 3);
     List<Question> bonusQuestions = gameData.getBonusQuestions();
@@ -287,7 +287,7 @@ public class GameDataServiceTest {
     assertPlayersInfoMessage(result.getInfoMessages().get(1), 3);
 
     // Bonus questions should not be parsed because they are too few for the number of players.
-    GameData gameData = this.gameService.getGameData();
+    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-not-enough-bonus-questions",
             10, 20, 30, 3, 0);
   }
@@ -565,7 +565,7 @@ public class GameDataServiceTest {
   private FileParsingResult loadGameTestFile(String fileName) {
     File file = new File(fileName);
     assertTrue("Unable to find test file: " + fileName, file.exists());
-    FileParsingResult result = this.gameService.loadGameData(file.getAbsolutePath());
+    FileParsingResult result = this.testGameService.loadGameData(file.getAbsolutePath());
     assertNotNull("Parsing result should not be null", result);
     return result;
   }

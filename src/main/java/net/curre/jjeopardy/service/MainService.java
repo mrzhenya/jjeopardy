@@ -16,13 +16,11 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.ui.game.MainWindow;
-
 import java.util.logging.Logger;
 
 /**
- * This service bean is responsible for
- * handling various general tasks such as quitting, printing, etc.
+ * This service bean is responsible for handling various general tasks such as quitting,
+ * starting a new game, and other misc. tasks that don't have its own service.
  *
  * @author Yevgeny Nyden
  */
@@ -32,31 +30,21 @@ public class MainService {
   private static final Logger LOGGER = Logger.getLogger(MainService.class.getName());
 
   /** Private constructor to prevent instantiation. */
-  private MainService() {}
+  protected MainService() {}
 
   /**
    * Starts a new game.
    */
-  public static void startGame() {
+  public void startGame() {
     LOGGER.info("Starting a new game...");
 
-    // Create the main window if it doesn't exist.
     Registry registry = AppRegistry.getInstance();
-    MainWindow mainWindow = registry.getMainWindow();
-    if (mainWindow == null) {
-      mainWindow = new MainWindow();
-      registry.setMainWindow(mainWindow);
-    }
-    AppRegistry.getInstance().getGameDataService().resetPlayerScores();
-
-    mainWindow.prepareGame();
-    mainWindow.pack();
-    mainWindow.setLocationRelativeTo(null);
-    mainWindow.setVisible(true);
+    registry.getGameDataService().resetPlayerScores();
+    registry.getMainWindow().prepareAndStartGame();
   }
 
   /** Disposes all frames and quits the application. */
-  public static void quitApp() {
+  public void quitApp() {
     LOGGER.info("Handling application exit...");
     System.exit(0);
   }

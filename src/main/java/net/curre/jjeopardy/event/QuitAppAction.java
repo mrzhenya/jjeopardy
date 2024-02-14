@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.event;
 
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.MainService;
 
 import javax.swing.AbstractAction;
@@ -30,6 +31,6 @@ public class QuitAppAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    MainService.quitApp();
+    AppRegistry.getInstance().getMainService().quitApp();
   }
 }

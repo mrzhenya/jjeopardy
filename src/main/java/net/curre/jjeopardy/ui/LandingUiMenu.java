@@ -17,7 +17,7 @@
 package net.curre.jjeopardy.ui;
 
 import net.curre.jjeopardy.service.*;
-import net.curre.jjeopardy.ui.laf.LafService;
+import net.curre.jjeopardy.service.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafThemeInterface;
 
 import javax.swing.ButtonGroup;
@@ -44,11 +44,11 @@ public class LandingUiMenu extends JMenuBar {
     // Creating the Themes menu items.
     JMenu themeMenu = new JMenu(LocaleService.getString("jj.landing.menu.item.themes"));
     ButtonGroup themesGroup = new ButtonGroup();
-    LafService lafService = LafService.getInstance();
+    LafService lafService = AppRegistry.getInstance().getLafService();
     for (LafThemeInterface lafTheme : lafService.getSupportedThemes()) {
       JRadioButtonMenuItem themeItem = new JRadioButtonMenuItem(
         LocaleService.getString(lafTheme.getNameResourceKey()));
-      if (LafService.getInstance().getCurrentLafTheme().equals(lafTheme)) {
+      if (lafService.getCurrentLafTheme().equals(lafTheme)) {
         themeItem.setSelected(true);
       }
       themesGroup.add(themeItem);
@@ -58,10 +58,10 @@ public class LandingUiMenu extends JMenuBar {
           lafService.activateLafTheme(lafTheme.getId());
           Registry registry = AppRegistry.getInstance();
           SettingsService settingsService = registry.getSettingsService();
-          settingsService.getSettings().setLafThemeId(LafService.getInstance().getCurrentLafThemeId());
+          settingsService.getSettings().setLafThemeId(lafService.getCurrentLafThemeId());
           settingsService.persistSettings();
           registry.getLandingUi().updateLandingUi();
-          UiService.getInstance().showRestartGameDialog();
+          registry.getUiService().showRestartGameDialog();
         } catch (Exception e) {
           LOGGER.log(Level.WARNING, "Unable to save settings.", e);
         }
@@ -90,7 +90,7 @@ public class LandingUiMenu extends JMenuBar {
     // Creating the About menu item.
     final JMenuItem aboutItem = new JMenuItem(LocaleService.getString("jj.landing.menu.item.about"));
     aboutItem.setMnemonic(KeyEvent.VK_A);
-    aboutItem.addActionListener(evt -> UiService.getInstance().showInfoDialog(
+    aboutItem.addActionListener(evt -> AppRegistry.getInstance().getUiService().showInfoDialog(
       LocaleService.getString("jj.landing.menu.about.title"),
       LocaleService.getString("jj.landing.menu.about.message"),
     null));
@@ -98,7 +98,7 @@ public class LandingUiMenu extends JMenuBar {
     // Creating the Exit menu item.
     final JMenuItem exitItem = new JMenuItem(LocaleService.getString("jj.landing.menu.item.exit"));
     exitItem.setMnemonic(KeyEvent.VK_Q);
-    exitItem.addActionListener(evt -> MainService.quitApp());
+    exitItem.addActionListener(evt -> AppRegistry.getInstance().getMainService().quitApp());
 
     JMenu menu = new JMenu(LocaleService.getString("jj.landing.menu.title"));
     menu.add(themeMenu);

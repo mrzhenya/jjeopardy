@@ -76,11 +76,11 @@ public class BonusQuestionAction extends AbstractAction implements KeyListener {
 
   /** Performs the action. */
   private void performAction() {
-    final SoundService sService = SoundService.getInstance();
+    final SoundService soundService = AppRegistry.getInstance().getSoundService();
     if (this.isYes) {
-      sService.startMusic(SoundEnum.getRandomHooray(), 1);
+      soundService.startMusic(SoundEnum.getRandomHooray(), 1);
     } else {
-      sService.startMusic(SoundEnum.getRandomBoo(), 1);
+      soundService.startMusic(SoundEnum.getRandomBoo(), 1);
     }
 
     final Registry registry = AppRegistry.getInstance();

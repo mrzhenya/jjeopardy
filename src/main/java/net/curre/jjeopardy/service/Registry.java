@@ -23,59 +23,61 @@ import net.curre.jjeopardy.ui.game.MainWindow;
 
 /**
  * Represents a registry interface to set and retrieve application
- * services.
+ * services and main UI components.
  *
  * @author Yevgeny Nyden
  */
 public interface Registry {
 
   /**
-   * Getter for the main window reference.
-   * @return The reference to the main window object
+   * Gets the main service (a generic service to handle common tasks like
+   * starting a new game or quitting the app).
+   * @return a reference to the main service
    */
-  MainWindow getMainWindow();
+  MainService getMainService();
 
   /**
-   * Setter for the main window reference.
-   * @param mainWindow Reference to the main window object
-   */
-  void setMainWindow(MainWindow mainWindow);
-
-  /**
-   * Gets the game data service.
+   * Gets the game data service. This service is responsible for loading and handling
+   * game data - categories, questions, players.
    * @return a reference to the game data service
    */
   GameDataService getGameDataService();
 
   /**
-   * Gets the game settings service.
+   * Gets the game settings service to handle game settings (that are stored to disk).
    * @return a reference to the game settings service
    */
   SettingsService getSettingsService();
 
   /**
-   * Gets the local service.
+   * Gets the locale service.
    * @return reference to the locale service.
    */
   LocaleService getLocaleService();
+
+  /**
+   * Gets the sound service, which is responsible for playing sound clips for the app.
+   * @return reference to the sound service
+   */
+  SoundService getSoundService();
+
+  /**
+   * Gets the UI service, which is responsible for common UI tasks like opening dialogs.
+   * @return reference to the UI service
+   */
+  UiService getUiService();
+
+  /**
+   * Gets the service responsible for common Look and Feel support.
+   * @return reference to the LAF service
+   */
+  LafService getLafService();
 
   /**
    * Gets a reference to the game data.
    * @return a reference to the game data
    */
   GameData getGameData();
-
-  /**
-   * Gets a reference to the question dialog.
-   * @return a reference to the question dialog
-   */
-  QuestionDialog getQuestionDialog();
-
-  /**
-   * Sets the reference to the question dialog.
-   * @param questionDialog reference to the question dialog
-   */
-  void setQuestionDialog(QuestionDialog questionDialog);
 
   /**
    * Gets a reference to the main Landing UI.
@@ -88,4 +90,22 @@ public interface Registry {
    * @param landingUi reference to the main landing UI
    */
   void setLandingUi(LandingUi landingUi);
+
+  /**
+   * Getter for the main window reference.
+   * @return The reference to the main window object
+   */
+  MainWindow getMainWindow();
+
+  /**
+   * Gets a reference to the question dialog.
+   * @return a reference to the question dialog
+   */
+  QuestionDialog getQuestionDialog();
+
+  /**
+   * Sets the reference to the question dialog.
+   * @param questionDialog reference to the question dialog
+   */
+  void setQuestionDialog(QuestionDialog questionDialog);
 }

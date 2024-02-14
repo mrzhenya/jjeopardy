@@ -32,7 +32,7 @@ import java.awt.Image;
 public class DefaultTheme extends LafTheme {
 
   /** Theme ID. */
-  public static final LafThemeId LAF_THEME_ID = LafThemeId.MAC_DEFAULT;
+  public static final LafThemeId LAF_THEME_ID = LafThemeId.DEFAULT;
 
   /** Class name of this LAF to use with UIManager. */
   public static final String LAF_CLASS_NAME = "net.curre.jjeopardy.ui.laf.GameDefault";

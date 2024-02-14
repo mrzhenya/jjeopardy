@@ -25,13 +25,9 @@ import net.curre.jjeopardy.event.GameTableMouseListener;
 import net.curre.jjeopardy.event.GameWindowListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.service.MainService;
 import net.curre.jjeopardy.service.Registry;
-import net.curre.jjeopardy.service.SoundService;
-import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.dialog.QuestionDialog;
-import net.curre.jjeopardy.ui.laf.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.AbstractAction;
@@ -78,13 +74,13 @@ public class MainWindow extends JFrame {
     this.gameTable = new GameTable();
 
     final Settings settings = AppRegistry.getInstance().getSettingsService().getSettings();
-    this.setPreferredSize(new Dimension(settings.getMainFrameWidth(), settings.getMainFrameHeight()));
+    this.setPreferredSize(new Dimension(settings.getGameWindowWidth(), settings.getGameWindowHeight()));
     this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     this.addWindowListener(new GameWindowListener());
 
     initComponents();
 
-    LafService.registerUITreeForUpdates(this);
+    AppRegistry.getInstance().getLafService().registerUITreeForUpdates(this);
 
     Registry registry = AppRegistry.getInstance();
     if (registry.getQuestionDialog() == null) {
@@ -103,9 +99,9 @@ public class MainWindow extends JFrame {
   }
 
   /**
-   * Prepares the game for a new round.
+   * Prepares the game for a new round and starts it by showing the main game window UI.
    */
-  public void prepareGame() {
+  public void prepareAndStartGame() {
     GameData gameData = AppRegistry.getInstance().getGameDataService().getGameData();
     this.setTitle(gameData.getGameName());
 
@@ -113,6 +109,10 @@ public class MainWindow extends JFrame {
     this.playerScoresPanel.prepareGame();
     this.bonusQuestionsButton.setEnabled(gameData.hasUnansweredBonusQuestions());
     this.repaint();
+
+    this.pack();
+    this.setLocationRelativeTo(null);
+    this.setVisible(true);
   }
 
   /**
@@ -171,7 +171,7 @@ public class MainWindow extends JFrame {
    * @return player buttons panel
    */
   private JPanel initPlayerButtonsPanel() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
 
     JPanel buttonsPanel = new JPanel();
     final int buttonSpacing = lafTheme.getButtonSpacing();
@@ -231,7 +231,7 @@ public class MainWindow extends JFrame {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      MainService.startGame();
+      AppRegistry.getInstance().getMainService().startGame();
     }
   }
 
@@ -243,13 +243,14 @@ public class MainWindow extends JFrame {
     @Override
     public void actionPerformed(ActionEvent e) {
       // End the game.
-      SoundService.getInstance().startMusic(SoundEnum.FINAL, 1);
-      Player winner = AppRegistry.getInstance().getGameDataService().getWinner();
-      UiService.getInstance().showEndGameDialog(
+      Registry registry = AppRegistry.getInstance();
+      registry.getSoundService().startMusic(SoundEnum.FINAL, 1);
+      Player winner = registry.getGameDataService().getWinner();
+      registry.getUiService().showEndGameDialog(
         LocaleService.getString("jj.game.enddialog.header", winner.getName()),
         LocaleService.getString("jj.game.enddialog.message", winner.getName(), String.valueOf(winner.getScore())));
       MainWindow.this.setVisible(false);
-      AppRegistry.getInstance().getLandingUi().setVisible(true);
+      registry.getLandingUi().setVisible(true);
     }
   }
 }

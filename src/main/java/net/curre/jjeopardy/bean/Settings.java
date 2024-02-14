@@ -17,10 +17,11 @@
 package net.curre.jjeopardy.bean;
 
 import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.ui.laf.LafService;
 import net.curre.jjeopardy.ui.laf.LafThemeId;
 
 import java.io.Serializable;
+
+import static net.curre.jjeopardy.service.LafService.DEFAULT_LAF_THEME_ID;
 
 /**
  * Object of this class represents a bean for storing
@@ -36,10 +37,10 @@ public class Settings implements Serializable {
   private static final long serialVersionUID = 120364529132434560L;
 
   /** The main window frame width. */
-  private int mainFrameWidth;
+  private int gameWindowWidth;
 
   /** The main window frame height. */
-  private int mainFrameHeight;
+  private int gameWindowHeight;
 
   /** Look and Feel theme/skin ID. */
   private LafThemeId lafThemeId;
@@ -51,12 +52,14 @@ public class Settings implements Serializable {
   private String lastCurrentDirectory;
 
   /**
-   * Default constructor that initializes all properties to the default values.
+   * Ctor.
+   * @param gameWindowWidth game table width
+   * @param gameWindowHeight game table height
    */
-  public Settings() {
-    this.mainFrameWidth = LafService.DEFAULT_GAME_TABLE_WIDTH;
-    this.mainFrameHeight = LafService.DEFAULT_GAME_TABLE_HEIGHT;
-    this.lafThemeId = LafService.getInstance().getDefaultLafThemeId();
+  public Settings(int gameWindowWidth, int gameWindowHeight) {
+    this.gameWindowWidth = gameWindowWidth;
+    this.gameWindowHeight = gameWindowHeight;
+    this.lafThemeId = DEFAULT_LAF_THEME_ID;
     this.localeId = LocaleService.DEFAULT_LOCALE.toString();
     this.lastCurrentDirectory = System.getProperty("user.home");
   }
@@ -65,32 +68,32 @@ public class Settings implements Serializable {
    * Getter for the main window frame width.
    * @return The main window frame width
    */
-  public int getMainFrameWidth() {
-    return mainFrameWidth;
+  public int getGameWindowWidth() {
+    return this.gameWindowWidth;
   }
 
   /**
-   * Setter for the main window frame width.
-   * @param mainFrameWidth Main window frame width
+   * Setter for the main game window frame width.
+   * @param gameWindowWidth Main game window frame width
    */
-  public void setMainFrameWidth(int mainFrameWidth) {
-    this.mainFrameWidth = mainFrameWidth;
+  public void setGameWindowWidth(int gameWindowWidth) {
+    this.gameWindowWidth = gameWindowWidth;
   }
 
   /**
-   * Getter for the main window frame height.
-   * @return The main window frame height
+   * Getter for the main game window frame height.
+   * @return The main game window frame height
    */
-  public int getMainFrameHeight() {
-    return mainFrameHeight;
+  public int getGameWindowHeight() {
+    return this.gameWindowHeight;
   }
 
   /**
-   * Setter for the main window frame height.
-   * @param mainFrameHeight Main window frame height
+   * Setter for the main game window frame height.
+   * @param gameWindowHeight Main game window frame height
    */
-  public void setMainFrameHeight(int mainFrameHeight) {
-    this.mainFrameHeight = mainFrameHeight;
+  public void setGameWindowHeight(int gameWindowHeight) {
+    this.gameWindowHeight = gameWindowHeight;
   }
 
   /**
@@ -98,7 +101,7 @@ public class Settings implements Serializable {
    * @return The Look and Feel theme ID
    */
   public LafThemeId getLafThemeId() {
-    return lafThemeId;
+    return this.lafThemeId;
   }
 
   /**
@@ -114,7 +117,7 @@ public class Settings implements Serializable {
    * @return The locale ID (Locale.toString())
    */
   public String getLocaleId() {
-    return localeId;
+    return this.localeId;
   }
 
   /**

@@ -19,7 +19,7 @@ package net.curre.jjeopardy.ui.dialog;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.bean.Question;
-import net.curre.jjeopardy.ui.laf.LafService;
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.BorderFactory;
@@ -48,7 +48,7 @@ public class QuestionTitle extends JPanel {
     this.categoryLabel = new JLabel();
     this.pointsLabel = new JLabel();
 
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int spacing = lafTheme.getButtonSpacing();
 
     this.setLayout(new TableLayout(new double[][] {

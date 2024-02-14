@@ -19,9 +19,9 @@ package net.curre.jjeopardy.ui.dialog;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.images.ImageEnum;
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.FileParsingResult;
 import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.ui.laf.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.BoxLayout;
@@ -53,7 +53,7 @@ public class ParsingResultDialog extends BasicDialog {
 
   @Override
   public Component getHeaderComponent() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     JPanel headerPanel = new JPanel(new TableLayout(new double[][] {
       {TableLayout.PREFERRED}, {TableLayout.PREFERRED, TableLayout.PREFERRED}}));
     final JLabel label1 = new JLabel(this.result.getResulTitleLong());
@@ -69,7 +69,7 @@ public class ParsingResultDialog extends BasicDialog {
 
   @Override
   public Component getContentComponent() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     JPanel contentPane = new JPanel();
     contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
     Font textFont = lafTheme.getDialogTextFont();

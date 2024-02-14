@@ -26,10 +26,10 @@ import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.SoundService;
 import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.game.TimerLabel;
-import net.curre.jjeopardy.ui.laf.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.Utilities;
 
+import javax.sound.sampled.Clip;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -90,7 +90,7 @@ public class QuestionDialog extends JDialog {
       // Remove application name for the frame panel.
       this.getRootPane().putClientProperty( "apple.awt.windowTitleVisible", false);
     }
-    LafService.registerUITreeForUpdates(this);
+    AppRegistry.getInstance().getLafService().registerUITreeForUpdates(this);
   }
 
   /**
@@ -138,9 +138,9 @@ public class QuestionDialog extends JDialog {
     });
 
     // stating the thinking music
-    final SoundService soundService = SoundService.getInstance();
+    final SoundService soundService = AppRegistry.getInstance().getSoundService();
     soundService.stopAllMusic();
-    soundService.startMusic(SoundEnum.THINKING, SoundService.LOOP_CONTINUOUSLY);
+    soundService.startMusic(SoundEnum.THINKING, Clip.LOOP_CONTINUOUSLY);
   }
 
   /**
@@ -203,7 +203,7 @@ public class QuestionDialog extends JDialog {
   private void initComponents() {
     this.timeLabel = new TimerLabel();
 
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int padding = lafTheme.getPanelPadding();
 
     // Settings the main layout.

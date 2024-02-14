@@ -18,7 +18,7 @@ package net.curre.jjeopardy.ui.game;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.ui.laf.LafService;
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.BorderFactory;
@@ -44,7 +44,7 @@ public class GameTableHeaderRenderer extends JPanel implements javax.swing.table
 
   /** Ctor. */
   public GameTableHeaderRenderer() {
-    LafTheme lafTheme = LafService.getInstance().getCurrentLafTheme();
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.setLayout(new TableLayout(new double[][] {
       {10, TableLayout.FILL, 10},  // columns
       {TableLayout.FILL}})); // rows

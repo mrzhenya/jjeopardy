@@ -21,7 +21,6 @@ import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.ui.LandingUi;
-import net.curre.jjeopardy.ui.laf.LafService;
 
 import javax.swing.SwingUtilities;
 import java.util.logging.Logger;
@@ -42,23 +41,20 @@ public class App {
   public static void main(String[] args) {
     LOGGER.info("Starting application...");
 
-    // First, initialize the main service registry with a default (non-test) one.
+    // Initialize the main service registry with a default (non-test) one.
     AppRegistry.initialize(null);
-
-    // Second, initialize the Look and Feel service, before showing any UI.
-    LafService.getInstance().initialize();
 
     // Then, load and activate the stored settings (LAF theme, locale, game board size).
     Registry registry = AppRegistry.getInstance();
     SettingsService settingsService = registry.getSettingsService();
     Settings settings = settingsService.getSettings();
-    LafService.getInstance().activateLafTheme(settings.getLafThemeId());
+    registry.getLafService().activateLafTheme(settings.getLafThemeId());
     registry.getLocaleService().setCurrentLocale(settings.getLocaleId(), false);
 
     SwingUtilities.invokeLater(() -> {
       // Now, start the app by showing the landing UI.
       LandingUi landingUi = new LandingUi(); // The Landing UI will get displayed shortly.
-      AppRegistry.getInstance().setLandingUi(landingUi);
+      registry.setLandingUi(landingUi);
     });
   }
 }
