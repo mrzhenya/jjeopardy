@@ -85,10 +85,6 @@ public class GameTable extends JTable {
 
     // Configuring the table header.
     JTableHeader header = this.getTableHeader();
-    Dimension size = header.getSize();
-    // TODO - remove extraneous size call to the header.
-    size.setSize(size.getWidth(), 50);
-    header.setPreferredSize(size);
     header.setReorderingAllowed(false);
     header.setResizingAllowed(false);
     header.setDefaultRenderer(new GameTableHeaderRenderer());
