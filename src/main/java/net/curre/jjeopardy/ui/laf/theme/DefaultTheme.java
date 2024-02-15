@@ -35,7 +35,7 @@ public class DefaultTheme extends LafTheme {
   public static final LafThemeId LAF_THEME_ID = LafThemeId.DEFAULT;
 
   /** Class name of this LAF to use with UIManager. */
-  public static final String LAF_CLASS_NAME = "net.curre.jjeopardy.ui.laf.GameDefault";
+  public static final String LAF_CLASS_NAME = "net.curre.jjeopardy.ui.laf.theme.GameDefault";
 
   /** Color for the question dialog timer label. */
   private static final Color TIMER_LABEL_COLOR = new Color(249, 252, 255);

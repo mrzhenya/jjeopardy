@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package net.curre.jjeopardy.ui.laf;
+package net.curre.jjeopardy.ui.laf.theme;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 
 /**
  * FlatLaf custom game theme that's based on the FlatDark theme.
+ * It has a properties file that's located in the resources directory.
  * See <a href="https://www.formdev.com/flatlaf/theme-editor/">theme-editor</a> for details.
  *
  * @author Yevgeny Nyden
