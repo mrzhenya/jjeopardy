@@ -64,11 +64,13 @@ public class GameTableListener implements ComponentListener, MouseListener {
 
   @Override
   public void mouseReleased(MouseEvent e) {
-    Point p = e.getPoint();
-    int row = this.gameTable.rowAtPoint(p);
-    int column = this.gameTable.columnAtPoint(p);
-    if (row >= 0 && column >= 0) {
-      openQuestionDialog(column, row);
+    if (AppRegistry.getInstance().getMainWindow().isActionsEnabled()) {
+      Point p = e.getPoint();
+      int row = this.gameTable.rowAtPoint(p);
+      int column = this.gameTable.columnAtPoint(p);
+      if (row >= 0 && column >= 0) {
+        openQuestionDialog(column, row);
+      }
     }
   }
 

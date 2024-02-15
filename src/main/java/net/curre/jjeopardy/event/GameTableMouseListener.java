@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.event;
 
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.ui.game.GameTable;
 import net.curre.jjeopardy.ui.game.GameTableCellRenderer;
 
@@ -45,6 +46,9 @@ public class GameTableMouseListener extends MouseAdapter implements MouseMotionL
 
   @Override
   public void mouseMoved(MouseEvent e) {
+    if (!AppRegistry.getInstance().getMainWindow().isActionsEnabled()) {
+      return;
+    }
     Point p = e.getPoint();
     int row = this.gameTable.rowAtPoint(p);
     int column = this.gameTable.columnAtPoint(p);
@@ -58,6 +62,9 @@ public class GameTableMouseListener extends MouseAdapter implements MouseMotionL
 
   @Override
   public void mouseExited(MouseEvent e) {
+    if (!AppRegistry.getInstance().getMainWindow().isActionsEnabled()) {
+      return;
+    }
     // Clearing out the currently hovered cell state and repainting the table.
     GameTableCellRenderer cellRenderer = (GameTableCellRenderer) this.gameTable.getCellRenderer(0, 0);
     cellRenderer.setCellHovered(-1, -1);

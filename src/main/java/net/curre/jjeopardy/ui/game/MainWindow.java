@@ -66,12 +66,22 @@ public class MainWindow extends JFrame {
   /** Reference to the Bonus Questions button. */
   private JButton bonusQuestionsButton;
 
+  /** Reference to the Restart game button. */
+  private JButton resetButton;
+
+  /** Reference to the Quit game button. */
+  private JButton quitButton;
+
+  /** Flag to indicate that actions are enabled/disabled on the main game window. */
+  private boolean actionsEnabled;
+
   /**
    * Ctor.
    */
   public MainWindow() {
     LOGGER.info("Creating the main Game UI.");
     this.gameTable = new GameTable();
+    this.actionsEnabled = true;
 
     final Settings settings = AppRegistry.getInstance().getSettingsService().getSettings();
     this.setPreferredSize(new Dimension(settings.getGameWindowWidth(), settings.getGameWindowHeight()));
@@ -105,6 +115,7 @@ public class MainWindow extends JFrame {
     GameData gameData = AppRegistry.getInstance().getGameDataService().getGameData();
     this.setTitle(gameData.getGameName());
 
+    this.actionsEnabled = true;
     this.gameTable.prepareGame();
     this.playerScoresPanel.prepareGame();
     this.bonusQuestionsButton.setEnabled(gameData.bonusQuestionsHaveBeenAsked());
@@ -120,6 +131,35 @@ public class MainWindow extends JFrame {
    */
   public void updateScores() {
     this.playerScoresPanel.updateScores();
+  }
+
+  /**
+   * Determines if the actions are enabled on the main game window.
+   * @return true if actions are enabled; false if otherwise
+   */
+  public boolean isActionsEnabled() {
+    return this.actionsEnabled;
+  }
+
+  /**
+   * Enables actions on the main game window (this) dialog.
+   */
+  public void enableActions() {
+    this.actionsEnabled = true;
+    GameData gameData = AppRegistry.getInstance().getGameDataService().getGameData();
+    this.bonusQuestionsButton.setEnabled(gameData.bonusQuestionsHaveBeenAsked());
+    this.resetButton.setEnabled(true);
+    this.quitButton.setEnabled(true);
+  }
+
+  /**
+   * Disables actions on the main game window (this) dialog.
+   */
+  public void disableActions() {
+    this.actionsEnabled = false;
+    this.bonusQuestionsButton.setEnabled(false);
+    this.resetButton.setEnabled(false);
+    this.quitButton.setEnabled(false);
   }
 
   /**
@@ -191,19 +231,19 @@ public class MainWindow extends JFrame {
       1, 1, 1, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Restart the game button.
-    JButton resetButton = new JButton();
-    resetButton.setFont(buttonFont);
-    resetButton.setAction(new RestartGameAction());
-    resetButton.setText(LocaleService.getString("jj.game.buttons.restart.name"));
-    buttonsPanel.add(resetButton, new TableLayoutConstraints(
+    this.resetButton = new JButton();
+    this.resetButton.setFont(buttonFont);
+    this.resetButton.setAction(new RestartGameAction());
+    this.resetButton.setText(LocaleService.getString("jj.game.buttons.restart.name"));
+    buttonsPanel.add(this.resetButton, new TableLayoutConstraints(
       3, 1, 3, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Quit the game button.
-    JButton quitButton = new JButton();
-    quitButton.setFont(buttonFont);
-    quitButton.setAction(new EndGameAction());
-    quitButton.setText(LocaleService.getString("jj.game.buttons.quit.name"));
-    buttonsPanel.add(quitButton, new TableLayoutConstraints(
+    this.quitButton = new JButton();
+    this.quitButton.setFont(buttonFont);
+    this.quitButton.setAction(new EndGameAction());
+    this.quitButton.setText(LocaleService.getString("jj.game.buttons.quit.name"));
+    buttonsPanel.add(this.quitButton, new TableLayoutConstraints(
       5, 1, 5, 1, TableLayout.FULL, TableLayout.FULL));
 
     return buttonsPanel;

@@ -46,6 +46,10 @@ import java.util.logging.Logger;
 /**
  * Question dialog UI that could be adapted to three different versions:
  * main question UI, bonus question UI, and the answer UI.
+ * <br><br>
+ * Due to the thread responsible for updating the timer label, this dialog
+ * can not be modal; we have to fake the modality by disabling actions on the
+ * main window while the question dialog is open.
  *
  * @author Yevgeny Nyden
  */
@@ -82,8 +86,12 @@ public class QuestionDialog extends JDialog {
   public QuestionDialog() {
     this.currBonusPlayerIndex = -1;
 
+    // IMPORTANT: unfortunately, this dialog can not be modal due to
+    // the thread code that's responsible for updating the timer label.
+
     this.setResizable(false);
     this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
     this.initComponents();
 
     if (Utilities.isMacOs()) {
@@ -107,6 +115,21 @@ public class QuestionDialog extends JDialog {
    */
   public int getCurrentQuestionCost() {
     return this.currentQuestion.getPoints();
+  }
+
+  /**
+   * Shows or hides the dialog.
+   * @param isVisible true to show dialog; false to hide it
+   */
+  @Override
+  public void setVisible(boolean isVisible) {
+    super.setVisible(isVisible);
+    if (isVisible) {
+      AppRegistry.getInstance().getMainWindow().disableActions();
+      super.setAlwaysOnTop(true);
+    } else {
+      AppRegistry.getInstance().getMainWindow().enableActions();
+    }
   }
 
   /**
