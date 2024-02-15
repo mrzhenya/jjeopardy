@@ -16,8 +16,6 @@
 
 package net.curre.jjeopardy.bean;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,16 +49,17 @@ public class GameData {
   }
 
   /**
-   * Resets the game data for a new game.
+   * Resets the game data for a new game. Here we reset the
+   * "hasBeenAsked" state of all questions (and bonus questions).
    */
   public void resetGameData() {
     for (Category category : this.categories) {
       for (int i = 0; i < category.getQuestionsCount(); i++) {
-        category.getQuestion(i).resetAnswered();
+        category.getQuestion(i).resetHasBeenAsked();
       }
     }
     for (Question bonusQuestion : this.bonusQuestions) {
-      bonusQuestion.resetAnswered();
+      bonusQuestion.resetHasBeenAsked();
     }
   }
 
@@ -107,12 +106,12 @@ public class GameData {
   }
 
   /**
-   * Determines if there are unanswered bonus questions.
-   * @return true if there are unanswered bonus questions, false if otherwise
+   * Determines if bonus questions have been asked (if the first bonus question
+   * has been asked, we assume all questions have been asked).
+   * @return true if bonus questions have been asked
    */
-  public boolean hasUnansweredBonusQuestions() {
-    // Assume, if the first question is answered - all are answered.
-    return this.bonusQuestions.size() > 0 && !this.bonusQuestions.get(0).isHasBeenAsked();
+  public boolean bonusQuestionsHaveBeenAsked() {
+    return !this.bonusQuestions.isEmpty() && !this.bonusQuestions.get(0).isHasBeenAsked();
   }
 
   /**
@@ -133,20 +132,5 @@ public class GameData {
     this.gameName = name;
     this.categories.clear();
     this.categories.addAll(categories);
-  }
-
-  /**
-   * Determines if there is enough game data for the game, which means
-   * the game name is non-blank and there is enough categories/questions.
-   * @return true if we have enough game data (ignoring the players)
-   */
-  public boolean haveEnoughGameData() {
-    if (StringUtils.isBlank(this.gameName)) {
-      return false;
-    }
-    if (this.categories.isEmpty()) {
-      return false;
-    }
-    return true;
   }
 }

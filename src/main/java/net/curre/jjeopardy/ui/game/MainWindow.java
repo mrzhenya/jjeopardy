@@ -107,7 +107,7 @@ public class MainWindow extends JFrame {
 
     this.gameTable.prepareGame();
     this.playerScoresPanel.prepareGame();
-    this.bonusQuestionsButton.setEnabled(gameData.hasUnansweredBonusQuestions());
+    this.bonusQuestionsButton.setEnabled(gameData.bonusQuestionsHaveBeenAsked());
     this.repaint();
 
     this.pack();

@@ -95,7 +95,7 @@ public class Question {
   /**
    * Marks this question to be 'not asked'.
    */
-  public void resetAnswered() {
+  public void resetHasBeenAsked() {
     this.hasBeenAsked = false;
   }
 

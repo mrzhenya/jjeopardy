@@ -111,7 +111,7 @@ public class PlayerScoresPanel extends JPanel {
       // Player number label.
       final JLabel numberLabel = new JLabel();
       numberLabel.setFont(lafTheme.getGameTableScorePlayerFont());
-      numberLabel.setText(player.getPlayerNumberString());
+      numberLabel.setText(player.getNumberString());
       this.add(numberLabel, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.CENTER, TableLayout.CENTER));
 

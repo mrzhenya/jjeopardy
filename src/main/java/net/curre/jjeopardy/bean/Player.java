@@ -65,10 +65,18 @@ public class Player implements HasName {
   }
 
   /**
-   * Gets a player's number string.
-   * @return player number string (something like "Player #1").
+   * Gets a full title string for this player.
+   * @return name string (includes the word "Player")
    */
-  public String getPlayerNumberString() {
+  public String getNameString() {
+    return LocaleService.getString("jj.player.name", this.name);
+  }
+
+  /**
+   * Gets a player's number string.
+   * @return player number string (something like "Player #1")
+   */
+  public String getNumberString() {
     return LocaleService.getString("jj.player.name", String.valueOf((index + 1)));
   }
 
@@ -93,13 +101,5 @@ public class Player implements HasName {
    */
   public void resetScore() {
     this.score = 0;
-  }
-
-  /**
-   * Gets a full title string for this player.
-   * @return name string (includes the word "Player")
-   */
-  public String getNameString() {
-    return LocaleService.getString("jj.player.name", this.name);
   }
 }

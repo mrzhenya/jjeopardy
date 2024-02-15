@@ -190,14 +190,30 @@ public class GameDataService {
   }
 
   /**
-   * Determines if the game is ready to start.
+   * Determines if the game is ready to start, which means it has enough players
+   * and enough game categories and questions.
    * @return true if we have enough data to start a game; false if otherwise
    */
   public boolean isGameReady() {
     if (this.players.size() < minNumberOfPlayers) {
       return false;
     }
-    return this.gameData.haveEnoughGameData();
+    return hasEnoughGameData();
+  }
+
+
+  /**
+   * Determines if there is enough data for a game except the players.
+   * @return true if we have all data ignoring the players; false if otherwise
+   */
+  public boolean hasEnoughGameData() {
+    if (this.gameData.getCategories().size() < minNumberOfCategories) {
+      return false;
+    }
+    if (this.gameData.getCategories().get(0).getQuestionsCount() < minNumberOfQuestions) {
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -307,7 +323,7 @@ public class GameDataService {
           // Stop on first error - no further questions for this category is defined.
         }
 
-        Category c = new Category(catName.trim(), index, questions);
+        Category c = new Category(catName.trim(), questions);
         categories.add(c);
       }
     } catch (ServiceException e) {

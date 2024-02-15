@@ -175,7 +175,7 @@ public class LandingUi extends JFrame {
     // Updating the game name label.
     GameDataService gameDataService = AppRegistry.getInstance().getGameDataService();
     GameData gameFileData = gameDataService.getGameData();
-    if (gameFileData.haveEnoughGameData()) {
+    if (gameDataService.hasEnoughGameData()) {
       this.currGameLabel.setText(gameFileData.getGameName());
       this.currGameLabel.setEnabled(true);
     } else {

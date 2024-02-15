@@ -32,9 +32,6 @@ public class Category implements HasName {
   /** Name of this category. */
   private final String name;
 
-  /** Index of this category. */
-  private final int index;
-
   /** List of questions for this category. */
   private final List<Question> questions;
 
@@ -44,12 +41,10 @@ public class Category implements HasName {
    * for every question on the passed list of questions.
    *
    * @param name category name
-   * @param index category index
    * @param questions list of questions for this category
    */
-  public Category(String name, int index, List<Question> questions) {
+  public Category(String name, List<Question> questions) {
     this.name = name;
-    this.index = index;
     this.questions = questions;
 
     for (Question q : questions) {

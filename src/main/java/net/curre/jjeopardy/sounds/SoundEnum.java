@@ -82,16 +82,8 @@ public enum SoundEnum {
    * Creates a new <code>SoundFileEnum</code>.
    * @param fileName filename to set
    */
-  private SoundEnum(String fileName) {
+  SoundEnum(String fileName) {
     this.fileName = fileName;
-  }
-
-  /**
-   * Gets the filename for this sound.
-   * @return filename for this sound
-   */
-  public String getFileName() {
-    return this.fileName;
   }
 
   /**
