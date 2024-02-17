@@ -16,45 +16,44 @@
 
 package net.curre.jjeopardy.event;
 
-import net.curre.jjeopardy.service.AppRegistry;
-
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 /**
- * Quit app action and a window listener to quit app on window close.
+ * Basic base action to use for button that support mouse click/action
+ * and key press (enter).
  *
  * @author Yevgeny Nyden
  */
-public class QuitAppAction extends AbstractAction implements WindowListener  {
+public abstract class ClickAndKeyAction extends AbstractAction implements KeyListener {
 
-  @Override
+  /** Handles the action */
+  protected abstract void handleAction();
+
+  /**
+   * Handles the mouse click action.
+   * @param e the event to be processed
+   */
   public void actionPerformed(ActionEvent e) {
-    AppRegistry.getInstance().getMainService().quitApp();
+    this.handleAction();
   }
 
   @Override
-  public void windowOpened(WindowEvent e) {}
+  public void keyTyped(KeyEvent e) {}
 
+  /**
+   * Handles the key press event and handles action when Enter is pressed.
+   * @param e the event to be processed
+   */
   @Override
-  public void windowClosing(WindowEvent e) {
-    AppRegistry.getInstance().getMainService().quitApp();
+  public void keyPressed(KeyEvent e) {
+    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+      this.handleAction();
+    }
   }
 
   @Override
-  public void windowClosed(WindowEvent e) {}
-
-  @Override
-  public void windowIconified(WindowEvent e) {}
-
-  @Override
-  public void windowDeiconified(WindowEvent e) {}
-
-  @Override
-  public void windowActivated(WindowEvent e) {}
-
-  @Override
-  public void windowDeactivated(WindowEvent e) {}
+  public void keyReleased(KeyEvent e) {}
 }

@@ -18,7 +18,7 @@ package net.curre.jjeopardy.event;
 
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.Registry;
-import net.curre.jjeopardy.ui.LandingUi;
+import net.curre.jjeopardy.ui.landing.LandingUi;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;

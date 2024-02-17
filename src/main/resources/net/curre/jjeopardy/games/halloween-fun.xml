@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<!-- Copyright - https://i.pinimg.com/736x/5c/aa/0d/5caa0dad0329eeaf6db7e454a9d2117b-halloween-games-halloween-activities.jpg -->
+<properties>
+    <entry key="game.name">JJeopardy - Fun Halloween</entry>
+
+    <entry key="question.1.points">100</entry>
+    <entry key="question.2.points">200</entry>
+    <entry key="question.3.points">300</entry>
+    <entry key="question.4.points">400</entry>
+    <entry key="question.5.points">500</entry>
+
+    <entry key="category.1.name">Fun and Trivia</entry>
+    <entry key="category.1.question.1">Spiders have 8 legs and 8 what?</entry>
+    <entry key="category.1.answer.1">Eyes</entry>
+    <entry key="category.1.question.2">What is Dr. Frankenstein's first name?</entry>
+    <entry key="category.1.answer.2">Victor</entry>
+    <entry key="category.1.question.3">The fear of Halloween is called what?</entry>
+    <entry key="category.1.answer.3">Samhinophobia</entry>
+    <entry key="category.1.question.4">The first jack o' lantern was carved from what vegetable?</entry>
+    <entry key="category.1.answer.4">Turnip</entry>
+    <entry key="category.1.question.5">What famous magician diad on Halloween in 1926?</entry>
+    <entry key="category.1.answer.5">Harry Houdini</entry>
+    <entry key="category.2.name">Traditions</entry>
+    <entry key="category.2.question.1">What day is Halloween?</entry>
+    <entry key="category.2.answer.1">October 31</entry>
+    <entry key="category.2.question.2">What colors do we wear on Halloween? Name two.</entry>
+    <entry key="category.2.answer.2">Orange and Black</entry>
+    <entry key="category.2.question.3">What country celebrates the "Day of the Dead"?</entry>
+    <entry key="category.2.answer.3">Mexico</entry>
+    <entry key="category.2.question.4">Where does Halloween come from? Name the country.</entry>
+    <entry key="category.2.answer.4">Ireland</entry>
+    <entry key="category.2.question.5">The Romans called Halloween "Pomona Day." She is the goddess of what?</entry>
+    <entry key="category.2.answer.5">Fruit or gardens</entry>
+    <entry key="category.3.name">Pumpkins</entry>
+    <entry key="category.3.question.1">What is the original purpose of aa jack o' lantern?</entry>
+    <entry key="category.3.answer.1">To ward of evil spirits</entry>
+    <entry key="category.3.question.2">Is a pumpkin a fruit or a vegetable?</entry>
+    <entry key="category.3.answer.2">Fruit</entry>
+    <entry key="category.3.question.3">Pumpkins grow on?</entry>
+    <entry key="category.3.answer.3">Vines</entry>
+    <entry key="category.3.question.4">In addition to orange, what other colors can a pumpkin be? Name at least one.</entry>
+    <entry key="category.3.answer.4">Green or white</entry>
+    <entry key="category.3.question.5">What do you call a carved pumpkin?</entry>
+    <entry key="category.3.answer.5">Jack-o-lantern</entry>
+    <entry key="category.4.name">Monsters</entry>
+    <entry key="category.4.question.1">What is the purpose of a ghoul?</entry>
+    <entry key="category.4.answer.1">To rob graves</entry>
+    <entry key="category.4.question.2">Name 3 scary characters.</entry>
+    <entry key="category.4.answer.2">Frankenstein, Dracula, witch, vampire, ghost, zombie, werewolf</entry>
+    <entry key="category.4.question.3">In 1962, a society was established for what well-known vampire?</entry>
+    <entry key="category.4.answer.3">Count Dracula</entry>
+    <entry key="category.4.question.4">On which continent are vampire bats found?</entry>
+    <entry key="category.4.answer.4">South America</entry>
+    <entry key="category.4.question.5">What is the name of Dracula's sidekick?</entry>
+    <entry key="category.4.answer.5">Renfield</entry>
+    <entry key="category.5.name">Candy</entry>
+    <entry key="category.5.question.1">What was the first wrapped penny candy in America?</entry>
+    <entry key="category.5.answer.1">Tootsie Rolls</entry>
+    <entry key="category.5.question.2">Halloween candy sales average about how much annually in the US?</entry>
+    <entry key="category.5.answer.2">$2 billion</entry>
+    <entry key="category.5.question.3">Which candy bar is listed as the most popular among trick or treaters?</entry>
+    <entry key="category.5.answer.3">Snickers</entry>
+    <entry key="category.5.question.4">What percentage of adults admit to sneaking candy from their kids?</entry>
+    <entry key="category.5.answer.4">90%</entry>
+    <entry key="category.5.question.5">What percentage of kids say they sort their candy when first getting home (not sharing/trading/etc)?</entry>
+    <entry key="category.5.answer.5">30%</entry>
+</properties>

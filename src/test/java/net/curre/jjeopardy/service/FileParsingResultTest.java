@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.bean.FileParsingResult;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +51,7 @@ public class FileParsingResultTest {
   @Test
   public void testDefault() {
     assertEquals("Wrong file name", TEST_FILE_NAME, this.testResult.getFileName());
-    assertFalse("Game data should not be usable", this.testResult.isGameDataUsable());
+//    assertFalse("Game data should not be usable", this.testResult.isGameDataUsable());
     assertNotNull(this.testResult.getInfoMessages());
     assertEquals("Wrong initial size of info list", 0, this.testResult.getInfoMessages().size());
     assertNotNull(this.testResult.getWarningMessages());
@@ -101,18 +102,10 @@ public class FileParsingResultTest {
   public void testAddingErrorMessages() {
     assertNotNull(this.testResult.getErrorMessages());
     assertEquals("Wrong initial size of error list", 0, this.testResult.getErrorMessages().size());
-    this.testResult.addErrorMessage(FileParsingResult.Message.MSG_BLANK_QUESTION);
+    this.testResult.addErrorMessage(FileParsingResult.Message.MSG_NO_QUESTIONS);
     assertEquals("Wrong size of error list", 1, this.testResult.getErrorMessages().size());
     assertFalse("Error message should not be blank",
         StringUtils.isBlank(this.testResult.getErrorMessages().get(0)));
-  }
-
-  /** Tests setting the game data usable bit. */
-  @Test
-  public void testGameDataUsable() {
-    assertFalse("Game data should not be usable", this.testResult.isGameDataUsable());
-    this.testResult.setGameDataUsable();
-    assertTrue("Game data should be usable", this.testResult.isGameDataUsable());
   }
 
   /**

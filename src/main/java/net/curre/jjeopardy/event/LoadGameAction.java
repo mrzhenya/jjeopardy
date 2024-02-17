@@ -16,8 +16,13 @@
 
 package net.curre.jjeopardy.event;
 
-import net.curre.jjeopardy.service.*;
-import net.curre.jjeopardy.ui.LandingUi;
+import net.curre.jjeopardy.bean.FileParsingResult;
+import net.curre.jjeopardy.bean.GameData;
+import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.GameDataService;
+import net.curre.jjeopardy.service.Registry;
+import net.curre.jjeopardy.service.SettingsService;
+import net.curre.jjeopardy.ui.landing.LandingUi;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -84,11 +89,12 @@ public class LoadGameAction extends AbstractAction implements KeyListener {
     if (result == JFileChooser.APPROVE_OPTION) {
       File selectedFile = fileChooser.getSelectedFile();
       GameDataService gameDataService = registry.getGameDataService();
-      FileParsingResult parsingResults = gameDataService.loadGameData(selectedFile.getAbsolutePath());
+      GameData gameData = gameDataService.parseGameData(selectedFile.getAbsolutePath());
+      FileParsingResult parsingResults = gameData.generateFileParsingResult();
       registry.getUiService().showParsingResult(parsingResults, this.landingUi);
 
-      if (parsingResults.isGameDataUsable()) {
-        // Game data is valid.
+      if (gameData.isGameDataUsable()) {
+        gameDataService.setCurrentGameData(gameData);
         this.landingUi.updateUiWithLoadedGameFile();
       }
     }

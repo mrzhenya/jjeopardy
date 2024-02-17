@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
-package net.curre.jjeopardy.util;
+package net.curre.jjeopardy.event;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertNotNull;
+import net.curre.jjeopardy.ui.landing.LandingUi;
 
 /**
- * Tests for the Utilities class.
+ * Action to handle switching to the Library view (card) and
+ * back to the background image on the Landing UI.
  *
  * @author Yevgeny Nyden
  */
-public class UtilitiesTest {
+public class ShowLibraryAction extends ClickAndKeyAction {
 
-  /** Initializes the state before each test run. */
-  @Before
-  public void init() {
+  /** Reference to the landing UI. */
+  private final LandingUi landingUi;
+
+  /**
+   * Ctor.
+   * @param landingUi reference to the landing UI
+   */
+  public ShowLibraryAction(LandingUi landingUi) {
+    this.landingUi = landingUi;
   }
 
-  /** Tests getPlatformType. */
-  @Test
-  public void testGetPlatformType() {
-    assertNotNull("Platform type should not be null", Utilities.getPlatformType());
+  @Override
+  protected void handleAction() {
+    this.landingUi.switchBetweenLibraryAndBackgroundCard();
   }
 }

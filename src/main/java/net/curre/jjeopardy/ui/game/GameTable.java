@@ -16,10 +16,10 @@
 
 package net.curre.jjeopardy.ui.game;
 
-import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.event.GameTableListener;
-import net.curre.jjeopardy.util.Utilities;
+import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.util.JjDefaults;
 
 import javax.swing.JTable;
 import javax.swing.ToolTipManager;
@@ -29,7 +29,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -47,35 +46,22 @@ public class GameTable extends JTable {
   /** Reference to the table cell renderer. */
   private final TableCellRenderer renderer;
 
-  /** Minimum table row height. */
-  private final int minRowHeight;
-
   /** Reference to the table data model. */
   private final GameTableModel model;
 
   /** Constructs a new game table. */
   public GameTable() {
-    // Loading essential default properties.
-    int rowHeight = 0, preferredHeaderHeight = 0, defaultTableWidth = 0, defaultTableHeight = 0;
-    try {
-      defaultTableWidth = Utilities.getDefaultIntProperty("jj.defaults.game.table.width");
-      defaultTableHeight = Utilities.getDefaultIntProperty("jj.defaults.game.table.height");
-      rowHeight = Utilities.getDefaultIntProperty("jj.defaults.min.row.height");
-      preferredHeaderHeight = Utilities.getDefaultIntProperty("jj.defaults.preferred.header.height");
-    } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Unable to initialize default properties", e);
-      System.exit(1);
-    }
-    this.minRowHeight = rowHeight;
+    LOGGER.info("Creating game table");
 
     // Initializing game data.
-    GameData data = AppRegistry.getInstance().getGameData();
+    GameData data = AppRegistry.getInstance().getGameDataService().getCurrentGameData();
     this.model = new GameTableModel(data);
     this.setModel(this.model);
 
     // Creating renderer and setting up the UI.
     this.renderer = new GameTableCellRenderer(this.model);
-    setPreferredScrollableViewportSize(new Dimension(defaultTableWidth, defaultTableHeight));
+    setPreferredScrollableViewportSize(
+        new Dimension(JjDefaults.GAME_TABLE_MIN_WIDTH, JjDefaults.GAME_TABLE_MIN_HEIGHT));
 
     resizeAndRefreshTable();
 
@@ -88,7 +74,8 @@ public class GameTable extends JTable {
     header.setReorderingAllowed(false);
     header.setResizingAllowed(false);
     header.setDefaultRenderer(new GameTableHeaderRenderer());
-    header.setPreferredSize(new Dimension(this.getColumnModel().getTotalColumnWidth(), preferredHeaderHeight));
+    header.setPreferredSize(
+        new Dimension(this.getColumnModel().getTotalColumnWidth(), JjDefaults.GAME_TABLE_HEADER_HEIGHT));
 
     // Adding resize and mouse-click listener.
     final GameTableListener gtListener = new GameTableListener(this);
@@ -121,7 +108,7 @@ public class GameTable extends JTable {
   public void resizeAndRefreshTable() {
     final double rowNum = this.model.getRowCount();
     final double height = this.getSize().getHeight() / rowNum;
-    final double heightToSet = Math.max(height, this.minRowHeight);
+    final double heightToSet = Math.max(height, JjDefaults.GAME_TABLE_MIN_ROW_HEIGHT);
     for (int i = 0; i < rowNum; ++i) {
       setRowHeight(i, (int) heightToSet);
     }

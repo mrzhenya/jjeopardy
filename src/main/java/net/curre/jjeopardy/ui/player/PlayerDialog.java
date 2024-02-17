@@ -18,13 +18,19 @@ package net.curre.jjeopardy.ui.player;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.Registry;
-import net.curre.jjeopardy.ui.LandingUi;
+import net.curre.jjeopardy.ui.landing.LandingUi;
+import net.curre.jjeopardy.util.JjDefaults;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.WindowConstants;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -70,11 +76,11 @@ public class PlayerDialog extends JDialog {
   }
 
   /**
-   * Updates the players pane with the player loaded from a game file.
-   * @param playersNames list of player names
+   * Updates the players pane.
+   * @param players list of players
    */
-  public void updatePlayersPane(List<String> playersNames) {
-    this.playersPane.updatePlayersPane(playersNames);
+  public void updatePlayersPane(List<Player> players) {
+    this.playersPane.updatePlayersPane(players);
   }
 
   /**
@@ -157,18 +163,18 @@ public class PlayerDialog extends JDialog {
 
       PlayerDialog.this.playersPane.cleanEmptyPlayers();
       List<String> playerNames = playersPane.getPlayerNames();
-      if (playerNames.size() < gameService.getMinNumberOfPlayers()) {
+      if (playerNames.size() < JjDefaults.MIN_NUMBER_OF_PLAYERS) {
         LOGGER.info("Not enough non-blank player names");
         PlayerDialog.this.setVisible(false);
         registry.getUiService().showWarningDialog(
-          LocaleService.getString("jj.playerdialog.addplayers.warn.title"),
-          LocaleService.getString("jj.playerdialog.addplayers.warn.msg",
-                  String.valueOf(gameService.getMinNumberOfPlayers())),
-          PlayerDialog.this);
+            LocaleService.getString("jj.playerdialog.addplayers.warn.title"),
+            LocaleService.getString("jj.playerdialog.addplayers.warn.msg",
+                String.valueOf(JjDefaults.MIN_NUMBER_OF_PLAYERS)),
+            PlayerDialog.this);
         PlayerDialog.this.setVisible(true);
         return;
       }
-      gameService.updatePlayersFromNames(playerNames);
+      gameService.updateCurrentPlayers(playerNames);
       PlayerDialog.this.landingUi.updateLandingUi();
       PlayerDialog.this.setVisible(false);
     }

@@ -174,7 +174,7 @@ public class QuestionDialog extends JDialog {
   public void startAskingBonusQuestions() {
     this.currBonusPlayerIndex = 0;
     GameDataService gameService = AppRegistry.getInstance().getGameDataService();
-    this.currBonusQuestions = new ArrayList<>(gameService.getGameData().getBonusQuestions());
+    this.currBonusQuestions = new ArrayList<>(gameService.getCurrentGameData().getBonusQuestions());
     this.askBonusQuestion(this.currBonusPlayerIndex);
   }
 
@@ -194,7 +194,7 @@ public class QuestionDialog extends JDialog {
    */
   private void askBonusQuestion(final int playerIndex) {
     GameDataService gameService = AppRegistry.getInstance().getGameDataService();
-    List<Player> players = gameService.getPlayers();
+    List<Player> players = gameService.getCurrentPlayers();
     if (playerIndex >= players.size() || this.currBonusQuestions.isEmpty()) {
       this.setVisible(false);
       return;
@@ -202,7 +202,7 @@ public class QuestionDialog extends JDialog {
     Random random = new Random();
     Question question = this.currBonusQuestions.get(random.nextInt(this.currBonusQuestions.size()));
     this.currBonusQuestions.remove(question);
-    question.setParentWithName(gameService.getPlayers().get(playerIndex));
+    question.setParentWithName(gameService.getCurrentPlayers().get(playerIndex));
 
     // Setting the title.
     this.titlePanel.updateTitle(question);

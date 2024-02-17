@@ -16,11 +16,14 @@
 
 package net.curre.jjeopardy.bean;
 
+import net.curre.jjeopardy.service.LocaleService;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.curre.jjeopardy.bean.FileParsingResult.Message.*;
 import static org.junit.Assert.*;
 
 /**
@@ -33,7 +36,8 @@ public class GameDataTest {
   /** Tests initialization of the default object state. */
   @Test
   public void testDefault() {
-    GameData data = new GameData();
+    GameData data = new GameData("TestFileName");
+    assertEquals("Wrong file name", "TestFileName", data.getFileName());
     assertNull("Game name should not be set", data.getGameName());
     assertNotNull("List of categories should not be null", data.getCategories());
     assertEquals("Wrong size of categories list", 0, data.getCategories().size());
@@ -42,17 +46,28 @@ public class GameDataTest {
     assertNotNull("List of bonus questions should not be null", data.getBonusQuestions());
     assertEquals("Wrong size of bonus questions list", 0, data.getBonusQuestions().size());
     assertFalse("Should not have unanswered bonus questions", data.bonusQuestionsHaveBeenAsked());
+    assertFalse("Game data should not be usable", data.isGameDataUsable());
+    assertFalse("Should not be enough players", data.hasEnoughPlayers());
   }
 
-  /** Tests updateGameData. */
+  /** Tests setGameName. */
   @Test
-  public void testUpdateGameData() {
-    GameData data = new GameData();
+  public void testSetGameName() {
+    GameData data = new GameData("");
+    assertNull(data.getGameName());
+    data.setGameName("TestName");
+    assertEquals("Wrong game name", "TestName", data.getGameName());
+  }
+
+  /** Tests setCategories. */
+  @Test
+  public void testSetCategories() {
+    GameData data = new GameData("");
     List<Category> categories = new ArrayList<>();
     categories.add(createTestCategory("Category 1"));
     categories.add(createTestCategory("Category 2"));
     categories.add(createTestCategory("Category 3"));
-    data.updateGameData("TestName", categories);
+    data.setCategories(categories);
 
     List<Category> categoriesAfter = data.getCategories();
     assertNotNull("List of categories should not be null", categoriesAfter);
@@ -63,18 +78,16 @@ public class GameDataTest {
     assertEquals("Wrong questions count", 3, categoriesAfter.get(1).getQuestionsCount());
     assertEquals("Wrong name", "Category 3", categoriesAfter.get(2).getName());
     assertEquals("Wrong questions count", 3, categoriesAfter.get(2).getQuestionsCount());
-
-    assertEquals("Wrong game name", "TestName", data.getGameName());
   }
 
   /** Tests updateBonusQuestions and related logic. */
   @Test
   public void testPlayers() {
-    GameData data = new GameData();
+    GameData data = new GameData("");
     List<String> playerNames = new ArrayList<>();
     playerNames.add("One");
     playerNames.add("Two");
-    data.updatePlayersNames(playerNames);
+    data.setPlayersNames(playerNames);
 
     List<String> playerNamesAfter = data.getPlayerNames();
     assertNotNull("Player names list is null", playerNamesAfter);
@@ -85,7 +98,7 @@ public class GameDataTest {
     // Updating player should reset the previous players list.
     List<String> newPlayerNames = new ArrayList<>();
     newPlayerNames.add("Three");
-    data.updatePlayersNames(newPlayerNames);
+    data.setPlayersNames(newPlayerNames);
     assertNotNull("Player names list is null", data.getPlayerNames());
     assertEquals("Wrong player names list size", 1, data.getPlayerNames().size());
     assertEquals("Wrong player 0 name", "Three", data.getPlayerNames().get(0));
@@ -94,11 +107,11 @@ public class GameDataTest {
   /** Tests updateBonusQuestions and related logic. */
   @Test
   public void testBonusQuestions() {
-    GameData data = new GameData();
+    GameData data = new GameData("");
     assertFalse("There should be no bonus questions", data.bonusQuestionsHaveBeenAsked());
 
-    List<Question> questions = createTestQuestions();
-    data.updateBonusQuestions(questions);
+    List<Question> questions = createTestQuestions(3);
+    data.setBonusQuestions(questions);
 
     List<Question> questionsAfter = data.getBonusQuestions();
     assertNotNull("List of bonus questions should not be null", questionsAfter);
@@ -114,35 +127,245 @@ public class GameDataTest {
     assertFalse("There should be no bonus questions", data.bonusQuestionsHaveBeenAsked());
   }
 
+  /** Tests isGameDataUsable. */
+  @Test
+  public void testIsGameDataUsable() {
+    GameData data = new GameData("");
+    assertFalse("Game data should not be usable", data.isGameDataUsable());
+    data.setFileDataAcquired();
+    assertFalse("Game data should not be usable", data.isGameDataUsable());
+    data.setGameName("TestName");
+    assertFalse("Game data should not be usable", data.isGameDataUsable());
+    data.setGameDescription("Some description");
+    assertFalse("Game data should not be usable", data.isGameDataUsable());
+    List<Category> categories = new ArrayList<>();
+    categories.add(createTestCategory("Category 1"));
+    data.setCategories(categories);
+    assertFalse("Game data should not be usable", data.isGameDataUsable());
+    categories.add(createTestCategory("Category 2"));
+    categories.add(createTestCategory("Category 3"));
+    data.setCategories(categories);
+    assertTrue("Game data should be usable", data.isGameDataUsable());
+  }
+
+  /** Tests isPlayersValid with null argument. */
+  @Test
+  public void testPlayersValid() {
+    GameData data = new GameData("");
+    assertTrue("Players data considered valid with 0 players", data.isPlayersValid(null));
+    List<String> players = new ArrayList<>();
+    players.add("One");
+    data.setPlayersNames(players);
+    assertFalse("Players data should not be valid with 1 player", data.isPlayersValid(null));
+    players.add("Two");
+    players.add("Three");
+    data.setPlayersNames(players);
+    assertTrue("Players data should be valid", data.isPlayersValid(null));
+  }
+
+  /** Tests hasEnoughPlayers. */
+  @Test
+  public void testHasEnoughPlayers() {
+    GameData data = new GameData("");
+    assertFalse("Should not have enough players for a game", data.hasEnoughPlayers());
+    List<String> players = new ArrayList<>();
+    players.add("One");
+    data.setPlayersNames(players);
+    assertFalse("Should not have enough players for a game", data.hasEnoughPlayers());
+    players.add("Two");
+    players.add("Three");
+    data.setPlayersNames(players);
+    assertTrue("Should have enough players for a game", data.hasEnoughPlayers());
+  }
+
   /** Tests resetGameData. */
   @Test
   public void testReset() {
-    GameData data = new GameData();
-
     // Adding questions and "asking" one.
-    List<Category> categories = new ArrayList<>();
-    categories.add(createTestCategory("Category 1"));
-    categories.add(createTestCategory("Category 2"));
-    categories.add(createTestCategory("Category 3"));
-    data.updateGameData("TestName", categories);
-    List<Category> categoriesAfter = data.getCategories();
-    Question question = categoriesAfter.get(1).getQuestion(1);
+    GameData data = createMinViableTestGameData();
+    List<Category> categories = data.getCategories();
+    Question question = categories.get(1).getQuestion(1);
     question.setHasBeenAsked();
 
     // Adding bonus questions and "aAsking" one.
-    List<Question> questions = createTestQuestions();
-    data.updateBonusQuestions(questions);
+    List<Question> questions = createTestQuestions(3);
+    data.setBonusQuestions(questions);
     questions = data.getBonusQuestions();
     questions.get(1).setHasBeenAsked();
 
     data.resetGameData();
 
-    categoriesAfter = data.getCategories();
-    question = categoriesAfter.get(1).getQuestion(1);
+    categories = data.getCategories();
+    question = categories.get(1).getQuestion(1);
     assertFalse("Question should not have been asked", question.isHasBeenAsked());
 
     questions = data.getBonusQuestions();
     assertFalse("Bonus question should not have been asked", questions.get(1).isHasBeenAsked());
+  }
+
+  /** Tests generateFileParsingResult with empty data. */
+  @Test
+  public void testGenerateFileParsingResultWithEmptyData() {
+    GameData data = new GameData("");
+    FileParsingResult result = data.generateFileParsingResult();
+    assertResultMessageNumbers(result, 1, 0, 0);
+    assertFalse("Short result message should not be blank", StringUtils.isBlank(result.getResulTitleShort()));
+    assertFalse("Long result message should not be blank", StringUtils.isBlank(result.getResulTitleLong()));
+  }
+
+  /** Tests generateFileParsingResult with a valid data. */
+  @Test
+  public void testGenerateFileParsingResultWithMinValid() {
+    GameData data = createMinViableTestGameData();
+    FileParsingResult result = data.generateFileParsingResult();
+    assertResultMessageNumbers(result, 0, 0, 3);
+    assertThreeInfoMessages(result.getInfoMessages(), 3, 3, 0, 0);
+  }
+
+  /** Tests generateFileParsingResult with valid data and players. */
+  @Test
+  public void testGenerateFileParsingResultWithValidWithPlayer() {
+    GameData data = createMinViableTestGameData();
+    data.setPlayersNames(createTestPlayerNames(3));
+    FileParsingResult result = data.generateFileParsingResult();
+    assertResultMessageNumbers(result, 0, 0, 3);
+    assertThreeInfoMessages(result.getInfoMessages(), 3, 3, 3, 0);
+  }
+
+  /** Tests generateFileParsingResult with valid data and players and bonus questions. */
+  @Test
+  public void testGenerateFileParsingResultWithValidWithPlayerAndBonusQuestions() {
+    GameData data = createMinViableTestGameData();
+    data.setPlayersNames(createTestPlayerNames(3));
+    data.setBonusQuestions(createTestQuestions(6));
+    FileParsingResult result = data.generateFileParsingResult();
+    assertResultMessageNumbers(result, 0, 0, 3);
+    assertThreeInfoMessages(result.getInfoMessages(), 3, 3, 3, 6);
+  }
+
+  /** Tests generateFileParsingResult with valid data and not enough players. */
+  @Test
+  public void testGenerateFileParsingResultWithValidNotEnoughPlayers() {
+    GameData data = createMinViableTestGameData();
+    data.setPlayersNames(createTestPlayerNames(1));
+    FileParsingResult result = data.generateFileParsingResult();
+    assertResultMessageNumbers(result, 0, 1, 2);
+  }
+
+  /** Tests generateFileParsingResult with valid data and too many players. */
+  @Test
+  public void testGenerateFileParsingResultWithValidTooManyPlayers() {
+    GameData data = createMinViableTestGameData();
+    data.setPlayersNames(createTestPlayerNames(10));
+    FileParsingResult result = data.generateFileParsingResult();
+    assertResultMessageNumbers(result, 0, 1, 3);
+  }
+
+  /** Tests generateFileParsingResult with valid data and not enough bonus questions. */
+  @Test
+  public void testGenerateFileParsingResultWithValidNotEnoughBonusQuestions() {
+    GameData data = createMinViableTestGameData();
+    data.setBonusQuestions(createTestQuestions(1));
+    FileParsingResult result = data.generateFileParsingResult();
+    assertResultMessageNumbers(result, 0, 1, 2);
+  }
+
+  /** Tests generateFileParsingResult with valid data and too many bonus questions. */
+  @Test
+  public void testGenerateFileParsingResultWithValidTooManyBonusQuestions() {
+    GameData data = createMinViableTestGameData();
+    data.setBonusQuestions(createTestQuestions(30));
+    FileParsingResult result = data.generateFileParsingResult();
+    assertResultMessageNumbers(result, 0, 1, 3);
+  }
+
+  /**
+   * Asserts result message counts.
+   * @param result result object to test
+   * @param errorsCount expected number of error messages
+   * @param warningsCount expected number of warning messages
+   * @param infoCount expected number of informational messages
+   */
+  private static void assertResultMessageNumbers(FileParsingResult result,
+                                                 int errorsCount, int warningsCount, int infoCount) {
+    List<String> messages = result.getErrorMessages();
+    assertNotNull("Error messages list should not be null", messages);
+    assertEquals("Wrong number of error messages", errorsCount, messages.size());
+    messages = result.getWarningMessages();
+    assertNotNull("Warning messages list should not be null", messages);
+    assertEquals("Wrong number of warning messages", warningsCount, messages.size());
+    messages = result.getInfoMessages();
+    assertNotNull("Info messages list should not be null", messages);
+    assertEquals("Wrong number of informational messages", infoCount, messages.size());
+    for (int ind = 0; ind < infoCount; ind++) {
+      assertFalse("Info message " + ind + " should not be blank", StringUtils.isBlank(messages.get(ind)));
+    }
+  }
+
+  /**
+   * Asserts typical 3 info messages.
+   * @param infoMessages info messages to validate
+   * @param questionsCount expected total questions count
+   * @param categoriesCount expected categories count
+   * @param playersCount expected players count
+   * @param bonusQuestionsCount expected bonus question count
+   */
+  private static void assertThreeInfoMessages(
+      List<String> infoMessages, int questionsCount, int categoriesCount, int playersCount, int bonusQuestionsCount) {
+    assertGeneralInfoMessage(infoMessages.get(0), questionsCount, categoriesCount);
+    assertBonusQuestionsInfoMessage(infoMessages.get(1), bonusQuestionsCount);
+    assertPlayersInfoMessage(infoMessages.get(2), playersCount);
+  }
+
+  /**
+   * Asserts parsed players info message.
+   * @param message message to test
+   * @param questionsCount expected total questions count
+   * @param categoriesCount expected categories count
+   */
+  private static void assertGeneralInfoMessage(String message, int questionsCount, int categoriesCount) {
+    assertEquals("Wrong questions info message",
+        LocaleService.getString(MSG_QUESTIONS_PARSED.getPropertyName(),
+            String.valueOf(questionsCount), String.valueOf(categoriesCount)),
+        message);
+  }
+
+  /**
+   * Asserts parsed players info message.
+   * @param message message to test
+   * @param playersCount expected players count
+   */
+  private static void assertPlayersInfoMessage(String message, int playersCount) {
+    assertEquals("Wrong players info message",
+        LocaleService.getString(MSG_PLAYERS_PARSED.getPropertyName(), String.valueOf(playersCount)),
+        message);
+  }
+
+  /**
+   * Asserts parsed bonus questions info message.
+   * @param message message to test
+   * @param bonusQuestionsCount expected bonus question count
+   */
+  private static void assertBonusQuestionsInfoMessage(String message, int bonusQuestionsCount) {
+    assertEquals("Wrong bonus questions info message",
+        LocaleService.getString(MSG_BONUS_QUESTIONS_PARSED.getPropertyName(), String.valueOf(bonusQuestionsCount)),
+        message);
+  }
+
+  /**
+   * Creates minimally viable test game data.
+   * @return game data to test
+   */
+  private static GameData createMinViableTestGameData() {
+    GameData data = new GameData("TestFilename");
+    data.setGameName("TestName");
+    List<Category> categories = new ArrayList<>();
+    categories.add(createTestCategory("Category 1"));
+    categories.add(createTestCategory("Category 2"));
+    categories.add(createTestCategory("Category 3"));
+    data.setCategories(categories);
+    data.setFileDataAcquired();
+    return data;
   }
 
   /**
@@ -151,18 +374,32 @@ public class GameDataTest {
    * @return a new category object
    */
   private static Category createTestCategory(String name) {
-    return new Category(name, createTestQuestions());
+    return new Category(name, createTestQuestions(3));
   }
 
   /**
    * Creates test questions list.
+   * @param count number of questions to create
    * @return a list of test questions.
    */
-  private static List<Question> createTestQuestions() {
+  private static List<Question> createTestQuestions(int count) {
     List<Question> questions = new ArrayList<>();
-    questions.add(new Question("", "", 0));
-    questions.add(new Question("", "", 0));
-    questions.add(new Question("", "", 0));
+    for (int i = 0; i < count; i++) {
+      questions.add(new Question("", "", 0));
+    }
     return questions;
+  }
+
+  /**
+   * Creates test player names list.
+   * @param count number player names to create
+   * @return player names list
+   */
+  private List<String> createTestPlayerNames(int count) {
+    List<String> playerNames = new ArrayList<>();
+    for (int i = 0; i < count; i++) {
+      playerNames.add(String.valueOf(i + 1));
+    }
+    return playerNames;
   }
 }

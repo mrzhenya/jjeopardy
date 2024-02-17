@@ -20,7 +20,7 @@ import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
-import net.curre.jjeopardy.ui.LandingUi;
+import net.curre.jjeopardy.ui.landing.LandingUi;
 
 import javax.swing.SwingUtilities;
 import java.util.logging.Logger;

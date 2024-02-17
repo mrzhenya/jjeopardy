@@ -50,7 +50,7 @@ public class PlayerScoresPanel extends JPanel {
    */
   public void prepareGame() {
     this.removeAll();
-    List<Player> players = AppRegistry.getInstance().getGameDataService().getPlayers();
+    List<Player> players = AppRegistry.getInstance().getGameDataService().getCurrentPlayers();
     final int playersCount = players.size();
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int padding = lafTheme.getPanelPadding();
@@ -84,7 +84,7 @@ public class PlayerScoresPanel extends JPanel {
    * Updates the players' scores.
    */
   public void updateScores() {
-    List<Player> players = AppRegistry.getInstance().getGameDataService().getPlayers();
+    List<Player> players = AppRegistry.getInstance().getGameDataService().getCurrentPlayers();
     for (int index = 0; index < players.size(); index++) {
       Player player = players.get(index);
       String score = String.valueOf(player.getScore());

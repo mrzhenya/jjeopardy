@@ -112,7 +112,7 @@ public class SettingsServiceTest {
    * @param settingsFilePath test settings file path
    */
   private static void persistTestSettings(String settingsFilePath) {
-    Settings settings = new Settings(0, 0);
+    Settings settings = new Settings();
     settings.setLastCurrentDirectory(DEFAULT_LAST_CURRENT_DIR);
     settings.setGameWindowHeight(DEFAULT_MAIN_FRAME_HEIGHT);
     settings.setGameWindowWidth(DEFAULT_MAIN_FRAME_WIDTH);

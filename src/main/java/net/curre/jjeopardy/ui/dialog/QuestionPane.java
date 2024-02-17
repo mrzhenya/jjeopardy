@@ -252,7 +252,7 @@ public class QuestionPane extends JPanel {
         TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED}, // columns
       {TableLayout.FILL}})); // rows
 
-    List<Player> players = AppRegistry.getInstance().getGameDataService().getPlayers();
+    List<Player> players = AppRegistry.getInstance().getGameDataService().getCurrentPlayers();
     for (int index = 0; index < players.size(); index++) {
       Player player = players.get(index);
       JPanel aPanel = this.createYesNoAnswerPanel(player);

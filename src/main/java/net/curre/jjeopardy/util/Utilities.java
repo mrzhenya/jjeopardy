@@ -16,7 +16,7 @@
 
 package net.curre.jjeopardy.util;
 
-import java.util.ResourceBundle;
+import org.apache.commons.lang3.RegExUtils;
 
 /**
  * A set of common utilities.
@@ -28,16 +28,6 @@ public class Utilities {
   /** Enumeration tha represents a platform/os type. */
   public enum PlatformType {
     MAC_OS, LINUX, WINDOWS, UNKNOWN
-  }
-
-  /**
-   * Gets a default int property value for the given message name.
-   * @param messageName message name
-   * @return default int property value
-   */
-  public static int getDefaultIntProperty(String messageName) {
-    ResourceBundle bundle = ResourceBundle.getBundle("default");
-    return Integer.parseInt(bundle.getString(messageName).trim());
   }
 
   /**
@@ -66,5 +56,9 @@ public class Utilities {
       }
     }
     return PlatformType.MAC_OS;
+  }
+
+  public static String removeExtraWhitespace(String propStr) {
+    return RegExUtils.replacePattern(propStr, "\\s\\s+", " ");
   }
 }

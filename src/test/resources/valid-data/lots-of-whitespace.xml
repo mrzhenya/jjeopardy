@@ -16,16 +16,21 @@
 
     <entry key="category.1.name">Category 1  </entry>
     <entry key="category.1.question.1">Category 1, question 1   </entry>
-    <entry key="category.1.answer.1">Category 1, answer 1</entry>
+    <entry key="category.1.answer.1">Category 1,           answer 1</entry>
     <entry key="category.1.question.2">   Category 1, question 2</entry>
     <entry key="category.1.answer.2">Category 1, answer 2</entry>
     <entry key="category.1.question.3">   Category 1, question 3   </entry>
     <entry key="category.1.answer.3">Category 1, answer 3</entry>
 
     <entry key="category.2.name">    Category 2</entry>
-    <entry key="category.2.question.1">Category 2, question 1</entry>
-    <entry key="category.2.answer.1">Category 2, answer 1   </entry>
-    <entry key="category.2.question.2">Category 2, question 2</entry>
+    <entry key="category.2.question.1">
+        Category 2, question 1
+    </entry>
+    <entry key="category.2.answer.1">
+        Category 2,
+        answer 1
+    </entry>
+    <entry key="category.2.question.2">Category 2,      question 2</entry>
     <entry key="category.2.answer.2">   Category 2, answer 2</entry>
     <entry key="category.2.question.3">Category 2, question 3</entry>
     <entry key="category.2.answer.3">   Category 2, answer 3      </entry>

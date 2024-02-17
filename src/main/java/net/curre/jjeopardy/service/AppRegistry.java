@@ -16,8 +16,7 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.bean.GameData;
-import net.curre.jjeopardy.ui.LandingUi;
+import net.curre.jjeopardy.ui.landing.LandingUi;
 import net.curre.jjeopardy.ui.dialog.QuestionDialog;
 import net.curre.jjeopardy.ui.game.MainWindow;
 
@@ -142,12 +141,6 @@ public class AppRegistry implements Registry {
   @Override
   public LafService getLafService() {
     return this.lafService;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public GameData getGameData() {
-    return this.gameDataService.getGameData();
   }
 
   /** {@inheritDoc} */

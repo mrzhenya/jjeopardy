@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package net.curre.jjeopardy.service;
+package net.curre.jjeopardy.bean;
+
+import net.curre.jjeopardy.service.LocaleService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,29 +36,17 @@ public class FileParsingResult {
     /** Error of opening or parsing a file. */
     MSG_PARSING("jj.file.msg.error.parsing"),
 
-    /** Blank game name error. */
-    MSG_BLANK_NAME("jj.file.msg.error.name.blank"),
-
-    /** Name is not specified error. */
-    MSG_NAME_NOT_FOUND("jj.file.msg.error.name.notfound"),
+    /** Game name missing error. */
+    MSG_MISSING_NAME("jj.file.msg.error.name.blank"),
 
     /** Blank category name error. */
     MSG_BLANK_CATEGORY_NAME("jj.file.msg.error.category.name.empty"),
-
-    /** Blank question error. */
-    MSG_BLANK_QUESTION("jj.file.msg.error.question.empty"),
-
-    /** Blank question error. */
-    MSG_BLANK_ANSWER("jj.file.msg.error.answer.empty"),
 
     /** Empty categories error. */
     MSG_NO_CATEGORIES("jj.file.msg.error.categories.empty"),
 
     /** Not enough categories error. */
     MSG_NOT_ENOUGH_CATEGORIES("jj.file.msg.error.categories.notenough"),
-
-    /** Too many categories error. */
-    MSG_TOO_MANY_CATEGORIES("jj.file.msg.error.categories.toomany"),
 
     /** Not matching number of questions for a category. */
     MSG_NOT_MATCHING_QUESTIONS("jj.file.msg.error.questions.number"),
@@ -67,12 +57,6 @@ public class FileParsingResult {
     /** Not enough questions are parsed. */
     MSG_NOT_ENOUGH_QUESTIONS("jj.file.msg.error.questions.notenough"),
 
-    /** Too many questions are parsed. */
-    MSG_TOO_MANY_QUESTIONS("jj.file.msg.error.questions.toomany"),
-
-    /** Blank player name warning message. */
-    MSG_BLANK_PLAYER_NAME("jj.file.msg.error.player.blankname"),
-
     /** Not enough players warning message. */
     MSG_TOO_FEW_PLAYERS("jj.file.msg.warn.player.toofew"),
 
@@ -81,6 +65,15 @@ public class FileParsingResult {
 
     /** Not enough bonus questions warning message. */
     MSG_TOO_FEW_BONUS_QUESTIONS("jj.file.msg.warn.bonusquestions.toofew"),
+
+    /** Too many bonus questions warning message. */
+    MSG_TOO_MANY_BONUS_QUESTIONS("jj.file.msg.warn.bonusquestions.toomany"),
+
+    /** Too many categories warning. */
+    MSG_TOO_MANY_CATEGORIES("jj.file.msg.warn.categories.toomany"),
+
+    /** Too many questions are parsed warning. */
+    MSG_TOO_MANY_QUESTIONS("jj.file.msg.warn.questions.toomany"),
 
     /** Number of parsed questions and categories informational message. */
     MSG_QUESTIONS_PARSED("jj.file.msg.info.questions"),
@@ -111,6 +104,9 @@ public class FileParsingResult {
     }
   }
 
+  /** Game file data (game name, questions, categories, and optional players). */
+  private GameData gameData;
+
   /** Name of the file that's being parsed. */
   private final String fileName;
 
@@ -139,6 +135,22 @@ public class FileParsingResult {
   }
 
   /**
+   * Gets the game data corresponding to this parsing result.
+   * @return game data
+   */
+  public GameData getGameData() {
+    return this.gameData;
+  }
+
+  /**
+   * Sets the game data
+   * @param gameData game data for this parsing result
+   */
+  public void setGameData(GameData gameData) {
+    this.gameData = gameData;
+  }
+
+  /**
    * Gets the filename that's being parsed.
    * @return filename
    */
@@ -147,15 +159,8 @@ public class FileParsingResult {
   }
 
   /**
-   * Determines if the parsed data is usable.
-   * @return true if the parsed data is usable
-   */
-  public boolean isGameDataUsable() {
-    return gameDataUsable;
-  }
-
-  /**
-   * Sets the parsing success.
+   * Sets the 'usable data' bit to indicate that the game data is overall usable
+   * (game has a name and enough categories/questions to play).
    */
   public void setGameDataUsable() {
     this.gameDataUsable = true;

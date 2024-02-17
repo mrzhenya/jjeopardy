@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.bean.FileParsingResult;
 import net.curre.jjeopardy.ui.dialog.ConfirmDialog;
 import net.curre.jjeopardy.ui.dialog.ParsingResultDialog;
 import org.apache.commons.lang3.StringUtils;

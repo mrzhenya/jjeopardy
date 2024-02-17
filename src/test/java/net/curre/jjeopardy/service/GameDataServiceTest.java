@@ -28,7 +28,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.curre.jjeopardy.service.FileParsingResult.Message.*;
 import static org.junit.Assert.*;
 
 /**
@@ -63,19 +62,10 @@ public class GameDataServiceTest {
   @Test
   public void initialRun() {
     assertFalse("Game should not be ready", this.testGameService.isGameReady());
-    List<Player> players = this.testGameService.getPlayers();
+    List<Player> players = this.testGameService.getCurrentPlayers();
     assertNotNull("List of players should not be null", players);
     assertEquals("Players list should be empty", 0, players.size());
-
-    GameData gameData = this.testGameService.getGameData();
-    assertNotNull("Game data should not be null", gameData);
-    assertNull("Game name should not be set", gameData.getGameName());
-    assertNotNull("List of players should not be null", gameData.getPlayerNames());
-    assertTrue("List of players should be empty", gameData.getPlayerNames().isEmpty());
-    assertNotNull("List of categories should not be null", gameData.getCategories());
-    assertTrue("List of categories should be empty", gameData.getCategories().isEmpty());
-    assertNotNull("List of bonus questions should not be null", gameData.getBonusQuestions());
-    assertTrue("List of bonus questions should be empty", gameData.getBonusQuestions().isEmpty());
+    assertFalse("There should be no game data", this.testGameService.hasCurrentGameData());
   }
 
   /**
@@ -84,8 +74,8 @@ public class GameDataServiceTest {
   @Test
   public void testUpdatePlayersFromNames() {
     List<String> playerNames = createDefaultPlayers();
-    this.testGameService.updatePlayersFromNames(playerNames);
-    List<Player> players = this.testGameService.getPlayers();
+    this.testGameService.updateCurrentPlayers(playerNames);
+    List<Player> players = this.testGameService.getCurrentPlayers();
     assertNotNull("List of players should not be null", players);
     assertEquals("Wrong number of players", 3, players.size());
     assertPlayer("Wrong player 0", players.get(0), 0, "One", 0);
@@ -96,8 +86,8 @@ public class GameDataServiceTest {
     // This should reset the players.
     playerNames = new ArrayList<>();
     playerNames.add("Four");
-    this.testGameService.updatePlayersFromNames(playerNames);
-    players = this.testGameService.getPlayers();
+    this.testGameService.updateCurrentPlayers(playerNames);
+    players = this.testGameService.getCurrentPlayers();
     assertNotNull("List of players should not be null", players);
     assertEquals("Wrong number of players", 1, players.size());
     assertPlayer("Wrong player 0", players.get(0), 0, "Four", 0);
@@ -109,11 +99,11 @@ public class GameDataServiceTest {
   @Test
   public void testAdjustingPlayerScores() {
     List<String> playerNames = createDefaultPlayers();
-    this.testGameService.updatePlayersFromNames(playerNames);
+    this.testGameService.updateCurrentPlayers(playerNames);
     this.testGameService.addToPlayerScore(2, 222);
     this.testGameService.addToPlayerScore(1, 111);
     this.testGameService.addToPlayerScore(0, 0);
-    List<Player> players = this.testGameService.getPlayers();
+    List<Player> players = this.testGameService.getCurrentPlayers();
     assertPlayer("Wrong player 0", players.get(0), 0, "One", 0);
     assertPlayer("Wrong player 1", players.get(1), 1, "Two", 111);
     assertPlayer("Wrong player 2", players.get(2), 2, "Three", 222);
@@ -126,7 +116,7 @@ public class GameDataServiceTest {
 
     // Testing full scores reset.
     this.testGameService.resetPlayerScores();
-    players = this.testGameService.getPlayers();
+    players = this.testGameService.getCurrentPlayers();
     assertPlayer("Wrong player 0", players.get(0), 0, "One", 0);
     assertPlayer("Wrong player 1", players.get(1), 1, "Two", 0);
     assertPlayer("Wrong player 2", players.get(2), 2, "Three", 0);
@@ -138,7 +128,7 @@ public class GameDataServiceTest {
   @Test
   public void testWinnerPlayer() {
     List<String> playerNames = createDefaultPlayers();
-    this.testGameService.updatePlayersFromNames(playerNames);
+    this.testGameService.updateCurrentPlayers(playerNames);
     this.testGameService.addToPlayerScore(1, 101);
     assertPlayer("Wrong winner 1", this.testGameService.getWinner(), 1, "Two", 101);
 
@@ -154,83 +144,60 @@ public class GameDataServiceTest {
    */
   @Test
   public void testLoadGameDataValidDefault() {
-    FileParsingResult result = loadGameTestFile(PATH_VALID + "default.xml");
-    assertTrue("Game data should be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 0, 0, 3);
-    assertThreeInfoMessages(result.getInfoMessages(), 3, 9, 0, 0);
-
+    GameData gameData = loadGameTestFile(PATH_VALID + "default.xml");
     assertEquals("Wrong file name",
-            new File(PATH_VALID + "default.xml").getAbsolutePath(), result.getFileName());
-    assertFalse("Short result message should not be blank", StringUtils.isBlank(result.getResulTitleShort()));
-    assertFalse("Long result message should not be blank", StringUtils.isBlank(result.getResulTitleLong()));
+            new File(PATH_VALID + "default.xml").getAbsolutePath(), gameData.getFileName());
 
     // There should still be no players.
-    List<Player> players = this.testGameService.getPlayers();
+    List<Player> players = this.testGameService.getCurrentPlayers();
     assertNotNull("List of players should not be null", players);
     assertEquals("Wrong number of players", 0, players.size());
 
-    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-default",
             10, 20, 30, 0, 0);
+    assertTrue("Game data should be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from a valid game file w/o scores. */
   @Test
   public void testLoadGameDataValidNoScores() {
-    FileParsingResult result = loadGameTestFile(PATH_VALID + "no-scores.xml");
-    assertTrue("Game data should be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 0, 0, 3);
-    assertThreeInfoMessages(result.getInfoMessages(), 3, 9, 0, 0);
-
     // The same default data is expected but question points should be initialized to defaults.
-    GameData gameData = this.testGameService.getGameData();
+    GameData gameData = loadGameTestFile(PATH_VALID + "no-scores.xml");
     assertDefaultValidData(gameData, "valid-no-scores",
             50, 100, 150, 0, 0);
+    assertTrue("Game data should be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from a valid game file with valid number of players. */
   @Test
   public void testLoadGameDataValidWithEnoughPlayers() {
-    FileParsingResult result = loadGameTestFile(PATH_VALID + "with-enough-players.xml");
-    assertTrue("Game data should be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 0, 0, 3);
-    assertThreeInfoMessages(result.getInfoMessages(), 3, 9, 3, 0);
-
-    GameData gameData = this.testGameService.getGameData();
+    GameData gameData = loadGameTestFile(PATH_VALID + "with-enough-players.xml");
     assertDefaultValidData(gameData, "valid-with-enough-players",
             10, 20, 30, 3, 0);
     List<String> playerNames = gameData.getPlayerNames();
     assertEquals("Wrong player 0 name", "One", playerNames.get(0));
     assertEquals("Wrong player 1 name", "Two", playerNames.get(1));
     assertEquals("Wrong player 2 name", "Three", playerNames.get(2));
+    assertTrue("Game data should be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from a valid game file with not enough players. */
   @Test
   public void testLoadGameDataValidNotEnoughPlayers() {
-    FileParsingResult result = loadGameTestFile(PATH_VALID + "not-enough-players.xml");
-    assertTrue("Game data should be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 0, 1, 2);
-    assertGeneralInfoMessage(result.getInfoMessages().get(0), 3, 9);
-    assertBonusQuestionsInfoMessage(result.getInfoMessages().get(1), 0);
-
-    GameData gameData = this.testGameService.getGameData();
+    GameData gameData = loadGameTestFile(PATH_VALID + "not-enough-players.xml");
     assertDefaultValidData(gameData, "valid-not-enough-players",
-            10, 20, 30, 0, 0);
+            10, 20, 30, 1, 0);
+    assertTrue("Game data should be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from a valid game file but with too many players. */
   @Test
   public void testLoadGameDataValidTooManyPlayers() {
-    FileParsingResult result = loadGameTestFile(PATH_VALID + "too-many-players.xml");
-    assertTrue("Game data should be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 0, 1, 3);
-    assertThreeInfoMessages(result.getInfoMessages(), 3, 9, 6, 0);
+    GameData gameData = loadGameTestFile(PATH_VALID + "too-many-players.xml");
 
     // Extra players are ignored.
-    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-too-many-players",
-            10, 20, 30, 6, 0);
+            10, 20, 30, 7, 0);
     List<String> playerNames = gameData.getPlayerNames();
     assertEquals("Wrong player 0 name", "One", playerNames.get(0));
     assertEquals("Wrong player 1 name", "Two", playerNames.get(1));
@@ -238,18 +205,15 @@ public class GameDataServiceTest {
     assertEquals("Wrong player 3 name", "Four", playerNames.get(3));
     assertEquals("Wrong player 4 name", "Five", playerNames.get(4));
     assertEquals("Wrong player 5 name", "Six", playerNames.get(5));
+    assertTrue("Game data should be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from a valid game file but with a lot of leading/trailing whitespace. */
   @Test
   public void testLoadGameDataValidLotsOfWhitespace() {
-    FileParsingResult result = loadGameTestFile(PATH_VALID + "lots-of-whitespace.xml");
-    assertTrue("Game data should be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 0, 0, 3);
-    assertThreeInfoMessages(result.getInfoMessages(), 3, 9, 4, 0);
+    GameData gameData = loadGameTestFile(PATH_VALID + "lots-of-whitespace.xml");
 
     // Extra players are ignored.
-    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-lots-of-whitespace",
             10, 20, 30, 4, 0);
     List<String> playerNames = gameData.getPlayerNames();
@@ -257,17 +221,13 @@ public class GameDataServiceTest {
     assertEquals("Wrong player 1 name", "Two", playerNames.get(1));
     assertEquals("Wrong player 2 name", "Three", playerNames.get(2));
     assertEquals("Wrong player 3 name", "Four", playerNames.get(3));
+    assertTrue("Game data should be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from a valid game file with enough bonus questions. */
   @Test
   public void testLoadGameDataValidWithEnoughBonusQuestions() {
-    FileParsingResult result = loadGameTestFile(PATH_VALID + "with-enough-bonus-questions.xml");
-    assertTrue("Game data should be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 0, 0, 3);
-    assertThreeInfoMessages(result.getInfoMessages(), 3, 9, 0, 3);
-
-    GameData gameData = this.testGameService.getGameData();
+    GameData gameData = loadGameTestFile(PATH_VALID + "with-enough-bonus-questions.xml");
     assertDefaultValidData(gameData, "valid-with-enough-bonus-questions",
             10, 20, 30, 0, 3);
     List<Question> bonusQuestions = gameData.getBonusQuestions();
@@ -275,37 +235,34 @@ public class GameDataServiceTest {
       assertQuestion("Bonus question " + ind, bonusQuestions.get(ind),
               "Bonus Question " + (ind + 1), "Bonus Answer " + (ind + 1), 55, false);
     }
+    assertTrue("Game data should be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from a valid game file with not enough bonus questions. */
   @Test
   public void testLoadGameDataValidNotEnoughBonusQuestions() {
-    FileParsingResult result = loadGameTestFile(PATH_VALID + "not-enough-bonus-questions.xml");
-    assertTrue("Game data should be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 0, 1, 2);
-    assertGeneralInfoMessage(result.getInfoMessages().get(0), 3, 9);
-    assertPlayersInfoMessage(result.getInfoMessages().get(1), 3);
+    GameData gameData = loadGameTestFile(PATH_VALID + "not-enough-bonus-questions.xml");
 
     // Bonus questions should not be parsed because they are too few for the number of players.
-    GameData gameData = this.testGameService.getGameData();
     assertDefaultValidData(gameData, "valid-not-enough-bonus-questions",
-            10, 20, 30, 3, 0);
+            10, 20, 30, 3, 2);
+    assertTrue("Game data should be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid game file with not enough categories. */
   @Test
   public void testLoadGameDataInvalidTooFewCategories() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "too-few-categories.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "too-few-categories.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid game file with not enough questions. */
   @Test
   public void testLoadGameDataInvalidTooFewQuestions() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "too-few-questions.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "too-few-questions.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /**
@@ -314,90 +271,90 @@ public class GameDataServiceTest {
    */
   @Test
   public void testLoadGameDataInvalidNotEvenQuestions() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "not-even-questions.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "not-even-questions.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid not-XML file. */
   @Test
   public void testLoadGameDataInvalidNotXml() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "not-xml-format.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "not-xml-format.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid game file w/o game name. */
   @Test
   public void testLoadGameDataInvalidNoGameName() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "no-game-name.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "no-game-name.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid game file with blank game name. */
   @Test
   public void testLoadGameDataInvalidGameNameBlank() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "blank-game-name.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "blank-game-name.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid game file with blank category name. */
   @Test
   public void testLoadGameDataInvalidCategoryNameBlank() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "blank-category-name.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
+    GameData gameData = loadGameTestFile(PATH_INVALID + "blank-category-name.xml");
     // Two errors - one for empty category, another one for not enough categories parsed
-    assertResultMessageNumbers(result, 2, 0, 0);
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid game file w/o category name. */
   @Test
   public void testLoadGameDataInvalidNoCategoryName() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "no-category-name.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "no-category-name.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid game file with one blank question. */
   @Test
   public void testLoadGameDataInvalidOneQuestionBlank() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "one-question-blank.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "one-question-blank.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid game file with one blank answer. */
   @Test
   public void testLoadGameDataInvalidOneAnswerBlank() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "one-answer-blank.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "one-answer-blank.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid game file with a missing answer. */
   @Test
   public void testLoadGameDataInvalidMissingAnswer() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "missing-one-answer.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "missing-one-answer.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid game file with too many questions. */
   @Test
   public void testLoadGameDataInvalidTooManyQuestions() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "too-many-questions.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "too-many-questions.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
 
   /** Tests loading game data from an invalid game file with too many categories. */
   @Test
   public void testLoadGameDataInvalidTooManyCategories() {
-    FileParsingResult result = loadGameTestFile(PATH_INVALID + "too-many-categories.xml");
-    assertFalse("Game data should not be usable", result.isGameDataUsable());
-    assertResultMessageNumbers(result, 1, 0, 0);
+    GameData gameData = loadGameTestFile(PATH_INVALID + "too-many-categories.xml");
+    assertNotNull("Game data should not be null", gameData);
+    assertTrue("Game data should be usable", gameData.isGameDataUsable());
   }
 
   /**
@@ -438,29 +395,6 @@ public class GameDataServiceTest {
       assertFalse(message + "; parent name should not be blank", StringUtils.isBlank(question.getParentName()));
     } else {
       assertNull(message + "; parent name should be null", question.getParentName());
-    }
-  }
-
-  /**
-   * Asserts result message counts.
-   * @param result result object to test
-   * @param errorsCount expected number of error messages
-   * @param warningsCount expected number of warning messages
-   * @param infoCount expected number of informational messages
-   */
-  private static void assertResultMessageNumbers(FileParsingResult result,
-                                                 int errorsCount, int warningsCount, int infoCount) {
-    List<String> messages = result.getErrorMessages();
-    assertNotNull("Error messages list should not be null", messages);
-    assertEquals("Wrong number of error messages", errorsCount, messages.size());
-    messages = result.getWarningMessages();
-    assertNotNull("Warning messages list should not be null", messages);
-    assertEquals("Wrong number of warning messages", warningsCount, messages.size());
-    messages = result.getInfoMessages();
-    assertNotNull("Info messages list should not be null", messages);
-    assertEquals("Wrong number of informational messages", infoCount, messages.size());
-    for (int ind = 0; ind < infoCount; ind++) {
-      assertFalse("Info message " + ind + " should not be blank", StringUtils.isBlank(messages.get(ind)));
     }
   }
 
@@ -508,66 +442,16 @@ public class GameDataServiceTest {
   }
 
   /**
-   * Asserts typical 3 info messages.
-   * @param infoMessages info messages to validate
-   * @param questionsCount expected total questions count
-   * @param categoriesCount expected categories count
-   * @param playersCount expected players count
-   * @param bonusQuestionsCount expected bonus question count
-   */
-  private static void assertThreeInfoMessages(
-          List<String> infoMessages, int questionsCount, int categoriesCount, int playersCount, int bonusQuestionsCount) {
-    assertGeneralInfoMessage(infoMessages.get(0), questionsCount, categoriesCount);
-    assertPlayersInfoMessage(infoMessages.get(1), playersCount);
-    assertBonusQuestionsInfoMessage(infoMessages.get(2), bonusQuestionsCount);
-  }
-
-  /**
-   * Asserts parsed players info message.
-   * @param message message to test
-   * @param questionsCount expected total questions count
-   * @param categoriesCount expected categories count
-   */
-  private static void assertGeneralInfoMessage(String message, int questionsCount, int categoriesCount) {
-    assertEquals("Wrong questions info message",
-            LocaleService.getString(MSG_QUESTIONS_PARSED.getPropertyName(),
-                    String.valueOf(categoriesCount), String.valueOf(questionsCount)),
-            message);
-  }
-
-  /**
-   * Asserts parsed players info message.
-   * @param message message to test
-   * @param playersCount expected players count
-   */
-  private static void assertPlayersInfoMessage(String message, int playersCount) {
-    assertEquals("Wrong players info message",
-            LocaleService.getString(MSG_PLAYERS_PARSED.getPropertyName(), String.valueOf(playersCount)),
-            message);
-  }
-
-  /**
-   * Asserts parsed bonus questions info message.
-   * @param message message to test
-   * @param bonusQuestionsCount expected bonus question count
-   */
-  private static void assertBonusQuestionsInfoMessage(String message, int bonusQuestionsCount) {
-    assertEquals("Wrong bonus questions info message",
-            LocaleService.getString(MSG_BONUS_QUESTIONS_PARSED.getPropertyName(), String.valueOf(bonusQuestionsCount)),
-            message);
-  }
-
-  /**
    * Loads game test file.
    * @param fileName filename/path
    * @return result object
    */
-  private FileParsingResult loadGameTestFile(String fileName) {
+  private GameData loadGameTestFile(String fileName) {
     File file = new File(fileName);
     assertTrue("Unable to find test file: " + fileName, file.exists());
-    FileParsingResult result = this.testGameService.loadGameData(file.getAbsolutePath());
-    assertNotNull("Parsing result should not be null", result);
-    return result;
+    GameData gameData = this.testGameService.parseGameData(file.getAbsolutePath());
+    assertNotNull("Parsing result should not be null", gameData);
+    return gameData;
   }
 
   /**

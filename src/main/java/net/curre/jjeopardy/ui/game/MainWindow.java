@@ -24,6 +24,7 @@ import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.event.GameTableMouseListener;
 import net.curre.jjeopardy.event.GameWindowListener;
 import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.sounds.SoundEnum;
@@ -112,7 +113,7 @@ public class MainWindow extends JFrame {
    * Prepares the game for a new round and starts it by showing the main game window UI.
    */
   public void prepareAndStartGame() {
-    GameData gameData = AppRegistry.getInstance().getGameDataService().getGameData();
+    GameData gameData = AppRegistry.getInstance().getGameDataService().getCurrentGameData();
     this.setTitle(gameData.getGameName());
 
     this.actionsEnabled = true;
@@ -146,10 +147,17 @@ public class MainWindow extends JFrame {
    */
   public void enableActions() {
     this.actionsEnabled = true;
-    GameData gameData = AppRegistry.getInstance().getGameDataService().getGameData();
-    this.bonusQuestionsButton.setEnabled(gameData.bonusQuestionsHaveBeenAsked());
-    this.resetButton.setEnabled(true);
-    this.quitButton.setEnabled(true);
+    GameDataService gameService = AppRegistry.getInstance().getGameDataService();
+    if (gameService.hasCurrentGameData()) {
+      GameData gameData = gameService.getCurrentGameData();
+      this.bonusQuestionsButton.setEnabled(gameData.bonusQuestionsHaveBeenAsked());
+      this.resetButton.setEnabled(true);
+      this.quitButton.setEnabled(true);
+    } else {
+      this.bonusQuestionsButton.setEnabled(false);
+      this.resetButton.setEnabled(false);
+      this.quitButton.setEnabled(false);
+    }
   }
 
   /**

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<!--
+    Source - https://www.focusonyourchild.com/baby-jeopardy-questions-and-answers/
+-->
+<properties>
+    <entry key="game.name">Baby JJeopardy</entry>
+    <entry key="game.description">
+        A JJeopardy game with questions to cover a range of topics such as baby anatomy,
+        baby animals, nursery rhymes, baby care, baby conventions, baby items, baby music,
+        and baby movies. These topics all relate to babies in one way or another and are
+        all great fun for a Jeopardy-style game.
+    </entry>
+
+    <entry key="question.1.points">100</entry>
+    <entry key="question.2.points">200</entry>
+    <entry key="question.3.points">300</entry>
+    <entry key="question.4.points">400</entry>
+
+    <entry key="category.1.name">Baby Anatomy</entry>
+    <entry key="category.1.question.1">The tissue that connects the mother and the developing baby.</entry>
+    <entry key="category.1.answer.1">What is the umbilical cord?</entry>
+    <entry key="category.1.question.2">A baby has way more of these in their tongue than adults do.</entry>
+    <entry key="category.1.answer.2">What are taste buds?</entry>
+    <entry key="category.1.question.3">The process when a baby’s teeth begin to grow through their gumline.</entry>
+    <entry key="category.1.answer.3">What is teething?</entry>
+    <entry key="category.1.question.4">A congenital, irregular discoloration on a baby’s skin.</entry>
+    <entry key="category.1.answer.4">What is a birthmark?</entry>
+    <entry key="category.1.question.5">This cranial bone is currently not yet fused in the baby.</entry>
+    <entry key="category.1.answer.5">What is the skull?</entry>
+    <entry key="category.1.question.6">This is a piece of cartilage in a baby that will eventually form into bone to protect the knee.</entry>
+    <entry key="category.1.answer.6">What is a kneecap?</entry>
+    <entry key="category.1.question.7">A sibling that grows with your baby in the womb at the same time.</entry>
+    <entry key="category.1.answer.7">What is a twin?</entry>
+    <entry key="category.1.question.8">The squishy area on top of a baby’s head.</entry>
+    <entry key="category.1.answer.8">What is a soft spot?</entry>
+    <entry key="category.1.question.9">This internal organ is as big as a walnut during infancy.</entry>
+    <entry key="category.1.answer.9">What is the stomach?</entry>
+    <entry key="category.1.question.10">The number of bones a newborn baby has.</entry>
+    <entry key="category.1.answer.10">What is 300?</entry>
+
+    <entry key="category.2.name">Baby Animals</entry>
+    <entry key="category.2.question.1">The term used to refer to a baby cow.</entry>
+    <entry key="category.2.answer.1">What is a calf?</entry>
+    <entry key="category.2.question.2">The term used to refer to a baby bird.</entry>
+    <entry key="category.2.answer.2">What is a chick?</entry>
+    <entry key="category.2.question.3">The term used to refer to a baby dog.</entry>
+    <entry key="category.2.answer.3">What is a puppy?</entry>
+    <entry key="category.2.question.4">The term used to refer to a baby cat.</entry>
+    <entry key="category.2.answer.4">What is a kitten?</entry>
+    <entry key="category.2.question.5">The term used to refer to a baby sheep.</entry>
+    <entry key="category.2.answer.5">What is a lamb?</entry>
+    <entry key="category.2.question.6">The term used to refer to a baby bear.</entry>
+    <entry key="category.2.answer.6">What is a cub?</entry>
+    <entry key="category.2.question.7">The term used to refer to a baby kangaroo.</entry>
+    <entry key="category.2.answer.7">What is a joey?</entry>
+    <entry key="category.2.question.8">The term used to refer to a baby pig.</entry>
+    <entry key="category.2.answer.8">What is a piglet?</entry>
+    <entry key="category.2.question.9">The term used to refer to a baby deer.</entry>
+    <entry key="category.2.answer.9">What is a fawn?</entry>
+    <entry key="category.2.question.10">The term used to refer to a baby horse.</entry>
+    <entry key="category.2.answer.10">What is a foal?</entry>
+
+    <entry key="category.3.name">Nursery Rhymes</entry>
+    <entry key="category.3.question.1">The egg that had a great fall.</entry>
+    <entry key="category.3.answer.1">Who is Humpty Dumpty?</entry>
+    <entry key="category.3.question.2">The rain washed the itsy bitsy spider from this.</entry>
+    <entry key="category.3.answer.2">What is a waterspout?</entry>
+    <entry key="category.3.question.3">Little Miss Muffett sat on this.</entry>
+    <entry key="category.3.answer.3">What is a tuffet?</entry>
+    <entry key="category.3.question.4">Old Mother Hubbard looked for this in her cupboard.</entry>
+    <entry key="category.3.answer.4">What is a bone?</entry>
+    <entry key="category.3.question.5">She came tumbling right after Jack fell down.</entry>
+    <entry key="category.3.answer.5">Who is Jill?</entry>
+    <entry key="category.3.question.6">This baby animal followed Mary everywhere she went.</entry>
+    <entry key="category.3.answer.6">What is a lamb?</entry>
+    <entry key="category.3.question.7">Little stars in the sky twinkled like this precious gemstone.</entry>
+    <entry key="category.3.answer.7">What is a diamond?</entry>
+    <entry key="category.3.question.8">This woman cut off the tails of three blind mice.</entry>
+    <entry key="category.3.answer.8">Who is the farmer’s wife?</entry>
+    <entry key="category.3.question.9">The color of the sheep that had three bags worth of wool.</entry>
+    <entry key="category.3.answer.9">What is black?</entry>
+    <entry key="category.3.question.10">This merry old soul called for a pipe, a bowl, and three fiddlers.</entry>
+    <entry key="category.3.answer.10">Who is the Old King Cole?</entry>
+
+    <entry key="category.4.name">Baby Care</entry>
+    <entry key="category.4.question.1">The process of feeding a baby straight from the breast.</entry>
+    <entry key="category.4.answer.1">What is breastfeeding? What is nursing?</entry>
+    <entry key="category.4.question.2">The repeated gentle patting on a baby’s back to release swallowed air.</entry>
+    <entry key="category.4.answer.2">What is burping?</entry>
+    <entry key="category.4.question.3">A common skin condition that causes rough patches on the scalp of newborn babies.</entry>
+    <entry key="category.4.answer.3">What is cradle cap?</entry>
+    <entry key="category.4.question.4">The smooth flow of a baby’s stomach contents out through their mouth as opposed to a forceful vomit.</entry>
+    <entry key="category.4.answer.4">What is spit up?</entry>
+    <entry key="category.4.question.5">The process of feeding a baby from a cylindrical container.</entry>
+    <entry key="category.4.answer.5">What is bottle feeding?</entry>
+    <entry key="category.4.question.6">A paid professional to help take care of the baby.</entry>
+    <entry key="category.4.answer.6">What is a nanny?</entry>
+    <entry key="category.4.question.7">The technical terminology used to refer to the squeezing of milk out of a breast.</entry>
+    <entry key="category.4.answer.7">What is expressing milk?</entry>
+    <entry key="category.4.question.8">A specific location where a mother can feel comfortable nursing her baby.</entry>
+    <entry key="category.4.answer.8">What is a nursing nest?</entry>
+    <entry key="category.4.question.9">The process when a baby takes the mother’s nipple into their mouth to suckle.</entry>
+    <entry key="category.4.answer.9">What is latching?</entry>
+    <entry key="category.4.question.10">The process of wrapping a baby tightly with a blanket.</entry>
+    <entry key="category.4.answer.10">What is swaddling?</entry>
+
+    <entry key="category.5.name">Baby Conventions</entry>
+    <entry key="category.5.question.1">The color associated with baby girls.</entry>
+    <entry key="category.5.answer.1">What is pink?</entry>
+    <entry key="category.5.question.2">The way babies move from one place to another.</entry>
+    <entry key="category.5.answer.2">What is a crawl?</entry>
+    <entry key="category.5.question.3">The bird that is said to deliver babies to new parents’ homes.</entry>
+    <entry key="category.5.answer.3">What is the stork?</entry>
+    <entry key="category.5.question.4">Made up words that imitate how babies speak.</entry>
+    <entry key="category.5.answer.4">What is goo goo ga ga?</entry>
+    <entry key="category.5.question.5">The animals commonly referred to when explaining how babies are made.</entry>
+    <entry key="category.5.answer.5">What are the birds and the bees.</entry>
+    <entry key="category.5.question.6">The color associated with baby boys.</entry>
+    <entry key="category.5.answer.6">What is blue?</entry>
+    <entry key="category.5.question.7">A childish way of speaking to someone.</entry>
+    <entry key="category.5.answer.7">What is baby talk?</entry>
+    <entry key="category.5.question.8">An event where guests, or even the parents, discover the sex of the baby.</entry>
+    <entry key="category.5.answer.8">What is a gender reveal party?</entry>
+    <entry key="category.5.question.9">The post-Valentine’s month with the most babies being born.</entry>
+    <entry key="category.5.answer.9">What is September?</entry>
+    <entry key="category.5.question.10">Babies lack this ability to know that objects continue to exist even when they don’t see them anymore.</entry>
+    <entry key="category.5.answer.10">What is object permanence?</entry>
+
+    <entry key="category.6.name">Baby Items</entry>
+    <entry key="category.6.question.1">A container that babies can drink milk from.</entry>
+    <entry key="category.6.answer.1">What is a bottle?</entry>
+    <entry key="category.6.question.2">A tall piece of furniture to let the baby reach the table.</entry>
+    <entry key="category.6.answer.2">What is a high chair?</entry>
+    <entry key="category.6.question.3">A baby’s liquid food to substitute breast milk.</entry>
+    <entry key="category.6.answer.3">What is formula?</entry>
+    <entry key="category.6.question.4">A basket-like bed where babies sleep in safety.</entry>
+    <entry key="category.6.answer.4">What is a crib?</entry>
+    <entry key="category.6.question.5">A singular piece of clothing for babies.</entry>
+    <entry key="category.6.answer.5">What is a onesie?</entry>
+    <entry key="category.6.question.6">The thing that hangs over a baby’s crib.</entry>
+    <entry key="category.6.answer.6">What is a mobile?</entry>
+    <entry key="category.6.question.7">A disposable type of underwear for babies.</entry>
+    <entry key="category.6.answer.7">What is a diaper?</entry>
+    <entry key="category.6.question.8">A piece of fabric fastened around a baby’s neck to keep them clean during eating time.</entry>
+    <entry key="category.6.answer.8">What is a bib?</entry>
+    <entry key="category.6.question.9">A wheeled device for transporting a baby.</entry>
+    <entry key="category.6.answer.9">What is a baby stroller?</entry>
+    <entry key="category.6.question.10">An electronic device to keep track of a baby’s activities remotely.</entry>
+    <entry key="category.6.answer.10">What is a baby monitor?</entry>
+
+    <entry key="category.7.name">Baby Music</entry>
+    <entry key="category.7.question.1">Song by Justin Bieber featuring Ludacris.</entry>
+    <entry key="category.7.answer.1">Baby</entry>
+    <entry key="category.7.question.2">Debut single of Britney Spears from her album of the same name.</entry>
+    <entry key="category.7.answer.2">What is Baby One More Time?</entry>
+    <entry key="category.7.question.3">A children’s song that became viral in 2016; currently garnering over 9 billion views on YouTube.</entry>
+    <entry key="category.7.answer.3">What is Baby Shark?</entry>
+    <entry key="category.7.question.4">Song by Mariah Carey from the 1995 album “Daydream.”</entry>
+    <entry key="category.7.answer.4">What is Always Be My Baby?</entry>
+    <entry key="category.7.question.5">Potentially the most famous song by rapper Vanilla Ice.</entry>
+    <entry key="category.7.answer.5">What is Ice Ice Baby?</entry>
+    <entry key="category.7.question.6">Song by A Rocket to the Moon from the 2009 album “On Your Side.”</entry>
+    <entry key="category.7.answer.6">What is Baby Blue Eyes?</entry>
+    <entry key="category.7.question.7">Ranked number 17 on VH1’s 100 Greatest Songs of Hip Hop, it is one of the most iconic songs by Sir Mix-a-Lot.</entry>
+    <entry key="category.7.answer.7">What is Baby Got Back?</entry>
+    <entry key="category.7.question.8">Song by Ariana Grande for her debut album “Yours Truly.”</entry>
+    <entry key="category.7.answer.8">What is Baby I?</entry>
+    <entry key="category.7.question.9">The biggest hit single by the 70s rock band Player.</entry>
+    <entry key="category.7.answer.9">What is Baby Come Back?</entry>
+    <entry key="category.7.question.10">Song by Peter Frampton featured in his 1975 album “Frampton.”</entry>
+    <entry key="category.7.answer.10">What is Baby I Love Your Way?</entry>
+
+    <entry key="category.8.name">Baby Movies</entry>
+    <entry key="category.8.question.1">A 2004 sports drama film that follows an underdog amateur boxer under the mentorship of an underappreciated boxing trainer.</entry>
+    <entry key="category.8.answer.1">What is Million Dollar Baby?</entry>
+    <entry key="category.8.question.2">A 2017 animated film that follows the adventures of a 7-year-old boy who had just gotten a baby brother with a penchant for suits.</entry>
+    <entry key="category.8.answer.2">What is The Boss Baby?</entry>
+    <entry key="category.8.question.3">The third and final installment of the Bridget Jones franchise.</entry>
+    <entry key="category.8.answer.3">What is Bridget Jones’s Baby?</entry>
+    <entry key="category.8.question.4">A 1999 family comedy where scientists try to prove that babies are actually intelligent creatures – until they learn how to talk.</entry>
+    <entry key="category.8.answer.4">What is Baby Geniuses?</entry>
+    <entry key="category.8.question.5">A 1968 psychological horror film where a young woman comes to suspect her baby’s true nature.</entry>
+    <entry key="category.8.answer.5">What is Rosemary’s Baby?</entry>
+    <entry key="category.8.question.6">Actually the daughter of Santa Claus, a businesswoman is forced to return to the North Pole to take her father’s place when he falls terribly ill in this 2006 film.</entry>
+    <entry key="category.8.answer.6">What is Santa Baby?</entry>
+    <entry key="category.8.question.7">A 2008 romantic comedy where a single businesswoman discovers she is infertile, therefore hiring someone else to be her unlikely surrogate.</entry>
+    <entry key="category.8.answer.7">What is Baby Mama?</entry>
+    <entry key="category.8.question.8">A controversial 1978 historical drama where a New Orleans hooker meets a photographer that befriends her 12-year-old daughter.</entry>
+    <entry key="category.8.answer.8">What is Pretty Baby?</entry>
+    <entry key="category.8.question.9">A 2007 crime thriller film that served as the directorial debut of Ben Affleck following two private investigators tracking a young girl abducted from her mother’s apartment.</entry>
+    <entry key="category.8.answer.9">What is Gone Baby Gone?</entry>
+    <entry key="category.8.question.10">Directed by Leonard Nimoy, this 1987 comedy film features three bachelors attempting at fatherhood with the arrival of a baby in their lives.</entry>
+    <entry key="category.8.answer.10">Answer: What is Three Men and a Baby?</entry>
+
+</properties>

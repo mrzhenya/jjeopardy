@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.curre.jjeopardy.ui;
+package net.curre.jjeopardy.ui.landing;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
@@ -22,6 +22,8 @@ import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.event.LoadGameAction;
+import net.curre.jjeopardy.event.QuitAppAction;
+import net.curre.jjeopardy.event.ShowLibraryAction;
 import net.curre.jjeopardy.event.StartGameAction;
 import net.curre.jjeopardy.event.UpdatePlayersAction;
 import net.curre.jjeopardy.service.AppRegistry;
@@ -31,26 +33,14 @@ import net.curre.jjeopardy.service.SoundService;
 import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.ui.player.PlayerDialog;
+import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.Utilities;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -61,11 +51,14 @@ import java.util.logging.Logger;
  */
 public class LandingUi extends JFrame {
 
-  /** Landing UI preferred width. */
-  private static final int LANDING_UI_WIDTH = 800;
-
   /** Image filename used by the dialog. */
   private static final String BACKGROUND_IMAGE_FILE = "jeopardy.jpg";
+
+  /** Id for the Library card in the card layout. */
+  private static final String CARD_LIBRARY_ID = "LibraryCardId";
+
+  /** Id for the Background card in the card layout. */
+  private static final String CARD_BACKGROUND_ID = "BackgroundCardId";
 
   /** Private class logger. */
   private static final Logger LOGGER = Logger.getLogger(LandingUi.class.getName());
@@ -76,11 +69,17 @@ public class LandingUi extends JFrame {
   /** Current game label. */
   private JLabel currGameLabel;
 
+  /** Reference to the Library button. */
+  private JButton libraryButton;
+
   /** Start game button. */
   private JButton startGameButton;
 
   /** Reference to the container of the players list component. */
   private JPanel playersPanel;
+
+  /** Reference to the bottom panel (where background image or library is displayed). */
+  private JPanel bottomPanel;
 
   /**
    * Represents the main landing UI displayed to the user on application start.
@@ -89,7 +88,7 @@ public class LandingUi extends JFrame {
     this.setTitle(LocaleService.getString("jj.app.name"));
     this.setResizable(false);
     this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    this.addWindowListener(new LandingUiWindowListener());
+    this.addWindowListener(new QuitAppAction());
     this.initComponents();
 
     SwingUtilities.invokeLater(() -> {
@@ -124,17 +123,9 @@ public class LandingUi extends JFrame {
    * Updates the Landing UI according to the loaded game data.
    */
   public void updateUiWithLoadedGameFile() {
-    GameDataService gameDataService = AppRegistry.getInstance().getGameDataService();
-    GameData gameFileData = gameDataService.getGameData();
-    final List<String> playerNames = gameFileData.getPlayerNames();
-    // Updating game players from the ones parsed from the file.
-    if (playerNames.size() >= gameDataService.getMinNumberOfPlayers()) {
-      // Update the PlayerDialog values.
-      this.playerDialog.updatePlayersPane(playerNames);
-
-      // Update the Game "real" players data.
-      gameDataService.updatePlayersFromNames(playerNames);
-    }
+    GameDataService gameService = AppRegistry.getInstance().getGameDataService();
+    final List<Player> players = gameService.getCurrentPlayers();
+    this.playerDialog.updatePlayersPane(players);
 
     // Update the players list label in the Landing UI.
     this.updateLandingUi();
@@ -150,7 +141,7 @@ public class LandingUi extends JFrame {
     String buttonText;
     boolean arePlayersSet;
     playersPanel.removeAll();
-    List<Player> players = AppRegistry.getInstance().getGameDataService().getPlayers();
+    List<Player> players = AppRegistry.getInstance().getGameDataService().getCurrentPlayers();
     if (players.isEmpty()) {
       playersText = LocaleService.getString("jj.playerdialog.label.addplayers");
       buttonText = LocaleService.getString("jj.playerdialog.button.add");
@@ -174,20 +165,31 @@ public class LandingUi extends JFrame {
 
     // Updating the game name label.
     GameDataService gameDataService = AppRegistry.getInstance().getGameDataService();
-    GameData gameFileData = gameDataService.getGameData();
-    if (gameDataService.hasEnoughGameData()) {
-      this.currGameLabel.setText(gameFileData.getGameName());
-      this.currGameLabel.setEnabled(true);
-    } else {
-      this.currGameLabel.setText(LocaleService.getString("jj.playerdialog.game.default.name"));
-      this.currGameLabel.setEnabled(false);
+    String currGameName = null;
+    if (gameDataService.hasCurrentGameData()) {
+      GameData gameData = gameDataService.getCurrentGameData();
+      if (gameData.isGameDataUsable()) {
+        currGameName = gameData.getGameName();
+      }
     }
+    this.currGameLabel.setEnabled(currGameName != null);
+    currGameName = currGameName == null ?
+        LocaleService.getString("jj.playerdialog.game.default.name") : currGameName;
+    this.currGameLabel.setText(currGameName);
 
     // Check if the Start game button should be enabled.
     if (gameDataService.isGameReady()) {
       this.startGameButton.setEnabled(true);
       this.startGameButton.requestFocus();
     }
+  }
+
+  /**
+   * Shows the next card in the bottom panel - the Library UI card or the background card.
+   */
+  public void switchBetweenLibraryAndBackgroundCard() {
+    CardLayout cardLayout = (CardLayout) this.bottomPanel.getLayout();
+    cardLayout.next(this.bottomPanel);
   }
 
   /** Initializes UI components. */
@@ -198,22 +200,18 @@ public class LandingUi extends JFrame {
       {TableLayout.FILL},  // columns
       {TableLayout.PREFERRED, TableLayout.FILL}}));  // rows
 
-    // ******* Panel with the current game name and buttons to load and start the game.
-    JPanel mainPanel = this.createMainContentPanel();
-    contentPane.add(mainPanel, new TableLayoutConstraints(
-      0, 0, 0, 0, TableLayout.FULL, TableLayout.CENTER));
+    // ******* Top panel - with the current game name and buttons to load and start the game.
+    JPanel topPanel = this.createMainContentPanel();
+    contentPane.add(topPanel, new TableLayoutConstraints(
+        0, 0, 0, 0, TableLayout.FULL, TableLayout.CENTER));
 
-    // ********* Background image.
-    ImageIcon backgroundIcon = new ImageIcon(Objects.requireNonNull(
-      App.class.getResource("images/" + BACKGROUND_IMAGE_FILE)));
-    JLabel picLabel = new JLabel(backgroundIcon);
-    double imageWidth = backgroundIcon.getIconWidth();
-    double imageHeight = backgroundIcon.getIconHeight();
-    int scaledHeight = (int) (LANDING_UI_WIDTH / (imageWidth / imageHeight));
-    backgroundIcon.setImage(backgroundIcon.getImage().getScaledInstance(
-      LANDING_UI_WIDTH, scaledHeight, Image.SCALE_FAST));
-    contentPane.add(picLabel, new TableLayoutConstraints(
-      0, 1, 0, 1, TableLayout.FULL, TableLayout.BOTTOM));
+    // ********* Bottom panel - library OR background image.
+    this.bottomPanel = new JPanel();
+    this.bottomPanel.setLayout(new CardLayout());
+    this.bottomPanel.add(createImageBackground(), CARD_BACKGROUND_ID);
+    this.bottomPanel.add(createLibraryPanel(), CARD_LIBRARY_ID);
+    contentPane.add(this.bottomPanel, new TableLayoutConstraints(
+        0, 1, 0, 1, TableLayout.FULL, TableLayout.BOTTOM));
 
     // ********* Adding a menu bar
     this.setJMenuBar(new LandingUiMenu());
@@ -262,7 +260,7 @@ public class LandingUi extends JFrame {
 
     final JPanel gamePanel = new JPanel(new TableLayout(new double[][] {
       {TableLayout.FILL, TableLayout.PREFERRED, buttonSpacing, TableLayout.PREFERRED,
-        buttonSpacing, TableLayout.PREFERRED, TableLayout.FILL},  // columns
+        buttonSpacing, TableLayout.PREFERRED, buttonSpacing, TableLayout.PREFERRED, TableLayout.FILL},  // columns
       {TableLayout.PREFERRED}})); // rows
     this.currGameLabel = new JLabel(LocaleService.getString("jj.playerdialog.game.default.name"));
     this.currGameLabel.setFont(lafTheme.getLandingLabelFont());
@@ -280,6 +278,16 @@ public class LandingUi extends JFrame {
     gamePanel.add(loadButton, new TableLayoutConstraints(
       3, 0, 3, 0, TableLayout.CENTER, TableLayoutConstraints.CENTER));
 
+    // ******* Game library button.
+    this.libraryButton = new JButton();
+    this.libraryButton.setFont(buttonFont);
+    ShowLibraryAction libraryAction = new ShowLibraryAction(this);
+    this.libraryButton.setAction(libraryAction);
+    this.libraryButton.addKeyListener(libraryAction);
+    this.libraryButton.setText(LocaleService.getString("jj.playerdialog.button.library"));
+    gamePanel.add(this.libraryButton, new TableLayoutConstraints(
+      5, 0, 5, 0, TableLayout.CENTER, TableLayoutConstraints.CENTER));
+
     // ******* Start game button.
     this.startGameButton = new JButton();
     this.startGameButton.setFont(buttonFont);
@@ -289,7 +297,7 @@ public class LandingUi extends JFrame {
     this.startGameButton.setText(LocaleService.getString("jj.playerdialog.button.start"));
     this.startGameButton.setEnabled(false);
     gamePanel.add(this.startGameButton, new TableLayoutConstraints(
-      5, 0, 5, 0, TableLayout.CENTER, TableLayoutConstraints.CENTER));
+      7, 0, 7, 0, TableLayout.CENTER, TableLayoutConstraints.CENTER));
 
     return gamePanel;
   }
@@ -305,7 +313,7 @@ public class LandingUi extends JFrame {
     JPanel panel = new JPanel(new TableLayout(new double[][] {
       {TableLayout.FILL,
         // Text area width.
-        (arePlayersSet ? (int) (LANDING_UI_WIDTH * .75) : TableLayout.PREFERRED),
+        (arePlayersSet ? (int) (JjDefaults.LANDING_UI_WIDTH * .75) : TableLayout.PREFERRED),
         TableLayout.PREFERRED, 15, TableLayout.PREFERRED, TableLayout.FILL},  // columns
       {5, TableLayout.PREFERRED, 5}})); // rows
 
@@ -351,24 +359,41 @@ public class LandingUi extends JFrame {
   }
 
   /**
-   * Window listener class for this Landing dialog.
+   * Creates the library UI component.
+   * @return library UI component
    */
-  private static class LandingUiWindowListener implements WindowListener {
-    public void windowOpened(WindowEvent e) {}
+  private static Component createLibraryPanel() {
+    boolean loadSuccess = AppRegistry.getInstance().getGameDataService().loadDefaultGames();
 
-    public void windowClosing(WindowEvent e) {
-      AppRegistry.getInstance().getMainService().quitApp();
+    JPanel panel = new JPanel();
+    if (!loadSuccess) {
+      // TODO: add an error message to the returned panel.
+      return panel;
     }
+    JScrollPane scrollPane = new JScrollPane(panel);
+    scrollPane.setPreferredSize(new Dimension(JjDefaults.LANDING_UI_WIDTH, JjDefaults.LANDING_UI_LIBRARY_HEIGHT));
+    panel.setLayout(new GridLayout(0, 1));
 
-    public void windowClosed(WindowEvent e) {}
-
-    public void windowIconified(WindowEvent e) {}
-
-    public void windowDeiconified(WindowEvent e) {}
-
-    public void windowActivated(WindowEvent e) {}
-
-    public void windowDeactivated(WindowEvent e) {}
+    for (int i = 0; i < 7; i++) {
+      for (GameData game : AppRegistry.getInstance().getGameDataService().getAllGames()) {
+        // Assume the data has already been validated to be usable.
+        panel.add(new LibraryGameItem(game));
+      }
+    }
+    return scrollPane;
   }
 
+  /**
+   * Creates image background (label with image icon) to use
+   * for the landing UI background.
+   * @return label with an ImageIcon representing the background
+   */
+  private static JLabel createImageBackground() {
+    ImageIcon backgroundIcon = new ImageIcon(Objects.requireNonNull(
+        App.class.getResource("images/" + BACKGROUND_IMAGE_FILE)));
+    JLabel backgroundLabel = new JLabel(backgroundIcon);
+    backgroundIcon.setImage(backgroundIcon.getImage().getScaledInstance(
+        JjDefaults.LANDING_UI_WIDTH, JjDefaults.LANDING_UI_LIBRARY_HEIGHT, Image.SCALE_FAST));
+    return backgroundLabel;
+  }
 }

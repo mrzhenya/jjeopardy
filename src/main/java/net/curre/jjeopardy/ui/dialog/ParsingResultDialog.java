@@ -20,7 +20,7 @@ import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
-import net.curre.jjeopardy.service.FileParsingResult;
+import net.curre.jjeopardy.bean.FileParsingResult;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
@@ -46,7 +46,7 @@ public class ParsingResultDialog extends BasicDialog {
    */
   public ParsingResultDialog(FileParsingResult result) {
     this.result = result;
-    ImageEnum icon = result.isGameDataUsable() ? ImageEnum.SUCCESS_64 : ImageEnum.FAILURE_64;
+    ImageEnum icon = result.getGameData().isGameDataUsable() ? ImageEnum.SUCCESS_64 : ImageEnum.FAILURE_64;
     this.initializeDialog(
       result.getResulTitleShort(), LocaleService.getString("jj.dialog.button.ok"), icon);
   }

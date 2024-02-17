@@ -20,9 +20,12 @@ import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Question;
+import net.curre.jjeopardy.games.DefaultGames;
+import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -31,8 +34,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static net.curre.jjeopardy.service.FileParsingResult.Message.*;
 
 /**
  * Service to assist with player handling, keeping game scores,
@@ -46,96 +47,67 @@ public class GameDataService {
   /** Private class logger. */
   private static final Logger LOGGER = Logger.getLogger(GameDataService.class.getName());
 
-  /** Maximum number of players allowed in a game. */
-  public final int maxNumberOfPlayers;
+  /**
+   * Max value for the parse loops, it's not really used since every loop stops with/by an exception,
+   * but we need a large enough number for the parse for loop condition.
+   */
+  private static final int MAX_LOOP = 30;
 
-  /** Minimum number of players allowed in a game. */
-  public final int minNumberOfPlayers;
-
-  /** Maximum number of question categories. */
-  private final int maxNumberOfCategories;
-
-  /** Minimum number of question categories. */
-  private final int minNumberOfCategories;
-
-  /** Maximum number of questions in a category. */
-  private final int maxNumberOfQuestions;
-
-  /** Minimum number of questions in a category. */
-  private final int minNumberOfQuestions;
-
-  /** When question points are not specified, this will be the default multiplier for each level. */
-  private final int defaultQuestionsPointsMultiplier;
-
-  /** Maximum number of bonus questions. */
-  private final int maxNumberOfBonusQuestions;
-
-  /** Default points a bonus question is worth. */
-  private final int defaultBonusQuestionPoints;
-
-  /** Game file data (game name, questions, categories, and optional players). */
-  private final GameData gameData;
+  /** Current game data (game name, questions, categories, and optional players). */
+  private GameData currentGameData;
 
   /** Current game players and their scores. */
-  private final List<Player> players;
+  private final List<Player> currentPlayers;
+
+  /** All known games. */
+  private final List<GameData> allGames;
 
   /**
    * Ctor.
    */
   protected GameDataService() {
-    this.gameData = new GameData();
-    this.players = new ArrayList<>();
+    this.currentPlayers = new ArrayList<>();
+    this.allGames = new ArrayList<>();
+  }
 
-    // Parsing defaults from the properties file.
-    int playersMax = 0, playersMin = 0, categoriesMax = 0, categoriesMin = 0, questionsMax = 0,
-            questionsMin = 0, questionsMultiplier = 0, bonusQuestionsMax = 0, bonusQuestionsPoints = 0;
-    try {
-      playersMax = Utilities.getDefaultIntProperty("jj.defaults.players.max");
-      playersMin = Utilities.getDefaultIntProperty("jj.defaults.players.min");
-      categoriesMax = Utilities.getDefaultIntProperty("jj.defaults.categories.max");
-      categoriesMin = Utilities.getDefaultIntProperty("jj.defaults.categories.min");
-      questionsMax = Utilities.getDefaultIntProperty("jj.defaults.questions.max");
-      questionsMin = Utilities.getDefaultIntProperty("jj.defaults.questions.min");
-      questionsMultiplier = Utilities.getDefaultIntProperty("jj.defaults.questions.multiplier");
-      bonusQuestionsMax = Utilities.getDefaultIntProperty("jj.defaults.bonus.questions.max");
-      bonusQuestionsPoints = Utilities.getDefaultIntProperty("jj.defaults.bonus.questions.points");
-    } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Unable to initialize game default properties", e);
-      System.exit(1);
+  /**
+   * Determines if there is a current game data loaded.
+   * @return true if there is a current game data loaded; false if otherwise
+   */
+  public boolean hasCurrentGameData() {
+    return this.currentGameData != null;
+  }
+
+  /**
+   * Gets the current game data. Note, that you must ensure there is a current game data loaded
+   * before calling this method (with <code>#hasCurrentGameData</code>) or a runtime exception will
+   * be thrown.
+   * @return current game data
+   * @throws RuntimeException when there is no current game data loaded
+   * @see #hasCurrentGameData()
+   */
+  public GameData getCurrentGameData() {
+    if (this.currentGameData == null) {
+      throw new RuntimeException("Asking for current game data when there is none (use #hasCurrentGameData).");
     }
-    this.maxNumberOfPlayers = playersMax;
-    this.minNumberOfPlayers = playersMin;
-    this.maxNumberOfCategories = categoriesMax;
-    this.minNumberOfCategories = categoriesMin;
-    this.maxNumberOfQuestions = questionsMax;
-    this.minNumberOfQuestions = questionsMin;
-    this.defaultQuestionsPointsMultiplier = questionsMultiplier;
-    this.maxNumberOfBonusQuestions = bonusQuestionsMax;
-    this.defaultBonusQuestionPoints = bonusQuestionsPoints;
+    return this.currentGameData;
   }
 
   /**
-   * Gets the maximum number of players possible in a game.
-   * @return max number of players
+   * Sets the current game data.
+    * @param gameData game data to set as the current game
    */
-  public int getMaxNumberOfPlayers() {
-    return this.maxNumberOfPlayers;
-  }
+  public void setCurrentGameData(GameData gameData) {
+    this.currentGameData = gameData;
 
-  /**
-   * Gets the minimum number of players possible in a game.
-   * @return min number of players
-   */
-  public int getMinNumberOfPlayers() {
-    return this.minNumberOfPlayers;
-  }
-
-  /**
-   * Gets the current game data loaded from a game file.
-   * @return game file data
-   */
-  public GameData getGameData() {
-    return this.gameData;
+    // If there are enough players, updating the current state.
+    if (gameData.hasEnoughPlayers()) {
+      this.currentPlayers.clear();
+      List<String> playerNames = gameData.getPlayerNames();
+      for (int ind = 0; ind < playerNames.size(); ind++) {
+        this.currentPlayers.add(new Player(playerNames.get(ind), ind));
+      }
+    }
   }
 
   /**
@@ -145,7 +117,7 @@ public class GameDataService {
    * @return the question data object
    */
   public Question getQuestion(int catIndex, int questIndex) {
-    return this.gameData.getCategories().get(catIndex).getQuestion(questIndex);
+    return this.currentGameData.getCategories().get(catIndex).getQuestion(questIndex);
   }
 
   /**
@@ -154,7 +126,7 @@ public class GameDataService {
    * @param value value to add
    */
   public void addToPlayerScore(int playerIndex, int value) {
-    final Player player = this.players.get(playerIndex);
+    final Player player = this.currentPlayers.get(playerIndex);
     player.addScore(value);
   }
 
@@ -162,7 +134,7 @@ public class GameDataService {
    * Resets all players scores.
    */
   public void resetPlayerScores() {
-    for (Player player : this.players) {
+    for (Player player : this.currentPlayers) {
       player.resetScore();
     }
   }
@@ -172,8 +144,8 @@ public class GameDataService {
    * @return player with the most score
    */
   public Player getWinner() {
-    Player winner = this.players.get(0);
-    for (Player player : this.players) {
+    Player winner = this.currentPlayers.get(0);
+    for (Player player : this.currentPlayers) {
       if (player.getScore() > winner.getScore()) {
         winner = player;
       }
@@ -182,11 +154,11 @@ public class GameDataService {
   }
 
   /**
-   * Gets the players.
+   * Gets the current players.
    * @return player objects (with scores)
    */
-  public List<Player> getPlayers() {
-    return this.players;
+  public List<Player> getCurrentPlayers() {
+    return this.currentPlayers;
   }
 
   /**
@@ -195,34 +167,55 @@ public class GameDataService {
    * @return true if we have enough data to start a game; false if otherwise
    */
   public boolean isGameReady() {
-    if (this.players.size() < minNumberOfPlayers) {
+    // Do we have enough players?
+    if (this.currentPlayers.size() < JjDefaults.MIN_NUMBER_OF_PLAYERS) {
       return false;
     }
-    return hasEnoughGameData();
+    // Is there usable game data?
+     if (this.currentGameData == null) {
+       return false;
+     }
+    return this.currentGameData.isGameDataUsable();
   }
 
-
   /**
-   * Determines if there is enough data for a game except the players.
-   * @return true if we have all data ignoring the players; false if otherwise
+   * Loads default games from disk to memory. The games are expected to be in the same resource
+   * folder as the <code>DefaultGames.class</code>.
+   * @return true if the loading was successful; false if otherwise
    */
-  public boolean hasEnoughGameData() {
-    if (this.gameData.getCategories().size() < minNumberOfCategories) {
+  public boolean loadDefaultGames() {
+    try {
+      // Obtaining the list of files in the games directory.
+      for (File gameFile : DefaultGames.getDefaultGameFiles()) {
+        GameData gameData = parseGameData(gameFile.getAbsolutePath());
+        if (gameData.isGameDataUsable()) {
+          this.allGames.add(gameData);
+        }
+      }
+      return true;
+    } catch (Exception e) {
       return false;
     }
-    if (this.gameData.getCategories().get(0).getQuestionsCount() < minNumberOfQuestions) {
-      return false;
-    }
-    return true;
   }
 
   /**
-   * Loads game data from a given file.
+   * Gets all known games.
+   * @return all games data
+   */
+  public List<GameData> getAllGames() {
+    return this.allGames;
+  }
+
+  /**
+   * Loads game data from a given file. Note, that the parsed data is not validated and returned
+   * as is. No instance state on the service object is modified as a result, so if this is the game
+   * to load, call <code>#setCurrentGameData</code> method.
    * @param fileName absolute path to the file
-   * @return parsed game data file results
+   * @return parsed game data
+   * @see #setCurrentGameData(GameData)
    */
-  public FileParsingResult loadGameData(String fileName) {
-    final FileParsingResult result = new FileParsingResult(fileName);
+  public GameData parseGameData(String fileName) {
+    GameData gameData = new GameData(fileName);
 
     // Loading the game data from an XML file.
     Properties props = new Properties();
@@ -231,227 +224,160 @@ public class GameDataService {
       props.loadFromXML(in);
     } catch (Exception e) {
       LOGGER.log(Level.SEVERE, "Unable to open or parse XML file: " + fileName, e);
-      result.addErrorMessage(MSG_PARSING);
-      return result;
+      return gameData;
     }
+    gameData.setFileDataAcquired();
 
-    // ******* First, parse required games data - name and questions/categories.
-    final String gameName;
+    // ******* First, required game name.
     try {
-      gameName = getProperty(props, "game.name");
+      String gameName = getProperty(props, "game.name");
       if (StringUtils.isBlank(gameName)) {
         LOGGER.severe("Game name is blank.");
-        result.addErrorMessage(MSG_BLANK_NAME);
-        return result;
+      } else {
+        gameData.setGameName(gameName.trim());
       }
     } catch (ServiceException e) {
       LOGGER.severe("Unable to parse game name.");
-      result.addErrorMessage(MSG_NAME_NOT_FOUND);
-      return result;
     }
 
-    final List<Category> categories = this.parseCategories(props, result);
-    if (categories == null || categories.isEmpty()) {
-      return result;
+    // ******* Optional game description.
+    final String gameDescription;
+    try {
+      gameDescription = getProperty(props, "game.description");
+      if (!StringUtils.isBlank(gameDescription)) {
+        gameData.setGameDescription(gameDescription.trim());
+      }
+    } catch (ServiceException e) {
+      // Ignore the error since description is optional.
     }
 
-    this.gameData.updateGameData(gameName.trim(), categories);
-    result.setGameDataUsable();
+    // Now, parse categories and questions.
+    gameData.setCategories(this.parseCategories(props));
 
     // ****** Now, parse optional data.
-    this.parsePlayersDataIfAny(props, result);
-    this.parseBonusQuestionsIfAny(props, result);
+    gameData.setPlayersNames(this.parsePlayersDataIfAny(props));
+    gameData.setBonusQuestions(this.parseBonusQuestionsIfAny(props));
 
-    return result;
+    return gameData;
   }
 
   /**
    * Updates current game players using data from the settings UI.
    * @param playerNames player names from the player dialog
    */
-  public void updatePlayersFromNames(List<String> playerNames) {
-    this.players.clear();
-    for (int ind = 0; ind < playerNames.size(); ind++) {
-      this.players.add(new Player(playerNames.get(ind), ind));
+  public void updateCurrentPlayers(List<String> playerNames) {
+    this.currentPlayers.clear();
+    for (int ind = 0; ind < playerNames.size() && ind < JjDefaults.MAX_NUMBER_OF_PLAYERS; ind++) {
+      this.currentPlayers.add(new Player(playerNames.get(ind), ind));
     }
   }
 
   /**
    * Parses the core of the games data - questions organized into categories.
-   * @param props  properties file
-   * @param result object to add parsing messages to
-   * @return parsed categories or null if unable to parse
+   * The parsed data has trimmed stings but returned not validated.
+   * @param props properties file to parse data from
+   * @return parsed categories (or empty list if none is parsed)
    */
-  private List<Category> parseCategories(Properties props, FileParsingResult result) {
+  private List<Category> parseCategories(Properties props) {
     List<Category> categories = new ArrayList<>();
-    int totalQuestionsCount = 0;
     try {
-      // getting the questions/answers data
-      for (int index = 1; index <= maxNumberOfCategories + 1; ++index) {
-        final String catName = getProperty(props, "category." + index + ".name");
-        if (StringUtils.isBlank(catName)) {
-          LOGGER.severe("Category " + index + " name is blank.");
-          result.addErrorMessage(MSG_BLANK_CATEGORY_NAME);
-          break;
+      // Notice that the (user facing) index starts at 1.
+      for (int categoryNumber = 1; categoryNumber < MAX_LOOP; ++categoryNumber) {
+        String categoryName = getProperty(props, "category." + categoryNumber + ".name");
+        if (StringUtils.isBlank(categoryName)) {
+          categoryName = "";
+          LOGGER.severe("Category " + categoryNumber + " name is blank.");
         }
-        List<Question> questions = new ArrayList<>();
-        try {
-          for (int k = 1; k <= maxNumberOfQuestions + 1; ++k) {
-            int points;
-            try {
-              points = getIntProperty(props, "question." + k + ".points");
-            } catch (ServiceException e) {
-              points = k * this.defaultQuestionsPointsMultiplier;
-            }
-            final String question = getProperty(props, "category." + index + ".question." + k);
-            final String answer = getProperty(props, "category." + index + ".answer." + k);
-            if (StringUtils.isBlank(question)) {
-              LOGGER.severe("Question blank.");
-              result.addErrorMessage(MSG_BLANK_QUESTION);
-              return null;
-            }
-            if (StringUtils.isBlank(answer)) {
-              LOGGER.severe("Answer blank.");
-              result.addErrorMessage(MSG_BLANK_ANSWER);
-              return null;
-            }
-            Question q = new Question(question.trim(), answer.trim(), points);
-            questions.add(q);
-            totalQuestionsCount++;
-          }
-        } catch (Exception e) {
-          // Stop on first error - no further questions for this category is defined.
-        }
-
-        Category c = new Category(catName.trim(), questions);
-        categories.add(c);
+        List<Question> questions = parseQuestions(props, categoryNumber);
+        categories.add(new Category(categoryName.trim(), questions));
       }
     } catch (ServiceException e) {
       // Stop at first category parsing error.
     }
-    if (categories.isEmpty()) {
-      result.addErrorMessage(MSG_NO_CATEGORIES);
-      LOGGER.severe("No questions/categories are parsed.");
-      return null;
-    }
-    if (categories.size() < minNumberOfCategories) {
-      result.addErrorMessage(MSG_NOT_ENOUGH_CATEGORIES, String.valueOf(minNumberOfCategories));
-      LOGGER.severe("Not enough categories are parsed - " + categories.size());
-      return null;
-    }
-    if (categories.size() > maxNumberOfCategories) {
-      result.addErrorMessage(MSG_TOO_MANY_CATEGORIES, String.valueOf(maxNumberOfCategories));
-      LOGGER.severe("Too many categories are parsed - " + categories.size());
-      return null;
-    }
-    final int numberOfQuestions = categories.get(0).getQuestionsCount();
-    for (Category category : categories) {
-      if (category.getQuestionsCount() == 0) {
-        result.addErrorMessage(MSG_NO_QUESTIONS);
-        LOGGER.severe("No questions are parse in a category");
-        return null;
-      } else if (category.getQuestionsCount() < minNumberOfQuestions) {
-        result.addErrorMessage(MSG_NOT_ENOUGH_QUESTIONS, String.valueOf(minNumberOfQuestions));
-        LOGGER.severe("Not enough questions in a category - " + category.getQuestionsCount());
-        return null;
-      } else if (category.getQuestionsCount() > maxNumberOfQuestions) {
-        result.addErrorMessage(MSG_TOO_MANY_QUESTIONS, String.valueOf(maxNumberOfQuestions));
-        LOGGER.severe("Too many questions are parse in a category - " + category.getQuestionsCount());
-        return null;
-      }
-      if (numberOfQuestions != category.getQuestionsCount()) {
-        result.addErrorMessage(MSG_NOT_MATCHING_QUESTIONS);
-        LOGGER.severe("Uneven number of questions in categories - " + category.getQuestionsCount());
-        return null;
-      }
-    }
-    result.addInfoMessage(MSG_QUESTIONS_PARSED, String.valueOf(totalQuestionsCount), String.valueOf(categories.size()));
     return categories;
   }
 
   /**
-   * Updates the player names in the GameFileData.
-   * Note, that it doesn't update current game players - it's assumed
-   * to be updated from the code that initiated parsing the file.
-   * @param props  properties file
-   * @param result object to add parsing messages to
+   * Parses questions for a specified category.
+   * The parsed data has trimmed stings but returned not validated.
+   * @param props properties to parse the data from
+   * @param categoryNumber category number to parse the questions for
+   * @return list of parsed questions (or none if parsed)
    */
-  private void parsePlayersDataIfAny(Properties props, FileParsingResult result) {
-    List<String> playerNames = new ArrayList<>();
-    boolean isTooMany = false;
-    // Notice that the (user facing) index starts at 1.
-    for (int ind = 1; ind <= (maxNumberOfPlayers + 1); ind++) {
-      try {
-        String playerName = getProperty(props, "player." + ind + ".name");
-        if (ind > maxNumberOfPlayers) {
-          isTooMany = true;
-          break;
+  private List<Question> parseQuestions(Properties props, int categoryNumber) {
+    List<Question> questions = new ArrayList<>();
+    try {
+      for (int questionNumber = 1; questionNumber < MAX_LOOP; questionNumber++) {
+        int points;
+        try {
+          points = getIntProperty(props, "question." + questionNumber + ".points");
+        } catch (ServiceException e) {
+          points = questionNumber * JjDefaults.QUESTION_POINTS_MULTIPLIER;
         }
-        if (StringUtils.isBlank(playerName)) {
-          result.addWarningMessage(MSG_BLANK_PLAYER_NAME, String.valueOf(ind));
-        } else {
-          playerNames.add(playerName.trim());
+        final String question = getProperty(
+            props, "category." + categoryNumber + ".question." + questionNumber);
+        final String answer = getProperty(
+            props, "category." + categoryNumber + ".answer." + questionNumber);
+        if (!StringUtils.isBlank(question) && !StringUtils.isBlank(answer)) {
+          questions.add(new Question(question.trim(), answer.trim(), points));
         }
-      } catch (ServiceException e) {
-        // Stop on the first error, since there are no more players (or at all).
-        break;
       }
+    } catch (Exception e) {
+      // Stop on first error - no further questions for this category is defined.
     }
-
-    // Ignoring players if not enough players are parsed.
-    int playersCount = playerNames.size();
-    if (playersCount > 0 && playersCount < minNumberOfPlayers) {
-      LOGGER.warning("Ignoring players since the number is less then " + MSG_TOO_FEW_PLAYERS);
-      result.addWarningMessage(MSG_TOO_FEW_PLAYERS, String.valueOf(minNumberOfPlayers));
-      return;
-    }
-
-    // Adding a warning message if extraneous players are dropped.
-    if (isTooMany) {
-      result.addWarningMessage(MSG_TOO_MANY_PLAYERS);
-    }
-    result.addInfoMessage(MSG_PLAYERS_PARSED, String.valueOf(playersCount));
-    this.gameData.updatePlayersNames(playerNames);
+    return questions;
   }
 
   /**
-   * Parses bonus questions if found.
+   * Parses players from the passed game properties file.
+   * Empty player names are skipped/ignored.
+   * Note, that it doesn't update current game players - it's assumed
+   * to be updated from the code that initiated parsing the file.
    * @param props  properties file
-   * @param result object to add parsing messages to
+   * @return parsed valid player names list (or empty if none is parsed)
    */
-  private void parseBonusQuestionsIfAny(Properties props, FileParsingResult result) {
+  private List<String> parsePlayersDataIfAny(Properties props) {
+    List<String> playerNames = new ArrayList<>();
+    try {
+      // Notice that the (user facing) index starts at 1.
+      for (int playerNumber = 1; playerNumber < MAX_LOOP; playerNumber++) {
+        String playerName = getProperty(props, "player." + playerNumber + ".name");
+        if (!StringUtils.isBlank(playerName)) {
+          playerNames.add(playerName.trim());
+        }
+      }
+    } catch (ServiceException e) {
+      // Stop on the first error, since there are no more players (or at all).
+    }
+    return playerNames;
+  }
+
+  /**
+   * Parses bonus questions if found. Empty string values are ignored/skipped.
+   * @param props  properties file
+   * @return parsed valid bonus questions (or empty list if no questions are parsed)
+   */
+  private List<Question> parseBonusQuestionsIfAny(Properties props) {
     int bonusPoints;
     try {
       bonusPoints = getIntProperty(props, "bonus.question.points");
     } catch (ServiceException e) {
-      bonusPoints = defaultBonusQuestionPoints;
+      bonusPoints = JjDefaults.BONUS_QUESTION_POINTS;
     }
-    // Notice that the (user facing) index starts at 1.
     final List<Question> questions = new ArrayList<>();
-    for (int ind = 1; ind <= maxNumberOfBonusQuestions; ind++) {
-      // It's unlikely that we get more bonus questions than the max,
-      // but I wonder if displaying a message would also be nice.
-      try {
-        String bQuestion = getProperty(props, "bonus." + ind + ".question");
-        String bAnswer = getProperty(props, "bonus." + ind + ".answer");
-        questions.add(new Question(bQuestion, bAnswer, bonusPoints));
-      } catch (ServiceException e) {
-        // Stop on the first error, since there are no more questions (or at all).
-        break;
+    try {
+      // Notice that the (user facing) index starts at 1.
+      for (int questionNumber = 1; questionNumber < MAX_LOOP; questionNumber++) {
+        String questionStr = getProperty(props, "bonus." + questionNumber + ".question");
+        String answerStr = getProperty(props, "bonus." + questionNumber + ".answer");
+        if (!StringUtils.isBlank(questionStr) && !StringUtils.isBlank(answerStr)) {
+          questions.add(new Question(questionStr.trim(), answerStr.trim(), bonusPoints));
+        }
       }
+    } catch (ServiceException e) {
+      // Stop on the first error, since there are no more questions (or at all).
     }
-    int playersCount = gameData.getPlayerNames().size();
-    int bonusQuestionsCount = questions.size();
-    if (bonusQuestionsCount > 0) {
-      if (playersCount > 0 && bonusQuestionsCount < playersCount) {
-        result.addWarningMessage(MSG_TOO_FEW_BONUS_QUESTIONS, String.valueOf(playersCount));
-      } else {
-        this.gameData.updateBonusQuestions(questions);
-        result.addInfoMessage(MSG_BONUS_QUESTIONS_PARSED, String.valueOf(bonusQuestionsCount));
-      }
-    } else {
-      result.addInfoMessage(MSG_BONUS_QUESTIONS_PARSED, "0");
-    }
+    return questions;
   }
 
   /**
@@ -467,7 +393,7 @@ public class GameDataService {
     if (propStr == null) {
       throw new ServiceException("String property \"" + propName + "\" is not found!");
     }
-    return propStr;
+    return Utilities.removeExtraWhitespace(propStr);
   }
 
   /**

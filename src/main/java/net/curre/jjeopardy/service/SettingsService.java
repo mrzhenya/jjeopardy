@@ -17,6 +17,7 @@
 package net.curre.jjeopardy.service;
 
 import net.curre.jjeopardy.bean.Settings;
+import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.Utilities;
 
 import java.io.File;
@@ -65,29 +66,11 @@ public class SettingsService {
   /** Absolute path to the settings file. */
   private final String settingsFilePath;
 
-  /** Default and minimum game table width. */
-  private final int minGameTableWidth;
-
-  /** Default and minimum game table height. */
-  private final int minGameTableHeight;
-
   /**
    * Ctor.
    * @param settingsFilePath path to the settings file (for test) or null if default should be used
    */
   public SettingsService(String settingsFilePath) {
-    // Parsing defaults from the properties file.
-    int gameTableWidth = 0, gameTableHeight = 0;
-    try {
-      gameTableWidth = Utilities.getDefaultIntProperty("jj.defaults.game.table.width");
-      gameTableHeight = Utilities.getDefaultIntProperty("jj.defaults.game.table.height");
-    } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Unable to initialize default properties", e);
-      System.exit(1);
-    }
-    this.minGameTableWidth = gameTableWidth;
-    this.minGameTableHeight = gameTableHeight;
-
     if (settingsFilePath == null) {
       settingsFilePath = getVerifiedSettingsFilePath();
     }
@@ -130,10 +113,10 @@ public class SettingsService {
    * @param height the table height
    */
   public void updateMainWindowSize(int width, int height) {
-    if (width >= this.minGameTableWidth) {
+    if (width >= JjDefaults.GAME_TABLE_MIN_WIDTH) {
       this.settings.setGameWindowWidth(width);
     }
-    if (height >= this.minGameTableHeight) {
+    if (height >= JjDefaults.GAME_TABLE_MIN_HEIGHT) {
       this.settings.setGameWindowHeight(height);
     }
   }
@@ -161,7 +144,7 @@ public class SettingsService {
     } catch (Exception e) {
       LOGGER.log(Level.WARNING, "Unable to load a settings file. Creating a default one.", e);
     }
-    return new Settings(this.minGameTableWidth, this.minGameTableHeight);
+    return new Settings();
   }
 
   /**

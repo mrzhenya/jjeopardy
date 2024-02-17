@@ -18,6 +18,7 @@ package net.curre.jjeopardy.bean;
 
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.laf.LafThemeId;
+import net.curre.jjeopardy.util.JjDefaults;
 
 import java.io.Serializable;
 
@@ -53,12 +54,10 @@ public class Settings implements Serializable {
 
   /**
    * Ctor.
-   * @param gameWindowWidth game table width
-   * @param gameWindowHeight game table height
    */
-  public Settings(int gameWindowWidth, int gameWindowHeight) {
-    this.gameWindowWidth = gameWindowWidth;
-    this.gameWindowHeight = gameWindowHeight;
+  public Settings() {
+    this.gameWindowWidth = JjDefaults.GAME_TABLE_MIN_WIDTH;
+    this.gameWindowHeight = JjDefaults.GAME_TABLE_MIN_HEIGHT;
     this.lafThemeId = DEFAULT_LAF_THEME_ID;
     this.localeId = LocaleService.DEFAULT_LOCALE.toString();
     this.lastCurrentDirectory = System.getProperty("user.home");

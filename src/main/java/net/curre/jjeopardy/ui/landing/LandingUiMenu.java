@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.curre.jjeopardy.ui;
+package net.curre.jjeopardy.ui.landing;
 
 import net.curre.jjeopardy.service.*;
 import net.curre.jjeopardy.service.LafService;
