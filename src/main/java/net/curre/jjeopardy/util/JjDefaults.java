@@ -76,6 +76,12 @@ public class JjDefaults {
   /** Preferred game table header height (where game categories are displayed). */
   public static final int GAME_TABLE_HEADER_HEIGHT;
 
+  /** Add/remove players dialog width. */
+  public static final int PLAYER_DIALOG_WIDTH;
+
+  /** Add/remove players dialog height. */
+  public static final int PLAYER_DIALOG_HEIGHT;
+
   /** Private class logger. */
   private static final Logger LOGGER = Logger.getLogger(JjDefaults.class.getName());
 
@@ -99,6 +105,8 @@ public class JjDefaults {
     GAME_TABLE_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.game.table.min.height");
     GAME_TABLE_MIN_ROW_HEIGHT = getDefaultIntProperty("jj.defaults.min.row.height");
     GAME_TABLE_HEADER_HEIGHT = getDefaultIntProperty("jj.defaults.preferred.header.height");
+    PLAYER_DIALOG_WIDTH = getDefaultIntProperty("jj.defaults.player.dialog.width");
+    PLAYER_DIALOG_HEIGHT = getDefaultIntProperty("jj.defaults.player.dialog.height");
   }
 
   /**

@@ -47,5 +47,7 @@ public class JjDefaultsTest {
     assertTrue(JjDefaults.GAME_TABLE_MIN_HEIGHT > 0);
     assertTrue(JjDefaults.GAME_TABLE_MIN_ROW_HEIGHT > 0);
     assertTrue(JjDefaults.GAME_TABLE_HEADER_HEIGHT > 0);
+    assertTrue(JjDefaults.PLAYER_DIALOG_WIDTH > 0);
+    assertTrue(JjDefaults.PLAYER_DIALOG_HEIGHT > 0);
   }
 }

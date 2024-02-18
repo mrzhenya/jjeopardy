@@ -44,12 +44,6 @@ import java.util.logging.Logger;
  */
 public class PlayerDialog extends JDialog {
 
-  /** Preferred width for the dialog. */
-  private static final int DIALOG_WIDTH = 460;
-
-  /** Preferred height for the dialog. */
-  private static final int DIALOG_HEIGHT = 450;
-
   /** Class logger. */
   private static final Logger LOGGER = Logger.getLogger(PlayerDialog.class.getName());
 
@@ -113,7 +107,7 @@ public class PlayerDialog extends JDialog {
     this.add(saveButton, new TableLayoutConstraints(
       1, 5, 1, 5, TableLayout.CENTER, TableLayout.CENTER));
 
-    this.setPreferredSize(new Dimension(DIALOG_WIDTH, DIALOG_HEIGHT));
+    this.setPreferredSize(new Dimension(JjDefaults.PLAYER_DIALOG_WIDTH, JjDefaults.PLAYER_DIALOG_HEIGHT));
     this.pack();
   }
 
