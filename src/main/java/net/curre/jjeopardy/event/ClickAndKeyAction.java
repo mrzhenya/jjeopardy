@@ -17,27 +17,51 @@
 package net.curre.jjeopardy.event;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 /**
  * Basic base action to use for button that support mouse click/action
- * and key press (enter).
+ * and key press (enter). To create an action of this class, use the
+ * <code>createAndAddAction</code> method, that also conveniently adds
+ * this action to the passed button.
  *
  * @author Yevgeny Nyden
+ * @see #createAndAddAction(JButton, Runnable)
  */
-public abstract class ClickAndKeyAction extends AbstractAction implements KeyListener {
+public class ClickAndKeyAction extends AbstractAction implements KeyListener {
 
-  /** Handles the action */
-  protected abstract void handleAction();
+  /**
+   * Creates a new ClickAndKeyAction and adds it to the passed button
+   * as an action handler and a key listener.
+   * @param button button to add the action to
+   * @param actionHandler runnable to execute for this action
+   */
+  public static void createAndAddAction(JButton button, Runnable actionHandler) {
+    ClickAndKeyAction action = new ClickAndKeyAction(actionHandler);
+    button.setAction(action);
+    button.addKeyListener(action);
+  }
+
+  /** Runnable to execute on action. */
+  private final Runnable actionHandler;
+
+  /**
+   * Ctor.
+   * @param actionHandler runnable to execute on action
+   */
+  private ClickAndKeyAction(Runnable actionHandler) {
+    this.actionHandler = actionHandler;
+  }
 
   /**
    * Handles the mouse click action.
    * @param e the event to be processed
    */
   public void actionPerformed(ActionEvent e) {
-    this.handleAction();
+    this.actionHandler.run();
   }
 
   @Override
@@ -50,10 +74,11 @@ public abstract class ClickAndKeyAction extends AbstractAction implements KeyLis
   @Override
   public void keyPressed(KeyEvent e) {
     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-      this.handleAction();
+      this.actionHandler.run();
     }
   }
 
   @Override
-  public void keyReleased(KeyEvent e) {}
+  public void keyReleased(KeyEvent e) {
+  }
 }

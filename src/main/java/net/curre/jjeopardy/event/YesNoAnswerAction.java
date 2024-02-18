@@ -25,12 +25,14 @@ import net.curre.jjeopardy.ui.dialog.QuestionDialog;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 /**
  * Handler for the Yes/No buttons (Correct/Wrong answers).
  * @author Yevgeny Nyden
  */
-public class YesNoAnswerAction extends AbstractAction {
+public class YesNoAnswerAction extends AbstractAction implements KeyListener {
 
   /** Reference to the main Question dialog UI. */
   private final QuestionDialog questionDialog;
@@ -55,6 +57,29 @@ public class YesNoAnswerAction extends AbstractAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
+    this.handleAction();
+  }
+
+  @Override
+  public void keyTyped(KeyEvent e) {}
+
+  /**
+   * Handles the key press event and handles action when Enter is pressed.
+   * @param e the event to be processed
+   */
+  @Override
+  public void keyPressed(KeyEvent e) {
+    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+      this.handleAction();
+    }
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e) {
+  }
+
+  /** Handles action. */
+  private void handleAction() {
     final Registry registry = AppRegistry.getInstance();
     final SoundService soundService = registry.getSoundService();
     if (this.isYes) {

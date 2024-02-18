@@ -18,14 +18,13 @@ package net.curre.jjeopardy.ui.player;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.service.LocaleService;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.event.ActionEvent;
 import java.util.logging.Logger;
 
 /**
@@ -87,7 +86,7 @@ class PlayerItem extends JPanel {
 
     // ******* Remove player button.
     this.removeButton = new JButton();
-    this.removeButton.setAction(new AddRemoveAction(false));
+    ClickAndKeyAction.createAndAddAction(this.removeButton, this::handleRemovePlayerAction);
     this.removeButton.setText(" " + LocaleService.getString("jj.playerdialog.addplayers.button.remove") + " ");
     // By default, the button is disabled and not visible.
     this.removeButton.setEnabled(false);
@@ -97,7 +96,7 @@ class PlayerItem extends JPanel {
 
     // ******* Add a new player button.
     this.addButton = new JButton();
-    this.addButton.setAction(new AddRemoveAction(true));
+    ClickAndKeyAction.createAndAddAction(this.addButton, this::handleAddPlayerAction);
     this.addButton.setText(" " + LocaleService.getString("jj.playerdialog.addplayers.button.add") + " ");
     // By default, the button is disabled and not visible.
     this.addButton.setEnabled(false);
@@ -151,33 +150,15 @@ class PlayerItem extends JPanel {
     return LocaleService.getString("jj.player.name", String.valueOf(this.playerIndex + 1));
   }
 
-  /**
-   * Handler for the Add/Remove buttons.
-   */
-  private class AddRemoveAction extends AbstractAction {
+  /** Handles add player button action. */
+  protected void handleAddPlayerAction() {
+    LOGGER.info("Adding player.");
+    this.playersPane.addNewPlayerItem(null);
+  }
 
-    /** true if this is an Add action (Remove if otherwise). */
-    private final boolean isAdd;
-
-    /**
-     * Ctor.
-     * @param isAdd true if this is an Add action, Remove if otherwise
-     */
-    private AddRemoveAction(boolean isAdd) {
-      this.isAdd = isAdd;
-    }
-
-    /**
-     * Performs the action.
-     * @param e the event to be processed
-     */
-    public void actionPerformed(ActionEvent e) {
-      LOGGER.info("Performing " + (this.isAdd ? "add" : "remove") + " player action.");
-      if (this.isAdd) {
-        PlayerItem.this.playersPane.addNewPlayerItem(null);
-      } else {
-        PlayerItem.this.playersPane.removePlayerItem(PlayerItem.this.playerIndex);
-      }
-    }
+  /** Handles remove player button action. */
+  protected void handleRemovePlayerAction() {
+    LOGGER.info("Removing player.");
+    this.playersPane.removePlayerItem(this.playerIndex);
   }
 }

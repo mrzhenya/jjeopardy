@@ -19,6 +19,7 @@ package net.curre.jjeopardy.ui.player;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.bean.Player;
+import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
@@ -26,14 +27,12 @@ import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.ui.landing.LandingUi;
 import net.curre.jjeopardy.util.JjDefaults;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.List;
@@ -108,14 +107,38 @@ public class PlayerDialog extends JDialog {
 
     // ******* Save button.
     final JButton saveButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(saveButton, this::handleSavePlayersAction);
     saveButton.setFont(font);
-    saveButton.setAction(new SavePlayersAction());
     saveButton.setText("Save");
     this.add(saveButton, new TableLayoutConstraints(
       1, 5, 1, 5, TableLayout.CENTER, TableLayout.CENTER));
 
     this.setPreferredSize(new Dimension(DIALOG_WIDTH, DIALOG_HEIGHT));
     this.pack();
+  }
+
+  /** Handles the Save players action. */
+  private void handleSavePlayersAction() {
+    LOGGER.info("Saving players.");
+    Registry registry = AppRegistry.getInstance();
+    GameDataService gameService = registry.getGameDataService();
+
+    PlayerDialog.this.playersPane.cleanEmptyPlayers();
+    List<String> playerNames = playersPane.getPlayerNames();
+    if (playerNames.size() < JjDefaults.MIN_NUMBER_OF_PLAYERS) {
+      LOGGER.info("Not enough non-blank player names");
+      PlayerDialog.this.setVisible(false);
+      registry.getUiService().showWarningDialog(
+          LocaleService.getString("jj.playerdialog.addplayers.warn.title"),
+          LocaleService.getString("jj.playerdialog.addplayers.warn.msg",
+              String.valueOf(JjDefaults.MIN_NUMBER_OF_PLAYERS)),
+          PlayerDialog.this);
+      PlayerDialog.this.setVisible(true);
+      return;
+    }
+    gameService.updateCurrentPlayers(playerNames);
+    PlayerDialog.this.landingUi.updateLandingUi();
+    PlayerDialog.this.setVisible(false);
   }
 
   /**
@@ -146,37 +169,5 @@ public class PlayerDialog extends JDialog {
 
     @Override
     public void windowDeactivated(WindowEvent e) {}
-  }
-  /**
-   * Action to handle the Save players action.
-   */
-  private class SavePlayersAction extends AbstractAction {
-
-    /**
-     * Handles the Save players action.
-     * @param e the event to be processed
-     */
-    public void actionPerformed(ActionEvent e) {
-      LOGGER.info("Saving players.");
-      Registry registry = AppRegistry.getInstance();
-      GameDataService gameService = registry.getGameDataService();
-
-      PlayerDialog.this.playersPane.cleanEmptyPlayers();
-      List<String> playerNames = playersPane.getPlayerNames();
-      if (playerNames.size() < JjDefaults.MIN_NUMBER_OF_PLAYERS) {
-        LOGGER.info("Not enough non-blank player names");
-        PlayerDialog.this.setVisible(false);
-        registry.getUiService().showWarningDialog(
-            LocaleService.getString("jj.playerdialog.addplayers.warn.title"),
-            LocaleService.getString("jj.playerdialog.addplayers.warn.msg",
-                String.valueOf(JjDefaults.MIN_NUMBER_OF_PLAYERS)),
-            PlayerDialog.this);
-        PlayerDialog.this.setVisible(true);
-        return;
-      }
-      gameService.updateCurrentPlayers(playerNames);
-      PlayerDialog.this.landingUi.updateLandingUi();
-      PlayerDialog.this.setVisible(false);
-    }
   }
 }

@@ -21,6 +21,7 @@ import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Settings;
+import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.event.GameTableMouseListener;
 import net.curre.jjeopardy.event.GameWindowListener;
 import net.curre.jjeopardy.service.AppRegistry;
@@ -31,7 +32,6 @@ import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.dialog.QuestionDialog;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -43,7 +43,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.util.logging.Logger;
 
 /**
@@ -232,24 +231,24 @@ public class MainWindow extends JFrame {
     // Bonus questions button.
     this.bonusQuestionsButton = new JButton();
     Font buttonFont = lafTheme.getButtonFont();
+    ClickAndKeyAction.createAndAddAction(this.bonusQuestionsButton, this::handleBonusQuestionsAction);
     this.bonusQuestionsButton.setFont(buttonFont);
-    this.bonusQuestionsButton.setAction(new BonusQuestionsAction());
     this.bonusQuestionsButton.setText(LocaleService.getString("jj.game.buttons.bonus.name"));
     buttonsPanel.add(this.bonusQuestionsButton, new TableLayoutConstraints(
       1, 1, 1, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Restart the game button.
     this.resetButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(this.resetButton, this::handleRestartGameAction);
     this.resetButton.setFont(buttonFont);
-    this.resetButton.setAction(new RestartGameAction());
     this.resetButton.setText(LocaleService.getString("jj.game.buttons.restart.name"));
     buttonsPanel.add(this.resetButton, new TableLayoutConstraints(
       3, 1, 3, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Quit the game button.
     this.quitButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(this.quitButton, this::handleEndGameAction);
     this.quitButton.setFont(buttonFont);
-    this.quitButton.setAction(new EndGameAction());
     this.quitButton.setText(LocaleService.getString("jj.game.buttons.quit.name"));
     buttonsPanel.add(this.quitButton, new TableLayoutConstraints(
       5, 1, 5, 1, TableLayout.FULL, TableLayout.FULL));
@@ -257,48 +256,28 @@ public class MainWindow extends JFrame {
     return buttonsPanel;
   }
 
-  /** Handler for the Bonus question button. */
-  private class BonusQuestionsAction extends AbstractAction {
-
-    /** Ctor. */
-    private BonusQuestionsAction() {}
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Registry registry = AppRegistry.getInstance();
-      registry.getQuestionDialog().startAskingBonusQuestions();
-      MainWindow.this.bonusQuestionsButton.setEnabled(false);
-    }
+  /** Handles the Bonus question button action. */
+  private void handleBonusQuestionsAction() {
+    Registry registry = AppRegistry.getInstance();
+    registry.getQuestionDialog().startAskingBonusQuestions();
+    this.bonusQuestionsButton.setEnabled(false);
   }
 
-  /** Handler for the Restart game button. */
-  private static class RestartGameAction extends AbstractAction {
-
-    /** Ctor. */
-    private RestartGameAction() {}
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      AppRegistry.getInstance().getMainService().startGame();
-    }
+  /** Handles the Restart game button action. */
+  private void handleRestartGameAction() {
+    AppRegistry.getInstance().getMainService().startGame();
   }
 
-  /**
-   * Action to handle ending the game.
-   */
-  private class EndGameAction extends AbstractAction {
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      // End the game.
-      Registry registry = AppRegistry.getInstance();
-      registry.getSoundService().startMusic(SoundEnum.FINAL, 1);
-      Player winner = registry.getGameDataService().getWinner();
-      registry.getUiService().showEndGameDialog(
+  /** Handles the End game button action. */
+  private void handleEndGameAction() {
+    // End the game.
+    Registry registry = AppRegistry.getInstance();
+    registry.getSoundService().startMusic(SoundEnum.FINAL, 1);
+    Player winner = registry.getGameDataService().getWinner();
+    registry.getUiService().showEndGameDialog(
         LocaleService.getString("jj.game.enddialog.header", winner.getName()),
         LocaleService.getString("jj.game.enddialog.message", winner.getName(), String.valueOf(winner.getScore())));
-      MainWindow.this.setVisible(false);
-      registry.getLandingUi().setVisible(true);
-    }
+    MainWindow.this.setVisible(false);
+    registry.getLandingUi().setVisible(true);
   }
 }

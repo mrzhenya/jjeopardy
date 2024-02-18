@@ -18,12 +18,13 @@ package net.curre.jjeopardy.ui.dialog;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.event.ClickAndKeyAction;
+import net.curre.jjeopardy.event.QuitAppAction;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.Utilities;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -33,11 +34,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -86,7 +82,7 @@ public abstract class BasicDialog extends JDialog {
     this.setTitle(title);
     this.setResizable(false);
     this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    this.addWindowListener(new BasicDialogWindowEventsHandler());
+    this.addWindowListener(new QuitAppAction());
 
     // Setting the dialog layout.
     int columnShift = 0;
@@ -120,9 +116,7 @@ public abstract class BasicDialog extends JDialog {
 
     // Action button.
     final JButton button = new JButton();
-    BasicDialogButtonAction buttonAction = new BasicDialogButtonAction();
-    button.setAction(buttonAction);
-    button.addKeyListener(buttonAction);
+    ClickAndKeyAction.createAndAddAction(button, this::handleButtonAction);
     button.setText(buttonText);
     this.add(button, new TableLayoutConstraints(
       1 + columnShift, 5, 1 + columnShift, 5, TableLayout.CENTER, TableLayout.CENTER));
@@ -143,23 +137,13 @@ public abstract class BasicDialog extends JDialog {
   public abstract Component getContentComponent();
 
   /**
-   * Default handler for the close window action, which hides and disposes
-   * this dialog instance. Feel free to override with another handler (e.g.
-   * to keep the dialog instance in the memory).
-   */
-  public void handleCloseAction() {
-    BasicDialog.this.setVisible(false);
-    BasicDialog.this.dispose();
-  }
-
-  /**
    * Default handler for the button action, which hides and disposes
    * this dialog instance. Feel free to override with another handler (e.g.
    * to keep the dialog instance in the memory).
    */
   public void handleButtonAction() {
-    BasicDialog.this.setVisible(false);
-    BasicDialog.this.dispose();
+    this.setVisible(false);
+    this.dispose();
   }
 
   /**
@@ -231,58 +215,5 @@ public abstract class BasicDialog extends JDialog {
       count++;
     }
     return count;
-  }
-
-  /**
-   * Default window events handler, mostly to handle closing of the dialog.
-   */
-  private class BasicDialogWindowEventsHandler implements WindowListener {
-
-    @Override
-    public void windowOpened(WindowEvent e) {}
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-      BasicDialog.this.handleCloseAction();
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {}
-
-    @Override
-    public void windowIconified(WindowEvent e) {}
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {}
-
-    @Override
-    public void windowActivated(WindowEvent e) {}
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {}
-  }
-
-  /**
-   * Default button action handler.
-   */
-  private class BasicDialogButtonAction extends AbstractAction implements KeyListener {
-
-    @Override
-    public void keyTyped(KeyEvent e) {}
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-      if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-        BasicDialog.this.handleButtonAction();
-      }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {}
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      BasicDialog.this.handleButtonAction();
-    }
   }
 }

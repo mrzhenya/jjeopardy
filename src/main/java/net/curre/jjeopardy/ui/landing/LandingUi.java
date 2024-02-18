@@ -19,16 +19,16 @@ package net.curre.jjeopardy.ui.landing;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.App;
+import net.curre.jjeopardy.bean.FileParsingResult;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
-import net.curre.jjeopardy.event.LoadGameAction;
+import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.event.QuitAppAction;
-import net.curre.jjeopardy.event.ShowLibraryAction;
-import net.curre.jjeopardy.event.StartGameAction;
-import net.curre.jjeopardy.event.UpdatePlayersAction;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.service.Registry;
+import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.service.SoundService;
 import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
@@ -41,6 +41,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -270,30 +271,24 @@ public class LandingUi extends JFrame {
 
     // ******* Load game button.
     final JButton loadButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(loadButton, this::handleLoadGameAction);
     loadButton.setFont(buttonFont);
-    LoadGameAction loadGameAction = new LoadGameAction(this);
-    loadButton.setAction(loadGameAction);
-    loadButton.addKeyListener(loadGameAction);
     loadButton.setText(LocaleService.getString("jj.playerdialog.button.load"));
     gamePanel.add(loadButton, new TableLayoutConstraints(
       3, 0, 3, 0, TableLayout.CENTER, TableLayoutConstraints.CENTER));
 
     // ******* Game library button.
     this.libraryButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(this.libraryButton, this::handleShowLibraryAction);
     this.libraryButton.setFont(buttonFont);
-    ShowLibraryAction libraryAction = new ShowLibraryAction(this);
-    this.libraryButton.setAction(libraryAction);
-    this.libraryButton.addKeyListener(libraryAction);
     this.libraryButton.setText(LocaleService.getString("jj.playerdialog.button.library"));
     gamePanel.add(this.libraryButton, new TableLayoutConstraints(
       5, 0, 5, 0, TableLayout.CENTER, TableLayoutConstraints.CENTER));
 
     // ******* Start game button.
     this.startGameButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(this.startGameButton, this::handleStartGameAction);
     this.startGameButton.setFont(buttonFont);
-    StartGameAction startGameAction = new StartGameAction(this);
-    this.startGameButton.setAction(startGameAction);
-    this.startGameButton.addKeyListener(startGameAction);
     this.startGameButton.setText(LocaleService.getString("jj.playerdialog.button.start"));
     this.startGameButton.setEnabled(false);
     gamePanel.add(this.startGameButton, new TableLayoutConstraints(
@@ -348,10 +343,8 @@ public class LandingUi extends JFrame {
 
     // Add or Update players button.
     final JButton updateButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(updateButton, this::showPlayerDialog);
     updateButton.setFont(lafTheme.getButtonFont());
-    UpdatePlayersAction playersAction = new UpdatePlayersAction(this);
-    updateButton.setAction(playersAction);
-    updateButton.addKeyListener(playersAction);
     updateButton.setText(buttonText);
     panel.add(updateButton, new TableLayoutConstraints(
       4, 1, 4, 1, TableLayout.LEFT, TableLayout.CENTER));
@@ -395,5 +388,47 @@ public class LandingUi extends JFrame {
     backgroundIcon.setImage(backgroundIcon.getImage().getScaledInstance(
         JjDefaults.LANDING_UI_WIDTH, JjDefaults.LANDING_UI_LIBRARY_HEIGHT, Image.SCALE_FAST));
     return backgroundLabel;
+  }
+
+  /**
+   * Opens file chooser dialog to load a new game file.
+   */
+  private void handleLoadGameAction() {
+    LOGGER.info("Handling the Load button action.");
+    Registry registry = AppRegistry.getInstance();
+    SettingsService settingsService = registry.getSettingsService();
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setCurrentDirectory(new File(settingsService.getSettings().getLastCurrentDirectory()));
+    final int result = fileChooser.showOpenDialog(this);
+    settingsService.saveLastCurrentDirectory(fileChooser.getCurrentDirectory().getAbsolutePath());
+    settingsService.persistSettings();
+    if (result == JFileChooser.APPROVE_OPTION) {
+      File selectedFile = fileChooser.getSelectedFile();
+      GameDataService gameDataService = registry.getGameDataService();
+      GameData gameData = gameDataService.parseGameData(selectedFile.getAbsolutePath());
+      FileParsingResult parsingResults = gameData.generateFileParsingResult();
+      registry.getUiService().showParsingResult(parsingResults, this);
+
+      if (gameData.isGameDataUsable()) {
+        gameDataService.setCurrentGameData(gameData);
+        this.updateUiWithLoadedGameFile();
+      }
+    }
+  }
+
+  /**
+   * Starts a new game (assuming all data is ready and valid).
+   */
+  private void handleStartGameAction() {
+    LOGGER.info("Handling the Start Game button action.");
+    Registry registry = AppRegistry.getInstance();
+    registry.getSoundService().stopAllMusic();
+    this.setVisible(false);
+    registry.getMainService().startGame();
+  }
+
+  /** Handles the Show library button action. */
+  private void handleShowLibraryAction() {
+    this.switchBetweenLibraryAndBackgroundCard();
   }
 }

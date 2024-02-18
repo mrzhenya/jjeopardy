@@ -21,26 +21,17 @@ import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.event.BonusQuestionAction;
+import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.event.YesNoAnswerAction;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.CardLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.List;
 
 /**
@@ -193,9 +184,7 @@ public class QuestionPane extends JPanel {
 
     // ******** Show answer button.
     JButton answerButton = new JButton();
-    ShowAnswerAction answerAction = new ShowAnswerAction();
-    answerButton.setAction(answerAction);
-    answerButton.addKeyListener(answerAction);
+    ClickAndKeyAction.createAndAddAction(answerButton, this::handleShowAnswerAction);
     answerButton.setFont(lafTheme.getButtonFont());
     answerButton.setText(LocaleService.getString("jj.game.question.buttons.show.name"));
     questionPanel.add(answerButton, new TableLayoutConstraints(
@@ -358,19 +347,23 @@ public class QuestionPane extends JPanel {
       0, 1, 2, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Yes button.
-    JButton yes = new JButton();
-    yes.setFont(lafTheme.getButtonFont());
-    yes.setAction(new YesNoAnswerAction(this.questionDialog, player.getIndex(), true));
-    yes.setText(LocaleService.getString("jj.game.answer.button.yes"));
-    panel.add(yes, new TableLayoutConstraints(
+    JButton yesButton = new JButton();
+    yesButton.setFont(lafTheme.getButtonFont());
+    YesNoAnswerAction yesAction = new YesNoAnswerAction(this.questionDialog, player.getIndex(), true);
+    yesButton.setAction(yesAction);
+    yesButton.addKeyListener(yesAction);
+    yesButton.setText(LocaleService.getString("jj.game.answer.button.yes"));
+    panel.add(yesButton, new TableLayoutConstraints(
       1, 4, 1, 4, TableLayout.FULL, TableLayout.FULL));
 
     // No button.
-    JButton no = new JButton();
-    no.setFont(lafTheme.getButtonFont());
-    no.setAction(new YesNoAnswerAction(this.questionDialog, player.getIndex(), false));
-    no.setText(LocaleService.getString("jj.game.answer.button.no"));
-    panel.add(no, new TableLayoutConstraints(
+    JButton noButton = new JButton();
+    noButton.setFont(lafTheme.getButtonFont());
+    YesNoAnswerAction noAction = new YesNoAnswerAction(this.questionDialog, player.getIndex(), false);
+    noButton.setAction(noAction);
+    noButton.addKeyListener(noAction);
+    noButton.setText(LocaleService.getString("jj.game.answer.button.no"));
+    panel.add(noButton, new TableLayoutConstraints(
       1, 6, 1, 6, TableLayout.FULL, TableLayout.FULL));
 
     JPanel containerPanel = new JPanel();
@@ -382,40 +375,15 @@ public class QuestionPane extends JPanel {
   }
 
   /**
-   * Handler for the Show answer button.
+   * Handles the Show answer button action.
    */
-  private class ShowAnswerAction extends AbstractAction implements KeyListener {
-
-    /** Ctor. */
-    private ShowAnswerAction() {}
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      this.performAction();
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {}
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-      if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-        this.performAction();
-      }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {}
-
-    /** Performs the action. */
-    private void performAction() {
-      AppRegistry.getInstance().getSoundService().stopAllMusic();
-      QuestionPane.this.questionDialog.stopTimer();
-      if (QuestionPane.this.isBonusQuestionsRound) {
-        QuestionPane.this.showBonusAnswer();
-      } else {
-        QuestionPane.this.showAnswer();
-      }
+  private void handleShowAnswerAction() {
+    AppRegistry.getInstance().getSoundService().stopAllMusic();
+    this.questionDialog.stopTimer();
+    if (this.isBonusQuestionsRound) {
+      this.showBonusAnswer();
+    } else {
+      this.showAnswer();
     }
   }
 }
