@@ -47,6 +47,11 @@
       <version>5.10.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>de.perdian.maven.plugins</groupId>
+      <artifactId>macosappbundler-maven-plugin</artifactId>
+      <version>1.20.1</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -74,6 +79,32 @@
                 </transformer>
               </transformers>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- https://github.com/perdian/macosappbundler-maven-plugin?tab=readme-ov-file -->
+      <plugin>
+        <groupId>de.perdian.maven.plugins</groupId>
+        <artifactId>macosappbundler-maven-plugin</artifactId>
+        <version>1.20.0</version>
+        <configuration>
+          <plist>
+            <CFBundleIconFile>src/main/resources/bundle/JJeopardy.icns</CFBundleIconFile>
+            <CFBundleDisplayName>JJeopardy</CFBundleDisplayName>
+            <CFBundleIdentifier>JJeopardy</CFBundleIdentifier>
+            <CFBundleName>JJeopardy</CFBundleName>
+            <JVMMainClassName>net.curre.jjeopardy.App</JVMMainClassName>
+          </plist>
+          <dmg>
+            <generate>true</generate>
+          </dmg>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>bundle</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
