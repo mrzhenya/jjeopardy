@@ -23,6 +23,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.Map;
@@ -110,7 +111,8 @@ public class SoundService {
   private Clip openAudioStreamHelper(SoundEnum soundEnum) {
     try {
       InputStream inStream = soundEnum.getSoundFileStream();
-      AudioInputStream stream = AudioSystem.getAudioInputStream(inStream);
+      InputStream bufferedIn = new BufferedInputStream(inStream);
+      AudioInputStream stream = AudioSystem.getAudioInputStream(bufferedIn);
       AudioFormat format = stream.getFormat();
       stream = AudioSystem.getAudioInputStream(format, stream);
       DataLine.Info info = new DataLine.Info(Clip.class, stream.getFormat(),
