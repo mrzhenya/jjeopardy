@@ -23,14 +23,19 @@ import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.games.DefaultGames;
 import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.Utilities;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,21 +58,24 @@ public class GameDataService {
    */
   private static final int MAX_LOOP = 30;
 
+  /** Name of the directory under settings where library games are stored. */
+  private static final String GAME_DIRECTORY = "games";
+
   /** Current game data (game name, questions, categories, and optional players). */
   private GameData currentGameData;
 
   /** Current game players and their scores. */
   private final List<Player> currentPlayers;
 
-  /** All known games. */
-  private final List<GameData> allGames;
+  /** All known games in the game library. */
+  private final List<GameData> libraryGames;
 
   /**
    * Ctor.
    */
   protected GameDataService() {
     this.currentPlayers = new ArrayList<>();
-    this.allGames = new ArrayList<>();
+    this.libraryGames = new ArrayList<>();
   }
 
   /**
@@ -179,19 +187,57 @@ public class GameDataService {
   }
 
   /**
-   * Loads default games from disk to memory. The games are expected to be in the same resource
-   * folder as the <code>DefaultGames.class</code>.
+   * Copied default (packaged games) to the library folder (under settings) if
+   * they have not been copied there already.
+   */
+  public static void copyDefaultGamesToLibraryIfNeeded() {
+    Path gamesDir = Paths.get(getGameLibraryDirectoryPath());
+    if (Files.exists(gamesDir)) {
+      // If the games directory exists, assume the files have been copied there already.
+      return;
+    }
+    try {
+      gamesDir.toFile().mkdir();
+      List<File> gameFiles = DefaultGames.getDefaultGameFiles();
+      for (File originalFile : gameFiles) {
+        File destFile = new File(gamesDir.toString() + File.separatorChar + originalFile.getName());
+        FileUtils.copyFile(originalFile, destFile);
+      }
+    } catch (Exception e) {
+      LOGGER.log(Level.WARNING, "Unable to copy default game files", e);
+    }
+  }
+
+  /**
+   * Loads valid library games from disk to memory. The games are expected to be
+   * in the game settings directory nested in its own directory. Invalid (non-playable
+   * games are ignored).
    * @return true if the loading was successful; false if otherwise
    */
-  public boolean loadDefaultGames() {
+  public boolean loadLibraryGames() {
     try {
+      Path gamesDir = Paths.get(getGameLibraryDirectoryPath());
+      if (!Files.exists(gamesDir)) {
+        return false;
+      }
+
       // Obtaining the list of files in the games directory.
-      for (File gameFile : DefaultGames.getDefaultGameFiles()) {
+      final List<File> gameFiles = new ArrayList<>();
+      for (File gameFile : Objects.requireNonNull(gamesDir.toFile().listFiles())) {
+        if (StringUtils.startsWith(gameFile.getName(), DefaultGames.class.getSimpleName())) {
+          continue;
+        }
+        gameFiles.add(gameFile);
+      }
+
+      // Parsing and validating game files.
+      for (File gameFile : gameFiles) {
         GameData gameData = parseGameData(gameFile.getAbsolutePath());
         if (gameData.isGameDataUsable()) {
-          this.allGames.add(gameData);
+          this.libraryGames.add(gameData);
         }
       }
+      Collections.sort(this.libraryGames);
       return true;
     } catch (Exception e) {
       return false;
@@ -199,11 +245,64 @@ public class GameDataService {
   }
 
   /**
+   * Checks if the game already exists in the library folder.
+   * @param gameData game to check
+   * @return true if the game already exists in the library folder
+   */
+  public boolean gameExistsInLibrary(GameData gameData) {
+    Path gamesDir = Paths.get(getGameLibraryDirectoryPath());
+    File originalFile = new File(gameData.getFileName());
+    File destFile = new File(gamesDir.toString() + File.separatorChar + originalFile.getName());
+    return destFile.exists();
+  }
+
+  /**
+   * Adds game to the game Library by copying original game file to the
+   * settings game library folder if it doesn't exist there already.
+   * @param gameData game to add
+   */
+  public void addGameToLibrary(GameData gameData) {
+    if (gameData.isGameDataUsable()) {
+      try {
+        File originalFile = new File(gameData.getFileName());
+        Path gamesDir = Paths.get(getGameLibraryDirectoryPath());
+        File destFile = new File(gamesDir.toString() + File.separatorChar + originalFile.getName());
+        if (!destFile.exists()) {
+          // Ignore addition if the file already exists in the library folder.
+          FileUtils.copyFile(originalFile, destFile);
+          this.libraryGames.add(gameData);
+          Collections.sort(this.libraryGames);
+        }
+
+        // Update game file path on the current game data.
+        gameData.setFileName(destFile.getAbsolutePath());
+      } catch (Exception e) {
+        LOGGER.log(Level.WARNING, "Unable to copy game file: " + gameData.getFileName(), e);
+      }
+    }
+  }
+
+  /**
+   * Deletes the given game from the library (memory and disk).
+   * @param gameData game to delete
+   */
+  public void deleteGameFromLibrary(GameData gameData) {
+    this.libraryGames.remove(gameData);
+    Collections.sort(this.libraryGames);
+    File gameFile = new File(gameData.getFileName());
+    try {
+      FileUtils.delete(gameFile);
+    } catch (IOException e) {
+      LOGGER.log(Level.WARNING, "Unable to delete game file: " + gameData.getFileName(), e);
+    }
+  }
+
+  /**
    * Gets all known games.
    * @return all games data
    */
-  public List<GameData> getAllGames() {
-    return this.allGames;
+  public List<GameData> getLibraryGames() {
+    return this.libraryGames;
   }
 
   /**
@@ -414,5 +513,14 @@ public class GameDataService {
     } catch (NumberFormatException e) {
       throw new ServiceException("Int property \"" + propName + "\" is not an integer!");
     }
+  }
+
+  /**
+   * Returns an absolute path to the game library folder (under game settings).
+   * Note, that the path may not exist yet.
+   * @return absolute path to the games folder
+   */
+  private static String getGameLibraryDirectoryPath() {
+    return SettingsService.getVerifiedSettingsDirectoryPath() + File.separatorChar + GAME_DIRECTORY;
   }
 }

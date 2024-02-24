@@ -132,7 +132,7 @@ public class GameInfoDialog extends BasicDialog {
     panel.add(loadButton, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.CENTER, TableLayout.CENTER));
 
-    JButton defaultButton = createDefaultButton();
+    JButton defaultButton = createDefaultButton(null);
     panel.add(defaultButton, new TableLayoutConstraints(
         2, 0, 2, 0, TableLayout.CENTER, TableLayout.CENTER));
     SwingUtilities.invokeLater(defaultButton::requestFocus);

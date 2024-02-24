@@ -119,7 +119,10 @@ public enum ImageEnum {
   SIZE_M_24("size-medium-24.png"),
 
   /** Size icon - small 24x24. */
-  SIZE_S_24("size-small-24.png");
+  SIZE_S_24("size-small-24.png"),
+
+  /** User small icon. */
+  USER_24("user-24.png");
 
   /** Icon's filename. */
   private final String fileName;

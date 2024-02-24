@@ -33,7 +33,7 @@ import static net.curre.jjeopardy.bean.FileParsingResult.Message.*;
  *
  * @author Yevgeny Nyden
  */
-public class GameData {
+public class GameData implements Comparable<GameData> {
 
   /** Min total question count to consider game to be Extra Large. */
   private static final int XLARGE_GAME_SIZE = 60;
@@ -46,7 +46,7 @@ public class GameData {
 
 
   /** Game data file absolute path. */
-  private final String fileName;
+  private String fileName;
 
   /**
    * Indicates that game file was opened and parsed successfully.
@@ -90,6 +90,14 @@ public class GameData {
    */
   public String getFileName() {
     return this.fileName;
+  }
+
+  /**
+   * Sets the game file name.
+   * @param fileName absolute path to the game file
+   */
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
   }
 
   /**
@@ -183,6 +191,14 @@ public class GameData {
   public void setBonusQuestions(List<Question> bonusQuestions) {
     this.bonusQuestions.clear();
     this.bonusQuestions.addAll(bonusQuestions);
+  }
+
+  @Override
+  public int compareTo(GameData other) {
+    if (this == other) {
+      return 0;
+    }
+    return this.gameName.compareTo(other.gameName);
   }
 
   /**

@@ -123,7 +123,7 @@ public abstract class BasicDialog extends JDialog {
    * @return default OK button
    */
   public Component getButtonComponent() {
-    return this.createDefaultButton();
+    return this.createDefaultButton(null);
   }
 
   /**
@@ -144,11 +144,11 @@ public abstract class BasicDialog extends JDialog {
    * Creates default OK button.
    * @return default button
    */
-  protected JButton createDefaultButton() {
+  protected JButton createDefaultButton(String textOrNull) {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     JButton button = new JButton();
     ClickAndKeyAction.createAndAddAction(button, this::handleButtonAction);
-    button.setText(LocaleService.getString("jj.dialog.button.ok"));
+    button.setText(textOrNull == null ? LocaleService.getString("jj.dialog.button.ok") : textOrNull);
     button.setFont(lafTheme.getButtonFont());
     return button;
   }

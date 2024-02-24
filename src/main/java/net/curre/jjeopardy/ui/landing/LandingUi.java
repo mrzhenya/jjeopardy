@@ -79,6 +79,9 @@ public class LandingUi extends JFrame {
   /** Reference to the bottom panel (where background image or library is displayed). */
   private JPanel bottomPanel;
 
+  /** Reference to the library panel that contains library game items. */
+  private JPanel libraryPanel;
+
   /**
    * Represents the main landing UI displayed to the user on application start.
    */
@@ -180,6 +183,19 @@ public class LandingUi extends JFrame {
       this.startGameButton.setEnabled(true);
       this.startGameButton.requestFocus();
     }
+  }
+
+  /**
+   * Updates game library UI after new games are added.
+   */
+  public void updateLibrary() {
+    this.libraryPanel.removeAll();
+    for (GameData game : AppRegistry.getInstance().getGameDataService().getLibraryGames()) {
+      // Assume the data has already been validated to be usable.
+      this.libraryPanel.add(new LibraryGameItem(game));
+    }
+    this.libraryPanel.revalidate();
+    this.libraryPanel.repaint();
   }
 
   /**
@@ -352,22 +368,23 @@ public class LandingUi extends JFrame {
    * Creates the library UI component.
    * @return library UI component
    */
-  private static Component createLibraryPanel() {
-    boolean loadSuccess = AppRegistry.getInstance().getGameDataService().loadDefaultGames();
+  private Component createLibraryPanel() {
+    this.libraryPanel = new JPanel();
+    JScrollPane scrollPane = new JScrollPane(this.libraryPanel);
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-    JPanel panel = new JPanel();
+    boolean loadSuccess = AppRegistry.getInstance().getGameDataService().loadLibraryGames();
     if (!loadSuccess) {
       // TODO: add an error message to the returned panel.
-      return panel;
+      return scrollPane;
     }
-    JScrollPane scrollPane = new JScrollPane(panel);
     scrollPane.setPreferredSize(new Dimension(JjDefaults.LANDING_UI_WIDTH, JjDefaults.LANDING_UI_LIBRARY_HEIGHT));
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    this.libraryPanel.setLayout(new BoxLayout(this.libraryPanel, BoxLayout.Y_AXIS));
 
     // Populating library with the library games.
-    for (GameData game : AppRegistry.getInstance().getGameDataService().getAllGames()) {
+    for (GameData game : AppRegistry.getInstance().getGameDataService().getLibraryGames()) {
       // Assume the data has already been validated to be usable.
-      panel.add(new LibraryGameItem(game));
+      this.libraryPanel.add(new LibraryGameItem(game));
     }
     return scrollPane;
   }

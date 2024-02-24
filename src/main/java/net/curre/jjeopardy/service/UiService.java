@@ -20,6 +20,7 @@ import net.curre.jjeopardy.bean.FileParsingResult;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.ui.dialog.BasicDialog;
 import net.curre.jjeopardy.ui.dialog.ConfirmDialog;
+import net.curre.jjeopardy.ui.dialog.InfoDialog;
 import net.curre.jjeopardy.ui.dialog.GameInfoDialog;
 import net.curre.jjeopardy.ui.dialog.ParsingResultDialog;
 
@@ -47,7 +48,20 @@ public class UiService {
    */
   public void showInfoDialog(String title, String message, Component parentComponent) {
     LOGGER.info("Showing info dialog: " + title);
-    ConfirmDialog dialog = new ConfirmDialog(title, message, ConfirmDialog.Type.INFO);
+    InfoDialog dialog = new InfoDialog(title, message, InfoDialog.Type.INFO);
+    dialog.showDialog(parentComponent);
+  }
+
+  /**
+   * Displays a simple info dialog.
+   * @param title the title text
+   * @param message text content for the dialog
+   * @param yesHandler handler for the Yes action
+   * @param parentComponent reference to the relative parent for component position
+   */
+  public void showConfirmationDialog(String title, String message, Runnable yesHandler, Component parentComponent) {
+    LOGGER.info("Showing confirmation dialog: " + title);
+    ConfirmDialog dialog = new ConfirmDialog(title, message, yesHandler);
     dialog.showDialog(parentComponent);
   }
 
@@ -59,7 +73,7 @@ public class UiService {
    */
   public void showWarningDialog(String title, String message, Component parentComponent) {
     LOGGER.info("Showing warning dialog: " + title);
-    ConfirmDialog dialog = new ConfirmDialog(title, message, ConfirmDialog.Type.WARNING);
+    InfoDialog dialog = new InfoDialog(title, message, InfoDialog.Type.WARNING);
     dialog.showDialog(parentComponent);
   }
 
@@ -70,7 +84,7 @@ public class UiService {
    */
   public void showEndGameDialog(String title, String message) {
     LOGGER.info("Showing end game dialog: " + title);
-    ConfirmDialog dialog = new ConfirmDialog(title, message, ConfirmDialog.Type.END);
+    InfoDialog dialog = new InfoDialog(title, message, InfoDialog.Type.END);
     dialog.showDialog(null);
   }
 

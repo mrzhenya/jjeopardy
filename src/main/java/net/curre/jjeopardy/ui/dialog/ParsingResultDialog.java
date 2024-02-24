@@ -19,13 +19,18 @@ package net.curre.jjeopardy.ui.dialog;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.bean.FileParsingResult;
+import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Font;
 
@@ -82,6 +87,48 @@ public class ParsingResultDialog extends BasicDialog {
     }
     contentPane.add(new JLabel("\n\n")); // add a couple extra new lines
     return contentPane;
+  }
+
+  /**
+   * Gets the button panel.
+   * @return panel with buttons for this dialog
+   */
+  public Component getButtonComponent() {
+    Registry registry = AppRegistry.getInstance();
+    LafTheme lafTheme = registry.getLafService().getCurrentLafTheme();
+    final int padding = lafTheme.getPanelPadding();
+    JPanel panel = new JPanel(new TableLayout(new double[][] {
+        {TableLayout.PREFERRED, padding, TableLayout.PREFERRED}, // columns
+        {TableLayout.PREFERRED}})); // rows
+
+    JButton defaultButton = createDefaultButton(null);
+    panel.add(defaultButton, new TableLayoutConstraints(
+        0, 0, 0, 0, TableLayout.CENTER, TableLayout.CENTER));
+
+    JButton addButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(addButton, this::addGameToLibrary);
+    addButton.setText(LocaleService.getString("jj.dialog.addtolibrary.button"));
+    addButton.setFont(lafTheme.getButtonFont());
+    panel.add(addButton, new TableLayoutConstraints(
+        2, 0, 2, 0, TableLayout.CENTER, TableLayout.CENTER));
+    if (this.result.getGameData().isGameDataUsable() &&
+        !registry.getGameDataService().gameExistsInLibrary(this.result.getGameData())) {
+      SwingUtilities.invokeLater(addButton::requestFocus);
+    } else {
+      addButton.setEnabled(false);
+    }
+    return panel;
+  }
+
+  /**
+   * Adds the game to the game Library.
+   */
+  private void addGameToLibrary() {
+    Registry registry = AppRegistry.getInstance();
+    registry.getGameDataService().addGameToLibrary(result.getGameData());
+    registry.getLandingUi().updateLibrary();
+    this.setVisible(false);
+    this.dispose();
   }
 
   /**

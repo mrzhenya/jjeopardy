@@ -17,7 +17,7 @@
 package net.curre.jjeopardy.service;
 
 import net.curre.jjeopardy.bean.FileParsingResult;
-import net.curre.jjeopardy.ui.dialog.ConfirmDialog;
+import net.curre.jjeopardy.ui.dialog.InfoDialog;
 import net.curre.jjeopardy.ui.dialog.ParsingResultDialog;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -49,12 +49,12 @@ public class UiServiceTest {
   /** Tests showInfoDialog. */
   @Test
   public void testShowInfoDialog() {
-    try(MockedConstruction<ConfirmDialog> mockConfirmDialog = Mockito.mockConstruction(
-        ConfirmDialog.class, (mock, context) -> {
+    try(MockedConstruction<InfoDialog> mockConfirmDialog = Mockito.mockConstruction(
+        InfoDialog.class, (mock, context) -> {
           assertEquals("Wrong number of arguments", 3, context.arguments().size());
           assertEquals("Wrong title", "TestTitle", context.arguments().get(0));
           assertEquals("Wrong message", "TestMessage", context.arguments().get(1));
-          assertEquals("Wrong dialog type", ConfirmDialog.Type.INFO, context.arguments().get(2));
+          assertEquals("Wrong dialog type", InfoDialog.Type.INFO, context.arguments().get(2));
         })) {
 
       this.testUiService.showInfoDialog("TestTitle", "TestMessage", null);
@@ -66,12 +66,12 @@ public class UiServiceTest {
   /** Tests showWarningDialog. */
   @Test
   public void testShowWarningDialog() {
-    try(MockedConstruction<ConfirmDialog> mockConfirmDialog = Mockito.mockConstruction(
-        ConfirmDialog.class, (mock, context) -> {
+    try(MockedConstruction<InfoDialog> mockConfirmDialog = Mockito.mockConstruction(
+        InfoDialog.class, (mock, context) -> {
           assertEquals("Wrong number of arguments", 3, context.arguments().size());
           assertEquals("Wrong title", "TestTitle", context.arguments().get(0));
           assertEquals("Wrong message", "TestMessage", context.arguments().get(1));
-          assertEquals("Wrong dialog type", ConfirmDialog.Type.WARNING, context.arguments().get(2));
+          assertEquals("Wrong dialog type", InfoDialog.Type.WARNING, context.arguments().get(2));
         })) {
 
       this.testUiService.showWarningDialog("TestTitle", "TestMessage", null);
@@ -83,12 +83,12 @@ public class UiServiceTest {
   /** Tests showEndGameDialog. */
   @Test
   public void testShowEndGameDialog() {
-    try(MockedConstruction<ConfirmDialog> mockConfirmDialog = Mockito.mockConstruction(
-        ConfirmDialog.class, (mock, context) -> {
+    try(MockedConstruction<InfoDialog> mockConfirmDialog = Mockito.mockConstruction(
+        InfoDialog.class, (mock, context) -> {
           assertEquals("Wrong number of arguments", 3, context.arguments().size());
           assertEquals("Wrong title", "TestTitle", context.arguments().get(0));
           assertEquals("Wrong message", "TestMessage", context.arguments().get(1));
-          assertEquals("Wrong dialog type", ConfirmDialog.Type.END, context.arguments().get(2));
+          assertEquals("Wrong dialog type", InfoDialog.Type.END, context.arguments().get(2));
         })) {
 
       this.testUiService.showEndGameDialog("TestTitle", "TestMessage");
@@ -100,12 +100,12 @@ public class UiServiceTest {
   /** Tests showRestartGameDialog. */
   @Test
   public void testShowRestartGameDialog() {
-    try(MockedConstruction<ConfirmDialog> mockConfirmDialog = Mockito.mockConstruction(
-        ConfirmDialog.class, (mock, context) -> {
+    try(MockedConstruction<InfoDialog> mockConfirmDialog = Mockito.mockConstruction(
+        InfoDialog.class, (mock, context) -> {
           assertEquals("Wrong number of arguments", 3, context.arguments().size());
           assertFalse("Title is blank", StringUtils.isBlank((String) context.arguments().get(0)));
           assertFalse("Message is blank", StringUtils.isBlank((String) context.arguments().get(1)));
-          assertEquals("Wrong dialog type", ConfirmDialog.Type.INFO, context.arguments().get(2));
+          assertEquals("Wrong dialog type", InfoDialog.Type.INFO, context.arguments().get(2));
         })) {
 
       this.testUiService.showRestartGameDialog();

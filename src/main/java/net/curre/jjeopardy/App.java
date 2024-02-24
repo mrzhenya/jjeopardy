@@ -18,6 +18,7 @@ package net.curre.jjeopardy;
 
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.ui.landing.LandingUi;
@@ -43,6 +44,9 @@ public class App {
 
     // Initialize the main service registry with a default (non-test) one.
     AppRegistry.initialize(null);
+
+    // Copy default prepackaged game files to the settings game library folder.
+    GameDataService.copyDefaultGamesToLibraryIfNeeded();
 
     // Then, load and activate the stored settings (LAF theme, locale, game board size).
     Registry registry = AppRegistry.getInstance();

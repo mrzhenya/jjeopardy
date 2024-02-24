@@ -22,16 +22,21 @@ import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LafService;
+import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.JjDefaults;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -58,7 +63,7 @@ public class LibraryGameItem extends JPanel {
     LafTheme lafTheme = this.lafService.getCurrentLafTheme();
     Font font = lafTheme.getDialogTextFont();
     this.setLayout(new TableLayout(new double[][] {
-        {10, 30, 10, 200, 5, 450, TableLayout.FILL, 40, 10}, // columns
+        {10, 30, 10, 250, 5, 500, 10, TableLayout.FILL, 5, 40, 5, 40, 5, 20, 10}, // columns
         {3, 30, 3}})); // rows
     this.setToolTipText(gameData.getGameDescription());
     this.setMaximumSize(new Dimension(JjDefaults.LANDING_UI_WIDTH, 36));
@@ -80,37 +85,83 @@ public class LibraryGameItem extends JPanel {
     this.add(descriptionLabel, new TableLayoutConstraints(
         5, 1, 5, 1, TableLayout.LEFT, TableLayout.CENTER));
 
+    // Players number label.
+    int playersCount = gameData.getPlayerNames().size();
+    if (playersCount > 0) {
+      JLabel playersLabel = new JLabel(ImageEnum.USER_24.toImageIcon());
+      playersLabel.setFont(font);
+      playersLabel.setText(String.valueOf(playersCount));
+      this.add(playersLabel, new TableLayoutConstraints(
+          9, 1, 9, 1, TableLayout.CENTER, TableLayout.CENTER));
+    }
+
     // Game size text label.
     JLabel sizeLabel = new JLabel(gameData.getCategoriesCount() + "x" + gameData.getCategoryQuestionsCount());
     sizeLabel.setFont(font);
     this.add(sizeLabel, new TableLayoutConstraints(
-        7, 1, 7, 1, TableLayout.CENTER, TableLayout.CENTER));
+        11, 1, 11, 1, TableLayout.CENTER, TableLayout.CENTER));
+
+    // Remove game button.
+    JButton button  = new JButton();
+    button.setAction(new RemoveGameAction());
+    button.setText("-");
+    this.add(button, new TableLayoutConstraints(
+        13, 1, 13, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Adding mouse hover and click actions.
-    this.addMouseListener(new MouseAdapter() {
-      public void mouseEntered(MouseEvent evt) {
-        LafTheme lafTheme = LibraryGameItem.this.lafService.getCurrentLafTheme();
-        Color highlight = LafService.createAdjustedColor(lafTheme.getDefaultBackgroundColor(), 25);
-        LibraryGameItem.this.setBackground(highlight);
-      }
+    this.addMouseListener(new GameItemMouseAdapter());
+  }
 
-      public void mouseExited(MouseEvent evt) {
-        LibraryGameItem.this.setBackground(UIManager.getColor("control"));
-      }
+  /**
+   * Deletes this game from the library (memory and disk).
+   */
+  private void deleteGame() {
+    Registry registry = AppRegistry.getInstance();
+    registry.getGameDataService().deleteGameFromLibrary(this.gameData);
+    registry.getLandingUi().updateLibrary();
+  }
 
-      public void mousePressed(MouseEvent evt) {
-        LafTheme lafTheme = LibraryGameItem.this.lafService.getCurrentLafTheme();
-        Color highlight = LafService.createAdjustedColor(lafTheme.getDefaultBackgroundColor(), 50);
-        LibraryGameItem.this.setBackground(highlight);
-      }
+  /**
+   * Action handler for the remove game button.
+   */
+  private class RemoveGameAction extends AbstractAction {
 
-      public void mouseReleased(MouseEvent e) {
-        LafTheme lafTheme = LibraryGameItem.this.lafService.getCurrentLafTheme();
-        Color highlight = LafService.createAdjustedColor(lafTheme.getDefaultBackgroundColor(), 25);
-        LibraryGameItem.this.setBackground(highlight);
-        UiService uiService = AppRegistry.getInstance().getUiService();
-        uiService.showGameInfoDialog(LibraryGameItem.this.gameData, null);
-      }
-    });
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      AppRegistry.getInstance().getUiService().showConfirmationDialog(
+          LocaleService.getString("jj.dialog.delete.game.title"),
+          LocaleService.getString("jj.dialog.delete.game.msg"),
+          LibraryGameItem.this::deleteGame,
+          null);
+    }
+  }
+
+  /**
+   * Handler for the mouse actions.
+   */
+  private class GameItemMouseAdapter extends MouseAdapter {
+    public void mouseEntered(MouseEvent evt) {
+      LafTheme lafTheme = LibraryGameItem.this.lafService.getCurrentLafTheme();
+      Color highlight = LafService.createAdjustedColor(lafTheme.getDefaultBackgroundColor(), 25);
+      LibraryGameItem.this.setBackground(highlight);
+    }
+
+    public void mouseExited(MouseEvent evt) {
+      LibraryGameItem.this.setBackground(UIManager.getColor("control"));
+    }
+
+    public void mousePressed(MouseEvent evt) {
+      LafTheme lafTheme = LibraryGameItem.this.lafService.getCurrentLafTheme();
+      Color highlight = LafService.createAdjustedColor(lafTheme.getDefaultBackgroundColor(), 50);
+      LibraryGameItem.this.setBackground(highlight);
+    }
+
+    public void mouseReleased(MouseEvent e) {
+      LafTheme lafTheme = LibraryGameItem.this.lafService.getCurrentLafTheme();
+      Color highlight = LafService.createAdjustedColor(lafTheme.getDefaultBackgroundColor(), 25);
+      LibraryGameItem.this.setBackground(highlight);
+      UiService uiService = AppRegistry.getInstance().getUiService();
+      uiService.showGameInfoDialog(LibraryGameItem.this.gameData, null);
+    }
   }
 }

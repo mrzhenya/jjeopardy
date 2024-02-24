@@ -72,7 +72,7 @@ public class SettingsService {
    */
   public SettingsService(String settingsFilePath) {
     if (settingsFilePath == null) {
-      settingsFilePath = getVerifiedSettingsFilePath();
+      settingsFilePath = getVerifiedSettingsDirectoryPath() + File.separatorChar + SETTINGS_FILENAME;
     }
     this.settingsFilePath = settingsFilePath;
     this.settings = loadSettings(settingsFilePath);
@@ -122,6 +122,31 @@ public class SettingsService {
   }
 
   /**
+   * Returns a platform specific absolute path to the game settings directory.
+   * All custom directories in the path that don't exist, will be created.
+   * @return absolute path to the game settings directory
+   */
+  public static String getVerifiedSettingsDirectoryPath() {
+    StringBuilder path = new StringBuilder(System.getProperties().getProperty("user.home"));
+    switch (Utilities.getPlatformType()) {
+      case MAC_OS:
+        path.append(File.separatorChar).append("Library").
+            append(File.separatorChar).append("Application Support");
+        break;
+      case WINDOWS:
+        path.append(File.separatorChar).append("AppData").
+            append(File.separatorChar).append("Local").
+            append(File.separatorChar).append("Temp");
+        break;
+      default:
+        path.append(File.separatorChar).append("temp");
+    }
+    path.append(File.separatorChar).append(SETTINGS_DIR_NAME);
+    createDirIfDoesntExist(path);
+    return path.toString();
+  }
+
+  /**
    * Method to load settings stored on disk.
    * @param settingsFilePath path to the settings file
    * @return Settings, loaded from the settings file,
@@ -145,34 +170,6 @@ public class SettingsService {
       LOGGER.log(Level.WARNING, "Unable to load a settings file. Creating a default one.", e);
     }
     return new Settings();
-  }
-
-  /**
-   * Returns a platform specific absolute path to the settings file including
-   * the file name. All custom directories in the path that don't exist,
-   * will be created.
-   * @return Absolute path to the settings file including the file name
-   */
-  private static String getVerifiedSettingsFilePath() {
-    StringBuilder path = new StringBuilder(System.getProperties().getProperty("user.home"));
-    switch (Utilities.getPlatformType()) {
-      case MAC_OS:
-        path.append(File.separatorChar).append("Library").
-            append(File.separatorChar).append("Application Support");
-        break;
-      case WINDOWS:
-        path.append(File.separatorChar).append("AppData").
-            append(File.separatorChar).append("Local").
-            append(File.separatorChar).append("Temp");
-        break;
-      default:
-        path.append(File.separatorChar).append("temp");
-    }
-    // Settings file is nested in the game directory.
-    path.append(File.separatorChar).append(SETTINGS_DIR_NAME);
-    createDirIfDoesntExist(path);
-    path.append(File.separatorChar).append(SETTINGS_FILENAME);
-    return path.toString();
   }
 
   /**
