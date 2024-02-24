@@ -46,7 +46,7 @@ public class ConfirmDialog extends BasicDialog {
       default:
         icon = ImageEnum.INFO_64;
     };
-    this.initializeDialog(title, LocaleService.getString("jj.dialog.button.ok"), icon);
+    this.initializeDialog(title, icon);
   }
 
   @Override

@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.bean;
 
+import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,6 +34,16 @@ import static net.curre.jjeopardy.bean.FileParsingResult.Message.*;
  * @author Yevgeny Nyden
  */
 public class GameData {
+
+  /** Min total question count to consider game to be Extra Large. */
+  private static final int XLARGE_GAME_SIZE = 60;
+
+  /** Min total question count to consider game to be Large. */
+  private static final int LARGE_GAME_SIZE = 45;
+
+  /** Min total question count to consider game to be Medium. */
+  private static final int MEDIUM_GAME_SIZE = 30;
+
 
   /** Game data file absolute path. */
   private final String fileName;
@@ -172,6 +183,64 @@ public class GameData {
   public void setBonusQuestions(List<Question> bonusQuestions) {
     this.bonusQuestions.clear();
     this.bonusQuestions.addAll(bonusQuestions);
+  }
+
+  /**
+   * Gets the total count of categories in the game.
+   * @return total number of categories
+   */
+  public int getCategoriesCount() {
+    return this.categories.size();
+  }
+
+  /**
+   * Gets the total count of questions in a single category.
+   * @return total number of questions in a category
+   */
+  public int getCategoryQuestionsCount() {
+    return this.categories.isEmpty() ? 0 : this.categories.get(0).getQuestionsCount();
+  }
+
+  /**
+   * Gets the total count of questions in the game.
+   * @return total number of questions
+   */
+  public int getTotalQuestionsCount() {
+    return getCategoriesCount() * getCategoryQuestionsCount();
+  }
+
+  /**
+   * Gets a large image icon corresponding to the size of the current game.
+   * @return game size large icon
+   */
+  public ImageEnum getGameSizeIconLarge() {
+    int totalCount = getTotalQuestionsCount();
+    if (totalCount > XLARGE_GAME_SIZE) {
+      return ImageEnum.SIZE_XL_64;
+    } else if (totalCount > LARGE_GAME_SIZE) {
+      return ImageEnum.SIZE_L_64;
+    } else if (totalCount > MEDIUM_GAME_SIZE) {
+      return ImageEnum.SIZE_M_64;
+    } else {
+      return ImageEnum.SIZE_S_64;
+    }
+  }
+
+  /**
+   * Gets a small image icon corresponding to the size of the current game.
+   * @return game size small icon
+   */
+  public ImageEnum getGameSizeIconSmall() {
+    int totalCount = getTotalQuestionsCount();
+    if (totalCount > XLARGE_GAME_SIZE) {
+      return ImageEnum.SIZE_XL_24;
+    } else if (totalCount > LARGE_GAME_SIZE) {
+      return ImageEnum.SIZE_L_24;
+    } else if (totalCount > MEDIUM_GAME_SIZE) {
+      return ImageEnum.SIZE_M_24;
+    } else {
+      return ImageEnum.SIZE_S_24;
+    }
   }
 
   /**

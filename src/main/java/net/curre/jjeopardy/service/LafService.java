@@ -147,6 +147,18 @@ public class LafService {
   }
 
   /**
+   * Creates a new color that is lighter or darker than the passed color.
+   * @param color model color
+   * @param change value to be added to or subracted from the RGB channels of the model color
+   * @return the new, lighter color
+   */
+  public static Color createAdjustedColor(Color color, int change) {
+    return new Color(getSafeColor(color.getRed() + change),
+        getSafeColor(color.getGreen() + change),
+        getSafeColor(color.getBlue() + change));
+  }
+
+  /**
    * Checks if the passed LAF theme is present in the UIManager.
    * @param lafClassName class name of the theme class
    * @return true if the passed theme is installed in UIManager; false if otherwise
@@ -173,5 +185,19 @@ public class LafService {
       }
     }
     throw new ServiceException("Theme with id \"" + lafThemeId + "\" was not found!");
+  }
+
+  /**
+   * Gets a safe color value withing the "0 >= value <= 255" bounds.
+   * @param color color value to test
+   * @return safe color value
+   */
+  private static int getSafeColor(int color) {
+    if (color < 0) {
+      return 0;
+    } else if (color > 255) {
+      return 255;
+    }
+    return color;
   }
 }

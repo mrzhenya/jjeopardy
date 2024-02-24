@@ -20,6 +20,7 @@ import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.SoundService;
 import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
+import net.curre.jjeopardy.util.JjDefaults;
 
 import javax.swing.JLabel;
 import java.awt.Graphics;
@@ -34,9 +35,6 @@ public class TimerLabel extends JLabel implements Runnable {
 
   /** Timer time increments (in msec). */
   private static final long SLEEP_TIME = 1000L;
-
-  /** Start time for the question timer. */
-  private static final int QUESTION_TIME = 15;
 
   /** Time counter string format. */
   private static final DecimalFormat FORMAT = new DecimalFormat("00");
@@ -54,7 +52,7 @@ public class TimerLabel extends JLabel implements Runnable {
   /** Constructs a new timer label object. */
   public TimerLabel() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
-    this.timerStartTime = QUESTION_TIME;
+    this.timerStartTime = JjDefaults.QUESTION_TIME;
     super.setForeground(lafTheme.getTimerLabelColor());
     super.setFont(lafTheme.getTimerLabelFont());
   }

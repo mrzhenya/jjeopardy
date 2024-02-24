@@ -19,9 +19,9 @@ package net.curre.jjeopardy.ui.dialog;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
-import net.curre.jjeopardy.event.QuitAppAction;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.Utilities;
 
@@ -72,17 +72,15 @@ public abstract class BasicDialog extends JDialog {
    * Initializes an instance of this dialog. Must be the first
    * method to call after creating an instance of this class.
    * @param title the title
-   * @param buttonText the button text
    * @param iconOrNull icon image for the dialog or null is no icon should be displayed
    */
-  public void initializeDialog(String title, String buttonText, ImageEnum iconOrNull) {
+  public void initializeDialog(String title, ImageEnum iconOrNull) {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int padding = lafTheme.getPanelPadding();
 
     this.setTitle(title);
     this.setResizable(false);
     this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    this.addWindowListener(new QuitAppAction());
 
     // Setting the dialog layout.
     int columnShift = 0;
@@ -115,11 +113,17 @@ public abstract class BasicDialog extends JDialog {
       1 + columnShift, 3, 1 + columnShift, 3, TableLayout.CENTER, TableLayout.CENTER));
 
     // Action button.
-    final JButton button = new JButton();
-    ClickAndKeyAction.createAndAddAction(button, this::handleButtonAction);
-    button.setText(buttonText);
-    this.add(button, new TableLayoutConstraints(
+    Component buttons = this.getButtonComponent();
+    this.add(buttons, new TableLayoutConstraints(
       1 + columnShift, 5, 1 + columnShift, 5, TableLayout.CENTER, TableLayout.CENTER));
+  }
+
+  /**
+   * Gets the button component.
+   * @return default OK button
+   */
+  public Component getButtonComponent() {
+    return this.createDefaultButton();
   }
 
   /**
@@ -137,13 +141,16 @@ public abstract class BasicDialog extends JDialog {
   public abstract Component getContentComponent();
 
   /**
-   * Default handler for the button action, which hides and disposes
-   * this dialog instance. Feel free to override with another handler (e.g.
-   * to keep the dialog instance in the memory).
+   * Creates default OK button.
+   * @return default button
    */
-  public void handleButtonAction() {
-    this.setVisible(false);
-    this.dispose();
+  protected JButton createDefaultButton() {
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
+    JButton button = new JButton();
+    ClickAndKeyAction.createAndAddAction(button, this::handleButtonAction);
+    button.setText(LocaleService.getString("jj.dialog.button.ok"));
+    button.setFont(lafTheme.getButtonFont());
+    return button;
   }
 
   /**
@@ -201,6 +208,16 @@ public abstract class BasicDialog extends JDialog {
     textArea.setBorder(null);
     textArea.setOpaque(true);
     return textArea;
+  }
+
+  /**
+   * Default handler for the button action, which hides and disposes
+   * this dialog instance. Feel free to override with another handler (e.g.
+   * to keep the dialog instance in the memory).
+   */
+  private void handleButtonAction() {
+    this.setVisible(false);
+    this.dispose();
   }
 
   /**

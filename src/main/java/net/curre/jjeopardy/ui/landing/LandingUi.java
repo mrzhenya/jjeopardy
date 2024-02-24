@@ -70,9 +70,6 @@ public class LandingUi extends JFrame {
   /** Current game label. */
   private JLabel currGameLabel;
 
-  /** Reference to the Library button. */
-  private JButton libraryButton;
-
   /** Start game button. */
   private JButton startGameButton;
 
@@ -278,11 +275,11 @@ public class LandingUi extends JFrame {
       3, 0, 3, 0, TableLayout.CENTER, TableLayoutConstraints.CENTER));
 
     // ******* Game library button.
-    this.libraryButton = new JButton();
-    ClickAndKeyAction.createAndAddAction(this.libraryButton, this::handleShowLibraryAction);
-    this.libraryButton.setFont(buttonFont);
-    this.libraryButton.setText(LocaleService.getString("jj.playerdialog.button.library"));
-    gamePanel.add(this.libraryButton, new TableLayoutConstraints(
+    JButton libraryButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(libraryButton, this::handleShowLibraryAction);
+    libraryButton.setFont(buttonFont);
+    libraryButton.setText(LocaleService.getString("jj.playerdialog.button.library"));
+    gamePanel.add(libraryButton, new TableLayoutConstraints(
       5, 0, 5, 0, TableLayout.CENTER, TableLayoutConstraints.CENTER));
 
     // ******* Start game button.
@@ -365,13 +362,12 @@ public class LandingUi extends JFrame {
     }
     JScrollPane scrollPane = new JScrollPane(panel);
     scrollPane.setPreferredSize(new Dimension(JjDefaults.LANDING_UI_WIDTH, JjDefaults.LANDING_UI_LIBRARY_HEIGHT));
-    panel.setLayout(new GridLayout(0, 1));
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    for (int i = 0; i < 7; i++) {
-      for (GameData game : AppRegistry.getInstance().getGameDataService().getAllGames()) {
-        // Assume the data has already been validated to be usable.
-        panel.add(new LibraryGameItem(game));
-      }
+    // Populating library with the library games.
+    for (GameData game : AppRegistry.getInstance().getGameDataService().getAllGames()) {
+      // Assume the data has already been validated to be usable.
+      panel.add(new LibraryGameItem(game));
     }
     return scrollPane;
   }

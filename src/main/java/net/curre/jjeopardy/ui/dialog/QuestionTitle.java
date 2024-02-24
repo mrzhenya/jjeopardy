@@ -84,6 +84,6 @@ public class QuestionTitle extends JPanel {
    */
   protected void updateTitle(Question question) {
     this.categoryLabel.setText(question.getParentName());
-    this.pointsLabel.setText(" " + String.valueOf(question.getPoints()) + " ");
+    this.pointsLabel.setText(" " + question.getPoints() + " ");
   }
 }

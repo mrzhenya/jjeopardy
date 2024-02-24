@@ -18,10 +18,9 @@ package net.curre.jjeopardy.ui.dialog;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.bean.FileParsingResult;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
-import net.curre.jjeopardy.bean.FileParsingResult;
-import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.BoxLayout;
@@ -47,8 +46,7 @@ public class ParsingResultDialog extends BasicDialog {
   public ParsingResultDialog(FileParsingResult result) {
     this.result = result;
     ImageEnum icon = result.getGameData().isGameDataUsable() ? ImageEnum.SUCCESS_64 : ImageEnum.FAILURE_64;
-    this.initializeDialog(
-      result.getResulTitleShort(), LocaleService.getString("jj.dialog.button.ok"), icon);
+    this.initializeDialog(result.getResulTitleShort(), icon);
   }
 
   @Override

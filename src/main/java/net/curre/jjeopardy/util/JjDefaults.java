@@ -82,6 +82,9 @@ public class JjDefaults {
   /** Add/remove players dialog height. */
   public static final int PLAYER_DIALOG_HEIGHT;
 
+  /** Start time for the question timer (in seconds). */
+  public static final int QUESTION_TIME;
+
   /** Private class logger. */
   private static final Logger LOGGER = Logger.getLogger(JjDefaults.class.getName());
 
@@ -107,6 +110,7 @@ public class JjDefaults {
     GAME_TABLE_HEADER_HEIGHT = getDefaultIntProperty("jj.defaults.preferred.header.height");
     PLAYER_DIALOG_WIDTH = getDefaultIntProperty("jj.defaults.player.dialog.width");
     PLAYER_DIALOG_HEIGHT = getDefaultIntProperty("jj.defaults.player.dialog.height");
+    QUESTION_TIME = getDefaultIntProperty("jj.defaults.question.time");
   }
 
   /**

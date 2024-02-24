@@ -95,7 +95,31 @@ public enum ImageEnum {
   CELL_NIMBUS_EMPTY("cell_nimbus-dark.png"),
 
   /** Mac Dark empty button icon. */
-  CELL_MACDARK_EMPTY("cell_macdark-dark.png");
+  CELL_MACDARK_EMPTY("cell_macdark-dark.png"),
+
+  /** Size icon - extra large 64x64. */
+  SIZE_XL_64("size-xlarge-64.png"),
+
+  /** Size icon - large 64x64. */
+  SIZE_L_64("size-large-64.png"),
+
+  /** Size icon - medium 64x64. */
+  SIZE_M_64("size-medium-64.png"),
+
+  /** Size icon - small 64x64. */
+  SIZE_S_64("size-small-64.png"),
+
+  /** Size icon - extra large 24x24. */
+  SIZE_XL_24("size-xlarge-24.png"),
+
+  /** Size icon - large 24x24. */
+  SIZE_L_24("size-large-24.png"),
+
+  /** Size icon - medium 24x24. */
+  SIZE_M_24("size-medium-24.png"),
+
+  /** Size icon - small 24x24. */
+  SIZE_S_24("size-small-24.png");
 
   /** Icon's filename. */
   private final String fileName;

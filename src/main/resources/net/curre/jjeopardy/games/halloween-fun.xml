@@ -3,6 +3,7 @@
 <!-- Copyright - https://i.pinimg.com/736x/5c/aa/0d/5caa0dad0329eeaf6db7e454a9d2117b-halloween-games-halloween-activities.jpg -->
 <properties>
     <entry key="game.name">JJeopardy - Fun Halloween</entry>
+    <entry key="game.description">Collection of crowd sourced questions on the topic of Halloween.</entry>
 
     <entry key="question.1.points">100</entry>
     <entry key="question.2.points">200</entry>

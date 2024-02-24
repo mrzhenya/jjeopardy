@@ -17,8 +17,10 @@
 package net.curre.jjeopardy.service;
 
 import net.curre.jjeopardy.bean.FileParsingResult;
+import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.ui.dialog.BasicDialog;
 import net.curre.jjeopardy.ui.dialog.ConfirmDialog;
+import net.curre.jjeopardy.ui.dialog.GameInfoDialog;
 import net.curre.jjeopardy.ui.dialog.ParsingResultDialog;
 
 import java.awt.Component;
@@ -80,6 +82,18 @@ public class UiService {
   public void showParsingResult(FileParsingResult result, Component parent) {
     LOGGER.info("Showing parsing result dialog");
     BasicDialog dialog = new ParsingResultDialog(result);
+    dialog.showDialog(parent);
+  }
+
+  /**
+   * Displays a dialog to show game info.
+   * @param gameData game data
+   * @param parent parent UI component to show this dialog relative to
+   */
+  public void showGameInfoDialog(GameData gameData, Component parent) {
+    LOGGER.info("Showing parsing result dialog");
+    BasicDialog dialog = new GameInfoDialog(gameData);
+    dialog.pack();
     dialog.showDialog(parent);
   }
 

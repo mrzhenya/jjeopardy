@@ -4,7 +4,8 @@
     JJeopardy The Big Great World
 -->
 <properties>
-    <entry key="game.name">The Big Great World JJeopardy</entry>
+    <entry key="game.name">The Big Great World</entry>
+    <entry key="game.description">Collection of crowd sourced questions for a Jeopardy game.</entry>
 
     <entry key="question.1.points">100</entry>
     <entry key="question.2.points">200</entry>
