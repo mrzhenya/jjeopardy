@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="JjDefaultsTest" type="JUnit" factoryName="JUnit">
+    <module name="gs-maven" />
+    <option name="PACKAGE_NAME" value="net.curre.jjeopardy.util" />
+    <option name="MAIN_CLASS_NAME" value="net.curre.jjeopardy.util.JjDefaultsTest" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="class" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

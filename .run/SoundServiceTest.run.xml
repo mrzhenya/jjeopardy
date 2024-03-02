@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="SoundServiceTest" type="JUnit" factoryName="JUnit">
+    <module name="gs-maven" />
+    <option name="PACKAGE_NAME" value="net.curre.jjeopardy.service" />
+    <option name="MAIN_CLASS_NAME" value="net.curre.jjeopardy.service.SoundServiceTest" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="class" />
+    <option name="VM_PARAMETERS" value="-ea -XX:+EnableDynamicAgentLoading" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
