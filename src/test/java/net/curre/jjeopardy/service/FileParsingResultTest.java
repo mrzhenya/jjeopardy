@@ -17,6 +17,7 @@
 package net.curre.jjeopardy.service;
 
 import net.curre.jjeopardy.bean.FileParsingResult;
+import net.curre.jjeopardy.bean.GameData;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,8 +51,7 @@ public class FileParsingResultTest {
   /** Tests initialization of the default object state. */
   @Test
   public void testDefault() {
-    assertEquals("Wrong file name", TEST_FILE_NAME, this.testResult.getFileName());
-//    assertFalse("Game data should not be usable", this.testResult.isGameDataUsable());
+    assertEquals("Wrong file path", TEST_FILE_NAME, this.testResult.getFileOrBundlePath());
     assertNotNull(this.testResult.getInfoMessages());
     assertEquals("Wrong initial size of info list", 0, this.testResult.getInfoMessages().size());
     assertNotNull(this.testResult.getWarningMessages());
@@ -62,6 +62,14 @@ public class FileParsingResultTest {
     assertFalse("Long title is blank", StringUtils.isBlank(this.testResult.getResulTitleLong()));
   }
 
+  /** Tests getFileOrBundlePath. */
+  @Test
+  public void testGetFileOrBundlePath() {
+    assertEquals("Wrong file path", TEST_FILE_NAME, this.testResult.getFileOrBundlePath());
+    GameData gameData = new GameData(TEST_FILE_NAME, "testBundlePath");
+    this.testResult.setGameData(gameData);
+    assertEquals("Wrong file path", "testBundlePath", this.testResult.getFileOrBundlePath());
+  }
 
   /** Tests the message enums. */
   @Test
