@@ -63,7 +63,7 @@ public class LibraryGameItem extends JPanel {
     LafTheme lafTheme = this.lafService.getCurrentLafTheme();
     Font font = lafTheme.getDialogTextFont();
     this.setLayout(new TableLayout(new double[][] {
-        {10, 30, 10, 250, 5, 500, 10, TableLayout.FILL, 5, 40, 5, 40, 5, 20, 10}, // columns
+        {10, 30, 10, 250, 5, 500, 10, TableLayout.FILL, 5, 40, 5, 40, 5, 35, 10}, // columns
         {3, 30, 3}})); // rows
     this.setToolTipText(gameData.getGameDescription());
     this.setMaximumSize(new Dimension(JjDefaults.LANDING_UI_WIDTH, 36));
