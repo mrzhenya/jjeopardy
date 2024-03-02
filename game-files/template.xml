@@ -28,9 +28,21 @@
       <entry key="player.1.name">One</entry>
       <entry key="player.2.name">Two</entry>
 
+    If images are desired in questions, all game assets including the game XML file
+    and the images should be nested in a dedicated directory with an extension .jj; and images
+    could be added to questions in the following way:
+
+      <entry key="category.1.question.2.img">image-file-name.jpg</entry>
+      <entry key="bonus.1.question.img">image-file-name.jpg</entry>
+
+    The directory would look something like this:
+
+      game-directory.jj
+        game-file.xml
+        image-file-name.jpg
 -->
 <properties>
-    <entry key="game.name">JJeopardy </entry>
+    <entry key="game.name">JJeopardy game</entry>
     <entry key="game.description">
         Description of this JJeopardy game.
     </entry>
@@ -47,8 +59,12 @@
         b. Two
     </entry>
     <entry key="category.1.answer.1"></entry>
-    <entry key="category.1.question.2"></entry>
-    <entry key="category.1.answer.2"></entry>
+    <entry key="category.1.question.2">
+        Question
+    </entry>
+    <entry key="category.1.answer.2">
+        Answer
+    </entry>
     <entry key="category.1.question.3"></entry>
     <entry key="category.1.answer.3"></entry>
     <entry key="category.1.question.4"></entry>

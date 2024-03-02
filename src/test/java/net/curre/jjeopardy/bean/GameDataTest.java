@@ -36,8 +36,9 @@ public class GameDataTest {
   /** Tests initialization of the default object state. */
   @Test
   public void testDefault() {
-    GameData data = new GameData("TestFileName", null);
-    assertEquals("Wrong file name", "TestFileName", data.getFilePath());
+    GameData data = new GameData("TestFilePath", "TestDirPath");
+    assertEquals("Wrong file path", "TestFilePath", data.getFilePath());
+    assertEquals("Wrong dir path", "TestDirPath", data.getBundlePath());
     assertNull("Game name should not be set", data.getGameName());
     assertNotNull("List of categories should not be null", data.getCategories());
     assertEquals("Wrong size of categories list", 0, data.getCategories().size());
@@ -48,6 +49,17 @@ public class GameDataTest {
     assertFalse("Should not have unanswered bonus questions", data.bonusQuestionsHaveBeenAsked());
     assertFalse("Game data should not be usable", data.isGameDataUsable());
     assertFalse("Should not be enough players", data.hasEnoughPlayers());
+  }
+
+  /** Tests setGameFilePaths. */
+  @Test
+  public void testSetGameFilePaths() {
+    GameData data = new GameData("TestFilePath", "TestDirPath");
+    assertEquals("Wrong file path", "TestFilePath", data.getFilePath());
+    assertEquals("Wrong dir path", "TestDirPath", data.getBundlePath());
+    data.setGameFilePaths("TestFilePath2", "TestDirPath2");
+    assertEquals("Wrong file path", "TestFilePath2", data.getFilePath());
+    assertEquals("Wrong dir path", "TestDirPath2", data.getBundlePath());
   }
 
   /** Tests setGameName. */
@@ -357,7 +369,7 @@ public class GameDataTest {
    * @return game data to test
    */
   private static GameData createMinViableTestGameData() {
-    GameData data = new GameData("TestFilename", null);
+    GameData data = new GameData("filepathdoesntmatter", null);
     data.setGameName("TestName");
     List<Category> categories = new ArrayList<>();
     categories.add(createTestCategory("Category 1"));
@@ -385,7 +397,7 @@ public class GameDataTest {
   private static List<Question> createTestQuestions(int count) {
     List<Question> questions = new ArrayList<>();
     for (int i = 0; i < count; i++) {
-      questions.add(new Question("", "", 0));
+      questions.add(new Question("", null, "", 0));
     }
     return questions;
   }

@@ -16,7 +16,10 @@
 
 package net.curre.jjeopardy.util;
 
+import net.curre.jjeopardy.service.ServiceException;
 import org.apache.commons.lang3.RegExUtils;
+
+import java.util.Properties;
 
 /**
  * A set of common utilities.
@@ -59,11 +62,60 @@ public class Utilities {
   }
 
   /**
+   * Fetches a string property value (with all end whitespace removed) from the given property object.
+   * @param props    property object to use
+   * @param propName property name
+   * @return property string value or null if property with a given name is not found
+   */
+  public static String getPropertyOrNull(Properties props, String propName) {
+    try {
+      return removeEndsWhitespace(getProperty(props, propName));
+    } catch (ServiceException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Fetches a string property value (with all end whitespace removed) from the given property object.
+   * @param props    property object to use
+   * @param propName property name
+   * @return non-null property string value with all end whitespace removed
+   * @throws ServiceException if the property is not present
+   */
+  public static String getProperty(Properties props, String propName) throws ServiceException {
+    final String propStr = props.getProperty(propName);
+    if (propStr == null) {
+      throw new ServiceException("String property \"" + propName + "\" is not found!");
+    }
+    return removeEndsWhitespace(propStr);
+  }
+
+  /**
+   * Fetches a property from the given property object
+   * and returns its int value.
+   * @param props    property object to use
+   * @param propName property name
+   * @return property int value
+   * @throws ServiceException if the property is not present or does not represent an integer
+   */
+  public static int getIntProperty(Properties props, String propName) throws ServiceException {
+    final String propStr = props.getProperty(propName);
+    if (propStr == null) {
+      throw new ServiceException("Int property \"" + propName + "\" is not found!");
+    }
+    try {
+      return Integer.parseInt(propStr.trim());
+    } catch (NumberFormatException e) {
+      throw new ServiceException("Int property \"" + propName + "\" is not an integer!");
+    }
+  }
+
+  /**
    * Removes extra leading and trailing whitespace.
    * @param propStr property string to clean
    * @return a new string w/o leading and trailing whitespace
    */
   public static String removeEndsWhitespace(String propStr) {
-    return RegExUtils.replacePattern(propStr, "(^\\n\\h*)|(\\h*\\n$)", "");
+    return RegExUtils.replacePattern(propStr, "(^\\h*\\n?\\h*)|(\\h*\\n?\\h*$)", "");
   }
 }

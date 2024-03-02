@@ -41,8 +41,10 @@
 
     <entry key="category.3.name">   Category 3   </entry>
     <entry key="category.3.question.1">Category 3, question 1       </entry>
-    <entry key="category.3.answer.1">Category 3, answer 1</entry>
-    <entry key="category.3.question.2">Category 3, question 2</entry>
+    <entry key="category.3.answer.1">
+        Category 3, answer 1</entry>
+    <entry key="category.3.question.2">Category 3, question 2
+    </entry>
     <entry key="category.3.answer.2">Category 3, answer 2</entry>
     <entry key="category.3.question.3">
         Category 3, question 3

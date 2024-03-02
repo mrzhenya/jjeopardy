@@ -205,7 +205,7 @@ public class GameDataService {
       for (File originalBundle : gameBundles) {
         File destDir = new File(gamesDir.toString() + File.separatorChar + originalBundle.getName());
         destDir.mkdir();
-        for (File file : originalBundle.listFiles()) {
+        for (File file : Objects.requireNonNull(originalBundle.listFiles())) {
           File destFile = new File(destDir.toString() + File.separatorChar + file.getName());
           FileUtils.copyFile(file, destFile);
         }
@@ -382,7 +382,7 @@ public class GameDataService {
    * @return parsed game data
    * @see #setCurrentGameData(GameData)
    */
-  protected GameData parseGameData(String fileName, String bundleOrNull) {
+  private GameData parseGameData(String fileName, String bundleOrNull) {
     GameData gameData = new GameData(fileName, bundleOrNull);
 
     // Loading the game data from an XML file.
@@ -398,7 +398,7 @@ public class GameDataService {
 
     // ******* First, required game name.
     try {
-      String gameName = getProperty(props, "game.name");
+      String gameName = Utilities.getProperty(props, "game.name");
       if (StringUtils.isBlank(gameName)) {
         LOGGER.severe("Game name is blank.");
       } else {
@@ -411,7 +411,7 @@ public class GameDataService {
     // ******* Optional game description.
     final String gameDescription;
     try {
-      gameDescription = getProperty(props, "game.description");
+      gameDescription = Utilities.getProperty(props, "game.description");
       if (!StringUtils.isBlank(gameDescription)) {
         gameData.setGameDescription(gameDescription.trim());
       }
@@ -451,7 +451,7 @@ public class GameDataService {
     try {
       // Notice that the (user facing) index starts at 1.
       for (int categoryNumber = 1; categoryNumber < MAX_LOOP; ++categoryNumber) {
-        String categoryName = getProperty(props, "category." + categoryNumber + ".name");
+        String categoryName = Utilities.getProperty(props, "category." + categoryNumber + ".name");
         if (StringUtils.isBlank(categoryName)) {
           categoryName = "";
           LOGGER.severe("Category " + categoryNumber + " name is blank.");
@@ -478,16 +478,18 @@ public class GameDataService {
       for (int questionNumber = 1; questionNumber < MAX_LOOP; questionNumber++) {
         int points;
         try {
-          points = getIntProperty(props, "question." + questionNumber + ".points");
+          points = Utilities.getIntProperty(props, "question." + questionNumber + ".points");
         } catch (ServiceException e) {
           points = questionNumber * JjDefaults.QUESTION_POINTS_MULTIPLIER;
         }
-        final String question = getProperty(
+        final String question = Utilities.getProperty(
             props, "category." + categoryNumber + ".question." + questionNumber);
-        final String answer = getProperty(
+        final String answer = Utilities.getProperty(
             props, "category." + categoryNumber + ".answer." + questionNumber);
+        final String questionImage = Utilities.getPropertyOrNull(
+            props,"category." + categoryNumber + ".question." + questionNumber + ".img");
         if (!StringUtils.isBlank(question) && !StringUtils.isBlank(answer)) {
-          questions.add(new Question(question.trim(), answer.trim(), points));
+          questions.add(new Question(question, questionImage, answer, points));
         }
       }
     } catch (Exception e) {
@@ -509,9 +511,9 @@ public class GameDataService {
     try {
       // Notice that the (user facing) index starts at 1.
       for (int playerNumber = 1; playerNumber < MAX_LOOP; playerNumber++) {
-        String playerName = getProperty(props, "player." + playerNumber + ".name");
+        String playerName = Utilities.getProperty(props, "player." + playerNumber + ".name");
         if (!StringUtils.isBlank(playerName)) {
-          playerNames.add(playerName.trim());
+          playerNames.add(playerName);
         }
       }
     } catch (ServiceException e) {
@@ -528,7 +530,7 @@ public class GameDataService {
   private List<Question> parseBonusQuestionsIfAny(Properties props) {
     int bonusPoints;
     try {
-      bonusPoints = getIntProperty(props, "bonus.question.points");
+      bonusPoints = Utilities.getIntProperty(props, "bonus.question.points");
     } catch (ServiceException e) {
       bonusPoints = JjDefaults.BONUS_QUESTION_POINTS;
     }
@@ -536,52 +538,18 @@ public class GameDataService {
     try {
       // Notice that the (user facing) index starts at 1.
       for (int questionNumber = 1; questionNumber < MAX_LOOP; questionNumber++) {
-        String questionStr = getProperty(props, "bonus." + questionNumber + ".question");
-        String answerStr = getProperty(props, "bonus." + questionNumber + ".answer");
+        String questionStr = Utilities.getProperty(props, "bonus." + questionNumber + ".question");
+        String answerStr = Utilities.getProperty(props, "bonus." + questionNumber + ".answer");
+        final String questionImage = Utilities.getPropertyOrNull(
+            props,"bonus." + questionNumber + ".question.img");
         if (!StringUtils.isBlank(questionStr) && !StringUtils.isBlank(answerStr)) {
-          questions.add(new Question(questionStr.trim(), answerStr.trim(), bonusPoints));
+          questions.add(new Question(questionStr, questionImage, answerStr, bonusPoints));
         }
       }
     } catch (ServiceException e) {
       // Stop on the first error, since there are no more questions (or at all).
     }
     return questions;
-  }
-
-  /**
-   * Fetches a raw (non-trimmed) property from the given property object
-   * and returns its String value.
-   * @param props    property object to use
-   * @param propName property name
-   * @return property string value
-   * @throws ServiceException if the property is not present
-   */
-  private static String getProperty(Properties props, String propName) throws ServiceException {
-    final String propStr = props.getProperty(propName);
-    if (propStr == null) {
-      throw new ServiceException("String property \"" + propName + "\" is not found!");
-    }
-    return Utilities.removeEndsWhitespace(propStr);
-  }
-
-  /**
-   * Fetches a property from the given property object
-   * and returns its int value.
-   * @param props    property object to use
-   * @param propName property name
-   * @return property int value
-   * @throws ServiceException if the property is not present or does not represent an integer
-   */
-  private static int getIntProperty(Properties props, String propName) throws ServiceException {
-    final String propStr = props.getProperty(propName);
-    if (propStr == null) {
-      throw new ServiceException("Int property \"" + propName + "\" is not found!");
-    }
-    try {
-      return Integer.parseInt(propStr.trim());
-    } catch (NumberFormatException e) {
-      throw new ServiceException("Int property \"" + propName + "\" is not an integer!");
-    }
   }
 
   /**

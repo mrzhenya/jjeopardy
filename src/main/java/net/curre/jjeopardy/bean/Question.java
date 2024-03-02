@@ -28,6 +28,9 @@ public class Question {
   /** The question text for this Question. */
   private final String question;
 
+  /** An image filename for the question if any. */
+  private final String questionImage;
+
   /** The answer text of this Question. */
   private final String answer;
 
@@ -43,11 +46,13 @@ public class Question {
   /**
    * Ctor.
    * @param question the question string
+   * @param questionImage question image filename if any
    * @param answer the answer string
    * @param points points value of this question
    */
-  public Question(String question, String answer, int points) {
+  public Question(String question, String questionImage, String answer, int points) {
     this.question = question;
+    this.questionImage = questionImage;
     this.answer = answer;
     this.points = points;
     this.hasBeenAsked = false;
@@ -59,6 +64,14 @@ public class Question {
    */
   public String getQuestion() {
     return this.question;
+  }
+
+  /**
+   * Gets the question image filename.
+   * @return the question image or null if none
+   */
+  public String getQuestionImage() {
+    return this.questionImage;
   }
 
   /**

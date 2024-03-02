@@ -123,6 +123,7 @@ public class QuestionDialog extends JDialog {
    */
   @Override
   public void setVisible(boolean isVisible) {
+    setLocationRelativeTo(getOwner());
     super.setVisible(isVisible);
     if (isVisible) {
       AppRegistry.getInstance().getMainWindow().disableActions();

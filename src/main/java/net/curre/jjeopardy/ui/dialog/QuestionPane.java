@@ -18,6 +18,7 @@ package net.curre.jjeopardy.ui.dialog;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.event.BonusQuestionAction;
@@ -32,6 +33,9 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -62,11 +66,20 @@ public class QuestionPane extends JPanel {
   /** Width of the yes/no buttons on the bonus question pane. */
   private static final int BONUS_BUTTON_WIDTH = 100;
 
+  /** Maximum question image width. */
+  private static final int MAX_IMAGE_WIDTH = 500;
+
+  /** Maximum question image height. */
+  private static final int MAX_IMAGE_HEIGHT = 400;
+
   /** Reference to the question dialog. */
   private final QuestionDialog questionDialog;
 
   /** Question label. */
   private JTextArea questionLabel;
+
+  /** Question image label. */
+  private JLabel questionImageLabel;
 
   /** Answer label. */
   private JTextArea answerLabel;
@@ -115,6 +128,7 @@ public class QuestionPane extends JPanel {
    */
   public void showQuestion(Question question, boolean isBonus) {
     this.questionLabel.setText(question.getQuestion());
+    updateQuestionImage(question);
     this.isBonusQuestionsRound = isBonus;
     if (isBonus) {
       this.bonusAnswerLabel.setText(question.getAnswer());
@@ -162,6 +176,7 @@ public class QuestionPane extends JPanel {
    */
   protected void clearTextLabels() {
     this.questionLabel.setText("");
+    this.questionImageLabel.setIcon(null);
     this.answerLabel.setText("");
     this.bonusAnswerLabel.setText("");
   }
@@ -178,8 +193,18 @@ public class QuestionPane extends JPanel {
       {TEXT_PANE_V_PADDING, TableLayout.FILL, TEXT_PANE_V_PADDING, TableLayout.PREFERRED}})); // rows
 
     // Text are where the question is displayed.
+    JPanel questionContainer = new JPanel();
+    questionContainer.setLayout(new TableLayout(new double[][] {
+        {TableLayout.FILL}, // columns
+        {TableLayout.FILL, TableLayout.PREFERRED}})); // rows
     this.questionLabel = BasicDialog.createDefaultTextArea(lafTheme.getQuestionTextFont());
-    questionPanel.add(questionLabel, new TableLayoutConstraints(
+    questionContainer.add(this.questionLabel, new TableLayoutConstraints(
+        0, 0, 0, 0, TableLayout.FULL, TableLayout.FULL));
+    this.questionImageLabel = new JLabel();
+    questionContainer.add(this.questionImageLabel, new TableLayoutConstraints(
+        0, 1, 0, 1, TableLayout.CENTER, TableLayout.CENTER));
+
+    questionPanel.add(questionContainer, new TableLayoutConstraints(
       0, 1, 0, 1, TableLayout.FULL, TableLayout.FULL));
 
     // ******** Show answer button.
@@ -372,6 +397,35 @@ public class QuestionPane extends JPanel {
     containerPanel.add(panel);
 
     return containerPanel;
+  }
+
+  /**
+   * Updates question image. If no image is set on the current question, image data is erased on the UI.
+   * @param question question to get the image data from
+   */
+  private void updateQuestionImage(Question question) {
+    GameData gameData = AppRegistry.getInstance().getGameDataService().getCurrentGameData();
+    if (question.getQuestionImage() != null && gameData.getBundlePath() != null) {
+      ImageIcon icon = new ImageIcon(gameData.getBundlePath() + File.separatorChar + question.getQuestionImage());
+      int iconHeight = icon.getIconHeight();
+      int iconWidth = icon.getIconWidth();
+      // Resizing the image to the max width/height dimensions.
+      boolean portraitOrient = iconHeight > iconWidth;
+      if (portraitOrient) {
+        iconWidth = (int) (iconWidth / ((double) iconHeight / MAX_IMAGE_HEIGHT));
+        iconHeight = MAX_IMAGE_HEIGHT;
+      } else {
+        iconHeight = (int) (iconHeight / ((double) iconWidth / MAX_IMAGE_WIDTH));
+        iconWidth = MAX_IMAGE_WIDTH;
+      }
+      icon.setImage(icon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_FAST));
+      this.questionImageLabel.setIcon(icon);
+      this.questionImageLabel.setPreferredSize(new Dimension(iconWidth, iconHeight));
+      this.questionImageLabel.repaint();
+    } else {
+      this.questionImageLabel.setIcon(null);
+      this.questionImageLabel.setPreferredSize(new Dimension(0, 0));
+    }
   }
 
   /**

@@ -30,7 +30,7 @@ public class QuestionTest {
   /** Tests Ctor and the getter methods. */
   @Test
   public void testDefault() {
-    Question question = new Question("Question 1", "Answer 1", 11);
+    Question question = new Question("Question 1", null,"Answer 1", 11);
     assertEquals("Wrong question", "Question 1", question.getQuestion());
     assertEquals("Wrong answer", "Answer 1", question.getAnswer());
     assertEquals("Wrong points", 11, question.getPoints());
@@ -38,10 +38,18 @@ public class QuestionTest {
     assertFalse("Question should not be asked yet", question.isHasBeenAsked());
   }
 
+  /** Tests Ctor with image filename. */
+  @Test
+  public void testCtorWithImage() {
+    Question question = new Question("Question 1", "test-image.jpg","Answer 1", 11);
+    assertEquals("Wrong question", "Question 1", question.getQuestion());
+    assertEquals("Wrong question image", "test-image.jpg", question.getQuestionImage());
+  }
+
   /** Tests hasBeenAsked methods. */
   @Test
   public void testHasBeenAsked() {
-    Question question = new Question("", "", 0);
+    Question question = new Question("", null,"", 0);
     assertFalse("Question should not be asked yet", question.isHasBeenAsked());
 
     question.resetHasBeenAsked();
@@ -57,7 +65,7 @@ public class QuestionTest {
   /** Tests parentWithName methods. */
   @Test
   public void testParentWithName() {
-    Question question = new Question("", "", 0);
+    Question question = new Question("", null, "", 0);
     assertNull("Paren name should be null", question.getParentName());
     HasName parent = () -> "TestParent";
     question.setParentWithName(parent);
