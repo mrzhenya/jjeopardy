@@ -35,12 +35,19 @@ import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.ui.player.PlayerDialog;
 import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.Utilities;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import java.awt.*;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Image;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
@@ -149,7 +156,7 @@ public class LandingUi extends JFrame {
       arePlayersSet = false;
     } else {
       StringBuilder playersString = new StringBuilder(
-        LocaleService.getString("jj.playerdialog.addplayers.label.intro"));
+        LocaleService.getString("jj.playerdialog.addplayers.label.intro")).append("  ");
       for (int ind = 0; ind < players.size(); ind++) {
         Player player = players.get(ind);
         playersString.append(player.getName());
@@ -410,15 +417,20 @@ public class LandingUi extends JFrame {
     LOGGER.info("Handling the Load button action.");
     Registry registry = AppRegistry.getInstance();
     SettingsService settingsService = registry.getSettingsService();
+
     JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setAcceptAllFileFilterUsed(false);
+    fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    fileChooser.addChoosableFileFilter(new GameFileFilter());
     fileChooser.setCurrentDirectory(new File(settingsService.getSettings().getLastCurrentDirectory()));
+
     final int result = fileChooser.showOpenDialog(this);
     settingsService.saveLastCurrentDirectory(fileChooser.getCurrentDirectory().getAbsolutePath());
     settingsService.persistSettings();
     if (result == JFileChooser.APPROVE_OPTION) {
       File selectedFile = fileChooser.getSelectedFile();
       GameDataService gameDataService = registry.getGameDataService();
-      GameData gameData = gameDataService.parseGameData(selectedFile.getAbsolutePath());
+      GameData gameData = gameDataService.parseGameFileOrBundle(selectedFile.getAbsolutePath());
       FileParsingResult parsingResults = gameData.generateFileParsingResult();
       registry.getUiService().showParsingResult(parsingResults, this);
 
@@ -443,5 +455,24 @@ public class LandingUi extends JFrame {
   /** Handles the Show library button action. */
   private void handleShowLibraryAction() {
     this.switchBetweenLibraryAndBackgroundCard();
+  }
+
+  /** File selection filter for the JJeopardy game bundles. */
+  private static class GameFileFilter extends FileFilter {
+
+    /**
+     * Recognizes either directories or xml files.
+     * @param f the File to test
+     * @return true to accept the file
+     */
+    @Override
+    public boolean accept(File f) {
+      return f.isDirectory() || (f.isFile() && StringUtils.endsWithIgnoreCase(f.getName(), ".xml"));
+    }
+
+    @Override
+    public String getDescription() {
+      return "JJeopardy game files or file bundles";
+    }
   }
 }

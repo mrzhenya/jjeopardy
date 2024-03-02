@@ -36,8 +36,8 @@ public class GameDataTest {
   /** Tests initialization of the default object state. */
   @Test
   public void testDefault() {
-    GameData data = new GameData("TestFileName");
-    assertEquals("Wrong file name", "TestFileName", data.getFileName());
+    GameData data = new GameData("TestFileName", null);
+    assertEquals("Wrong file name", "TestFileName", data.getFilePath());
     assertNull("Game name should not be set", data.getGameName());
     assertNotNull("List of categories should not be null", data.getCategories());
     assertEquals("Wrong size of categories list", 0, data.getCategories().size());
@@ -53,7 +53,7 @@ public class GameDataTest {
   /** Tests setGameName. */
   @Test
   public void testSetGameName() {
-    GameData data = new GameData("");
+    GameData data = new GameData("", null);
     assertNull(data.getGameName());
     data.setGameName("TestName");
     assertEquals("Wrong game name", "TestName", data.getGameName());
@@ -62,7 +62,7 @@ public class GameDataTest {
   /** Tests setCategories. */
   @Test
   public void testSetCategories() {
-    GameData data = new GameData("");
+    GameData data = new GameData("", null);
     List<Category> categories = new ArrayList<>();
     categories.add(createTestCategory("Category 1"));
     categories.add(createTestCategory("Category 2"));
@@ -83,7 +83,7 @@ public class GameDataTest {
   /** Tests updateBonusQuestions and related logic. */
   @Test
   public void testPlayers() {
-    GameData data = new GameData("");
+    GameData data = new GameData("", null);
     List<String> playerNames = new ArrayList<>();
     playerNames.add("One");
     playerNames.add("Two");
@@ -107,7 +107,7 @@ public class GameDataTest {
   /** Tests updateBonusQuestions and related logic. */
   @Test
   public void testBonusQuestions() {
-    GameData data = new GameData("");
+    GameData data = new GameData("", null);
     assertFalse("There should be no bonus questions", data.bonusQuestionsHaveBeenAsked());
 
     List<Question> questions = createTestQuestions(3);
@@ -130,7 +130,7 @@ public class GameDataTest {
   /** Tests isGameDataUsable. */
   @Test
   public void testIsGameDataUsable() {
-    GameData data = new GameData("");
+    GameData data = new GameData("", null);
     assertFalse("Game data should not be usable", data.isGameDataUsable());
     data.setFileDataAcquired();
     assertFalse("Game data should not be usable", data.isGameDataUsable());
@@ -151,7 +151,7 @@ public class GameDataTest {
   /** Tests isPlayersValid with null argument. */
   @Test
   public void testPlayersValid() {
-    GameData data = new GameData("");
+    GameData data = new GameData("", null);
     assertTrue("Players data considered valid with 0 players", data.isPlayersValid(null));
     List<String> players = new ArrayList<>();
     players.add("One");
@@ -166,7 +166,7 @@ public class GameDataTest {
   /** Tests hasEnoughPlayers. */
   @Test
   public void testHasEnoughPlayers() {
-    GameData data = new GameData("");
+    GameData data = new GameData("", null);
     assertFalse("Should not have enough players for a game", data.hasEnoughPlayers());
     List<String> players = new ArrayList<>();
     players.add("One");
@@ -206,7 +206,7 @@ public class GameDataTest {
   /** Tests generateFileParsingResult with empty data. */
   @Test
   public void testGenerateFileParsingResultWithEmptyData() {
-    GameData data = new GameData("");
+    GameData data = new GameData("", null);
     FileParsingResult result = data.generateFileParsingResult();
     assertResultMessageNumbers(result, 1, 0, 0);
     assertFalse("Short result message should not be blank", StringUtils.isBlank(result.getResulTitleShort()));
@@ -357,7 +357,7 @@ public class GameDataTest {
    * @return game data to test
    */
   private static GameData createMinViableTestGameData() {
-    GameData data = new GameData("TestFilename");
+    GameData data = new GameData("TestFilename", null);
     data.setGameName("TestName");
     List<Category> categories = new ArrayList<>();
     categories.add(createTestCategory("Category 1"));

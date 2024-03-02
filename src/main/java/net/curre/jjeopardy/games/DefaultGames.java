@@ -35,20 +35,21 @@ import java.util.Objects;
 public class DefaultGames {
 
   /**
-   * Loads game data files from the default games folder.
-   * @return a list of File objects representing default game data files
+   * Gets the default game bundle from the default games folder.
+   * @return a list of File objects representing default game bundles
    * @throws URISyntaxException on loading error
    */
-  public static List<File> getDefaultGameFiles() throws URISyntaxException {
-    final List<File> files = new ArrayList<>();
-    // Obtaining the list of files in the games directory.
+  public static List<File> getDefaultGameBundles() throws URISyntaxException {
+    final List<File> bundles = new ArrayList<>();
+    // Obtaining the list of game bundles (directories) in the games directory.
     URL resource = DefaultGames.class.getResource("");
-    for (File gameFile : Objects.requireNonNull(Paths.get(resource.toURI()).toFile().listFiles())) {
-      if (StringUtils.startsWith(gameFile.getName(), DefaultGames.class.getSimpleName())) {
+    for (File gameBundle : Objects.requireNonNull(Paths.get(resource.toURI()).toFile().listFiles())) {
+      if (StringUtils.startsWith(gameBundle.getName(), DefaultGames.class.getSimpleName())) {
+        // Skipping the class file.
         continue;
       }
-      files.add(gameFile);
+      bundles.add(gameBundle);
     }
-    return files;
+    return bundles;
   }
 }

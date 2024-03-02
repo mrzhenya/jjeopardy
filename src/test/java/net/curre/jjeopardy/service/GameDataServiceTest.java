@@ -146,7 +146,7 @@ public class GameDataServiceTest {
   public void testLoadGameDataValidDefault() {
     GameData gameData = loadGameTestFile(PATH_VALID + "default.xml");
     assertEquals("Wrong file name",
-            new File(PATH_VALID + "default.xml").getAbsolutePath(), gameData.getFileName());
+            new File(PATH_VALID + "default.xml").getAbsolutePath(), gameData.getFilePath());
 
     // There should still be no players.
     List<Player> players = this.testGameService.getCurrentPlayers();
@@ -222,6 +222,26 @@ public class GameDataServiceTest {
     assertEquals("Wrong player 2 name", "Three", playerNames.get(2));
     assertEquals("Wrong player 3 name", "Four", playerNames.get(3));
     assertTrue("Game data should be usable", gameData.isGameDataUsable());
+  }
+
+  /** Tests loading game data from a valid game file with a question as a list of items. */
+  @Test
+  public void testLoadGameDataValidItemsList() {
+    GameData gameData = loadGameTestFile(PATH_VALID + "items-list.xml");
+    assertEquals("Wrong file name",
+        new File(PATH_VALID + "items-list.xml").getAbsolutePath(), gameData.getFilePath());
+    assertTrue("Game data should be usable", gameData.isGameDataUsable());
+
+    List<Category> categories = gameData.getCategories();
+    assertNotNull("List of categories should not be null", categories);
+    assertEquals("Wrong size of categories", 3, categories.size());
+
+    Category category = categories.get(0);
+    assertEquals("Wrong number of questions in category 0", 3, category.getQuestionsCount());
+    Question question = category.getQuestion(0);
+    assertNotNull("Question 0 should not be null", question);
+    assertEquals("Wrong question 0 string",
+        "List of items:\n        a. One\n        b. Two\n        c. Three", question.getQuestion());
   }
 
   /** Tests loading game data from a valid game file with enough bonus questions. */
@@ -449,7 +469,8 @@ public class GameDataServiceTest {
   private GameData loadGameTestFile(String fileName) {
     File file = new File(fileName);
     assertTrue("Unable to find test file: " + fileName, file.exists());
-    GameData gameData = this.testGameService.parseGameData(file.getAbsolutePath());
+    // TODO - add bundle testing
+    GameData gameData = this.testGameService.parseGameData(file.getAbsolutePath(), null);
     assertNotNull("Parsing result should not be null", gameData);
     return gameData;
   }

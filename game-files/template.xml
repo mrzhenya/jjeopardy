@@ -31,6 +31,9 @@
 -->
 <properties>
     <entry key="game.name">JJeopardy </entry>
+    <entry key="game.description">
+        Description of this JJeopardy game.
+    </entry>
 
     <entry key="question.1.points">100</entry>
     <entry key="question.2.points">200</entry>
@@ -39,7 +42,10 @@
     <entry key="question.5.points">500</entry>
 
     <entry key="category.1.name"></entry>
-    <entry key="category.1.question.1"></entry>
+    <entry key="category.1.question.1">List of items:
+        a. One
+        b. Two
+    </entry>
     <entry key="category.1.answer.1"></entry>
     <entry key="category.1.question.2"></entry>
     <entry key="category.1.answer.2"></entry>

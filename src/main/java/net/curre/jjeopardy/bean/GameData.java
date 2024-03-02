@@ -44,9 +44,11 @@ public class GameData implements Comparable<GameData> {
   /** Min total question count to consider game to be Medium. */
   private static final int MEDIUM_GAME_SIZE = 30;
 
-
   /** Game data file absolute path. */
-  private String fileName;
+  private String filePath;
+
+  /** Game bundle directory absolute path. */
+  private String bundlePath;
 
   /**
    * Indicates that game file was opened and parsed successfully.
@@ -74,10 +76,12 @@ public class GameData implements Comparable<GameData> {
 
   /**
    * Ctor.
-   * @param fileName file name
+   * @param filePath absolute path to the XML game file
+   * @param bundleOrNull absolute path to the game bundle if the file is in a bundle; or null if it's a standalone file
    */
-  public GameData(String fileName) {
-    this.fileName = fileName;
+  public GameData(String filePath, String bundleOrNull) {
+    this.filePath = filePath;
+    this.bundlePath = bundleOrNull;
     this.isFileDataAcquired = false;
     this.categories = new ArrayList<>();
     this.playerNames = new ArrayList<>();
@@ -85,19 +89,29 @@ public class GameData implements Comparable<GameData> {
   }
 
   /**
-   * Gets the game file name.
-   * @return game file name (absolute path)
+   * Gets the game XML file path.
+   * @return game file absolute path
    */
-  public String getFileName() {
-    return this.fileName;
+  public String getFilePath() {
+    return this.filePath;
   }
 
   /**
-   * Sets the game file name.
-   * @param fileName absolute path to the game file
+   * Sets the game file paths.
+   * @param filePath absolute path to the XML game file
+   * @param bundleOrNull absolute path to the game bundle if the file is in a bundle; or null if it's a standalone file
    */
-  public void setFileName(String fileName) {
-    this.fileName = fileName;
+  public void setGameFilePaths(String filePath, String bundleOrNull) {
+    this.filePath = filePath;
+    this.bundlePath = bundleOrNull;
+  }
+
+  /**
+   * Gets the game bundle directory absolute path.
+   * @return game directory bundle absolute path or null if this game has only one (standalone) file
+   */
+  public String getBundlePath() {
+    return this.bundlePath;
   }
 
   /**
@@ -296,7 +310,7 @@ public class GameData implements Comparable<GameData> {
    * @return game data parsing result
    */
   public FileParsingResult generateFileParsingResult() {
-    final FileParsingResult result = new FileParsingResult(this.fileName);
+    final FileParsingResult result = new FileParsingResult(this.filePath);
     result.setGameData(this);
 
     // First, check if the game file was located and parsed successfully.

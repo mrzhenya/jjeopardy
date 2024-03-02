@@ -58,7 +58,12 @@ public class Utilities {
     return PlatformType.MAC_OS;
   }
 
-  public static String removeExtraWhitespace(String propStr) {
-    return RegExUtils.replacePattern(propStr, "\\s\\s+", " ");
+  /**
+   * Removes extra leading and trailing whitespace.
+   * @param propStr property string to clean
+   * @return a new string w/o leading and trailing whitespace
+   */
+  public static String removeEndsWhitespace(String propStr) {
+    return RegExUtils.replacePattern(propStr, "(^\\n\\h*)|(\\h*\\n$)", "");
   }
 }

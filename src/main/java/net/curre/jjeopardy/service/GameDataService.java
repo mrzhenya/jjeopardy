@@ -49,6 +49,9 @@ import java.util.logging.Logger;
  */
 public class GameDataService {
 
+  /** Extension of the game bundle directory. */
+  private static final String BUNDLE_EXTENSION = ".jj";
+
   /** Private class logger. */
   private static final Logger LOGGER = Logger.getLogger(GameDataService.class.getName());
 
@@ -198,10 +201,14 @@ public class GameDataService {
     }
     try {
       gamesDir.toFile().mkdir();
-      List<File> gameFiles = DefaultGames.getDefaultGameFiles();
-      for (File originalFile : gameFiles) {
-        File destFile = new File(gamesDir.toString() + File.separatorChar + originalFile.getName());
-        FileUtils.copyFile(originalFile, destFile);
+      List<File> gameBundles = DefaultGames.getDefaultGameBundles();
+      for (File originalBundle : gameBundles) {
+        File destDir = new File(gamesDir.toString() + File.separatorChar + originalBundle.getName());
+        destDir.mkdir();
+        for (File file : originalBundle.listFiles()) {
+          File destFile = new File(destDir.toString() + File.separatorChar + file.getName());
+          FileUtils.copyFile(file, destFile);
+        }
       }
     } catch (Exception e) {
       LOGGER.log(Level.WARNING, "Unable to copy default game files", e);
@@ -222,17 +229,17 @@ public class GameDataService {
       }
 
       // Obtaining the list of files in the games directory.
-      final List<File> gameFiles = new ArrayList<>();
+      final List<File> gameBundles = new ArrayList<>();
       for (File gameFile : Objects.requireNonNull(gamesDir.toFile().listFiles())) {
         if (StringUtils.startsWith(gameFile.getName(), DefaultGames.class.getSimpleName())) {
           continue;
         }
-        gameFiles.add(gameFile);
+        gameBundles.add(gameFile);
       }
 
       // Parsing and validating game files.
-      for (File gameFile : gameFiles) {
-        GameData gameData = parseGameData(gameFile.getAbsolutePath());
+      for (File gameBundle : gameBundles) {
+        GameData gameData = parseGameFileOrBundle(gameBundle.getAbsolutePath());
         if (gameData.isGameDataUsable()) {
           this.libraryGames.add(gameData);
         }
@@ -250,34 +257,69 @@ public class GameDataService {
    * @return true if the game already exists in the library folder
    */
   public boolean gameExistsInLibrary(GameData gameData) {
-    Path gamesDir = Paths.get(getGameLibraryDirectoryPath());
-    File originalFile = new File(gameData.getFileName());
-    File destFile = new File(gamesDir.toString() + File.separatorChar + originalFile.getName());
-    return destFile.exists();
+    Path libGamesDir = Paths.get(getGameLibraryDirectoryPath());
+    if (gameData.getBundlePath() == null) {
+      File originalFile = new File(gameData.getFilePath());
+      File destFile = new File(libGamesDir.toString() + File.separatorChar + originalFile.getName());
+      return destFile.exists();
+    } else {
+      File originalDir = new File(gameData.getBundlePath());
+      File destDir = new File(libGamesDir.toString() + File.separatorChar + originalDir.getName());
+      return destDir.exists();
+    }
   }
 
   /**
-   * Adds game to the game Library by copying original game file to the
-   * settings game library folder if it doesn't exist there already.
+   * Adds game to the game Library by copying original game files to the
+   * settings game library folder if they don't exist there already.
    * @param gameData game to add
    */
   public void addGameToLibrary(GameData gameData) {
     if (gameData.isGameDataUsable()) {
       try {
-        File originalFile = new File(gameData.getFileName());
-        Path gamesDir = Paths.get(getGameLibraryDirectoryPath());
-        File destFile = new File(gamesDir.toString() + File.separatorChar + originalFile.getName());
-        if (!destFile.exists()) {
-          // Ignore addition if the file already exists in the library folder.
-          FileUtils.copyFile(originalFile, destFile);
+        boolean updateLibrary = false;
+        String gameFilePath = null;
+        String gameBundlePath = null;
+        Path libGamesDir = Paths.get(getGameLibraryDirectoryPath());
+
+        if (gameData.getBundlePath() == null) {
+          // If game is a single file, copy the file to the game library folder.
+          File originalFile = new File(gameData.getFilePath());
+          File destFile = new File(libGamesDir.toString() + File.separatorChar + originalFile.getName());
+          if (!destFile.exists()) {
+            FileUtils.copyFile(originalFile, destFile);
+            updateLibrary = true;
+          }
+          gameFilePath = destFile.getAbsolutePath();
+        } else {
+          // If game has a bundle directory, check if the directory exists in the library.
+          File bundleDir = new File(gameData.getBundlePath());
+          File destDir = new File(libGamesDir.toString() + File.separatorChar + bundleDir.getName());
+          if (!destDir.exists()) {
+            // Create a bundle directory in the library folder and copy all content there.
+            destDir.mkdir();
+            for (File gameItem : Objects.requireNonNull(bundleDir.listFiles())) {
+              File destFile = new File(destDir.toString() + File.separatorChar + gameItem.getName());
+              FileUtils.copyFile(gameItem, destFile);
+              if (StringUtils.endsWithIgnoreCase(gameItem.getName(), ".xml")) {
+                gameFilePath = destFile.getAbsolutePath();
+              }
+            }
+            updateLibrary = true;
+            gameBundlePath = destDir.getAbsolutePath();
+          }
+        }
+
+        if (updateLibrary) {
+          // Update game file path on the current game data.
+          gameData.setGameFilePaths(gameFilePath, gameBundlePath);
+
+          // Update library games if a new game was added to the library folder.
           this.libraryGames.add(gameData);
           Collections.sort(this.libraryGames);
         }
-
-        // Update game file path on the current game data.
-        gameData.setFileName(destFile.getAbsolutePath());
       } catch (Exception e) {
-        LOGGER.log(Level.WARNING, "Unable to copy game file: " + gameData.getFileName(), e);
+        LOGGER.log(Level.WARNING, "Unable to copy game file: " + gameData.getFilePath(), e);
       }
     }
   }
@@ -289,11 +331,11 @@ public class GameDataService {
   public void deleteGameFromLibrary(GameData gameData) {
     this.libraryGames.remove(gameData);
     Collections.sort(this.libraryGames);
-    File gameFile = new File(gameData.getFileName());
+    File gameFile = new File(gameData.getFilePath());
     try {
       FileUtils.delete(gameFile);
     } catch (IOException e) {
-      LOGGER.log(Level.WARNING, "Unable to delete game file: " + gameData.getFileName(), e);
+      LOGGER.log(Level.WARNING, "Unable to delete game file: " + gameData.getFilePath(), e);
     }
   }
 
@@ -306,15 +348,42 @@ public class GameDataService {
   }
 
   /**
+   * Loads game data from a given game file (xml) or a game bundle (directory with a .jj extension).
+   * Note, that the parsed data is not validated and returned as is. No instance state on the service
+   * object is modified as a result, so if this is the game to load, call <code>#setCurrentGameData</code> method.
+   * @param fileName absolute path to the file or bundle directory
+   * @return parsed game data
+   * @see #setCurrentGameData(GameData)
+   */
+  public GameData parseGameFileOrBundle(String fileName) {
+    File gameFile = new File(fileName);
+    if (gameFile.isDirectory()) {
+      for (File bundleFile : Objects.requireNonNull(gameFile.listFiles())) {
+        if (StringUtils.endsWithIgnoreCase(bundleFile.getName(), ".xml")) {
+          // It's assumed there is only one xml file in a game bundle.
+          return parseGameData(bundleFile.getAbsolutePath(), gameFile.getAbsolutePath());
+        }
+      }
+    } else {
+      File parentDir = gameFile.getParentFile();
+      String bundleDir = parentDir.getName().endsWith(BUNDLE_EXTENSION) ? parentDir.getAbsolutePath(): null;
+      return parseGameData(fileName, bundleDir);
+    }
+
+    return new GameData(fileName, null);
+  }
+
+  /**
    * Loads game data from a given file. Note, that the parsed data is not validated and returned
    * as is. No instance state on the service object is modified as a result, so if this is the game
    * to load, call <code>#setCurrentGameData</code> method.
    * @param fileName absolute path to the file
+   * @param bundleOrNull absolute path to the game bundle if the file is in a bundle; or null if it's a standalone file
    * @return parsed game data
    * @see #setCurrentGameData(GameData)
    */
-  public GameData parseGameData(String fileName) {
-    GameData gameData = new GameData(fileName);
+  protected GameData parseGameData(String fileName, String bundleOrNull) {
+    GameData gameData = new GameData(fileName, bundleOrNull);
 
     // Loading the game data from an XML file.
     Properties props = new Properties();
@@ -492,7 +561,7 @@ public class GameDataService {
     if (propStr == null) {
       throw new ServiceException("String property \"" + propName + "\" is not found!");
     }
-    return Utilities.removeExtraWhitespace(propStr);
+    return Utilities.removeEndsWhitespace(propStr);
   }
 
   /**
