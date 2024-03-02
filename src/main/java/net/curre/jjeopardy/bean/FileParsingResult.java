@@ -151,10 +151,13 @@ public class FileParsingResult {
   }
 
   /**
-   * Gets the filename that's being parsed.
-   * @return filename
+   * Gets the path of the file or bundle directory that's being parsed.
+   * @return path to the bundle or file that's being parsed
    */
-  public String getFileName() {
+  public String getFileOrBundlePath() {
+    if (this.gameData != null && this.gameData.getBundlePath() != null) {
+      return this.gameData.getBundlePath();
+    }
     return this.fileName;
   }
 
@@ -234,10 +237,13 @@ public class FileParsingResult {
    * @return long result message (but not the content message)
    */
   public String getResulTitleLong() {
+    boolean isBundle = this.gameData != null && this.gameData.getBundlePath() != null;
     if (this.gameDataUsable) {
-      return LocaleService.getString("jj.file.result.header.success");
+      return isBundle ? LocaleService.getString("jj.file.result.header.bundle.success") :
+          LocaleService.getString("jj.file.result.header.file.success");
     } else {
-      return LocaleService.getString("jj.file.result.header.failure");
+      return isBundle ? LocaleService.getString("jj.file.result.header.bundle.failure") :
+          LocaleService.getString("jj.file.result.header.file.failure");
     }
   }
 }

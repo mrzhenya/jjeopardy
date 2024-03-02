@@ -63,7 +63,7 @@ public class ParsingResultDialog extends BasicDialog {
     label1.setFont(lafTheme.getDialogHeaderFont());
     headerPanel.add(label1, new TableLayoutConstraints(
       0, 0, 0, 0, TableLayout.CENTER, TableLayout.CENTER));
-    final JLabel label2 = new JLabel(this.result.getFileName());
+    final JLabel label2 = new JLabel(this.result.getFileOrBundlePath());
     label2.setFont(lafTheme.getDialogHeaderFont());
     headerPanel.add(label2, new TableLayoutConstraints(
       0, 1, 0, 1, TableLayout.CENTER, TableLayout.CENTER));
