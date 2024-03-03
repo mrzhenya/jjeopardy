@@ -2,12 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <groupId>org.springframework</groupId>
-  <artifactId>gs-maven</artifactId>
+  <groupId>net.curre.jjeopardy</groupId>
+  <artifactId>jjeopardy</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.0</version>
-
+  <version>0.2.0</version>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -47,14 +45,23 @@
       <version>5.10.0</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>de.perdian.maven.plugins</groupId>
-      <artifactId>macosappbundler-maven-plugin</artifactId>
-      <version>1.20.1</version>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-help-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>show-profiles</id>
+            <phase>package</phase>
+            <goals>
+              <goal>active-profiles</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.0.2</version>
@@ -62,6 +69,7 @@
         </configuration>
       </plugin>
       <plugin>
+        <!-- https://maven.apache.org/plugins/maven-shade-plugin/-->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <version>3.2.4</version>
@@ -72,6 +80,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
               <transformers>
                 <transformer
                     implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
@@ -82,32 +91,94 @@
           </execution>
         </executions>
       </plugin>
-      <!-- https://github.com/perdian/macosappbundler-maven-plugin?tab=readme-ov-file -->
-      <plugin>
-        <groupId>de.perdian.maven.plugins</groupId>
-        <artifactId>macosappbundler-maven-plugin</artifactId>
-        <version>1.20.0</version>
-        <configuration>
-          <plist>
-            <CFBundleIconFile>src/main/resources/bundle/JJeopardy.icns</CFBundleIconFile>
-            <CFBundleDisplayName>JJeopardy</CFBundleDisplayName>
-            <CFBundleIdentifier>JJeopardy</CFBundleIdentifier>
-            <CFBundleName>JJeopardy</CFBundleName>
-            <JVMMainClassName>net.curre.jjeopardy.App</JVMMainClassName>
-          </plist>
-          <dmg>
-            <generate>true</generate>
-          </dmg>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>bundle</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
+  <profiles>
+    <!--
+      Profile that's activated on Windows.
+    -->
+    <profile>
+      <id>windows-profile</id>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+    </profile>
+    <!--
+      Profile that's activated on Mac OS X to create Mac specific package bundles:
+        * an application bundle
+        * dmg package with the application bundle
+    -->
+    <profile>
+      <id>mac-profile</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-clean-plugin</artifactId>
+            <version>2.5</version>
+            <executions>
+              <execution>
+                <id>auto-clean</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>clean</goal>
+                </goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset>
+                      <directory>${project.build.directory}/bundle</directory>
+                    </fileset>
+                    <fileset>
+                      <directory>${project.build.directory}</directory>
+                      <includes>
+                        <include>*.dmg</include>
+                      </includes>
+                    </fileset>
+                  </filesets>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <!-- https://github.com/perdian/macosappbundler-maven-plugin?tab=readme-ov-file -->
+            <groupId>de.perdian.maven.plugins</groupId>
+            <artifactId>macosappbundler-maven-plugin</artifactId>
+            <version>1.20.0</version>
+            <configuration>
+              <app>
+                <includeDependencies>false</includeDependencies>
+              </app>
+              <plist>
+                <CFBundleIconFile>src/main/bundle/JJeopardy.icns</CFBundleIconFile>
+                <CFBundleDisplayName>JJeopardy</CFBundleDisplayName>
+                <CFBundleIdentifier>JJeopardy</CFBundleIdentifier>
+                <CFBundleDevelopmentRegion>English</CFBundleDevelopmentRegion>
+                <NSHumanReadableCopyright>Copyright © 2024 Yevgeny Nyden</NSHumanReadableCopyright>
+                <CFBundleName>JJeopardy</CFBundleName>
+                <JVMMainClassName>net.curre.jjeopardy.App</JVMMainClassName>
+              </plist>
+              <dmg>
+                <generate>true</generate>
+              </dmg>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>bundle</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
