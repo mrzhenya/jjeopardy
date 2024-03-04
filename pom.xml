@@ -7,6 +7,18 @@
   <packaging>jar</packaging>
   <version>0.2.0</version>
   <properties>
+    <!-- User facing application name. -->
+    <project.appName>JJeopardy</project.appName>
+
+    <!-- Windows project and file version must be in the form of x.x.x.x -->
+    <project.windowsVersion>${project.version}.0</project.windowsVersion>
+
+    <!-- Class path of the Java application main class. -->
+    <project.javaMainClass>net.curre.jjeopardy.App</project.javaMainClass>
+
+    <!-- Application copyright info, included in the distribution packages. -->
+    <project.appCopyright>Copyright © 2024 Yevgeny Nyden</project.appCopyright>
+
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -63,6 +75,15 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>3.0.2</version>
         <configuration>
@@ -84,7 +105,7 @@
               <transformers>
                 <transformer
                     implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>net.curre.jjeopardy.App</mainClass>
+                  <mainClass>${project.javaMainClass}</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -95,7 +116,7 @@
   </build>
   <profiles>
     <!--
-      Profile that's activated on Windows.
+      Profile that's activated on Windows to generate a Windows exe file.
     -->
     <profile>
       <id>windows-profile</id>
@@ -104,6 +125,58 @@
           <family>windows</family>
         </os>
       </activation>
+      <build>
+        <plugins>
+          <!--
+            https://github.com/orphan-oss/launch4j-maven-plugin
+            https://launch4j.sourceforge.net/docs.html#Configuration_file
+          -->
+          <plugin>
+            <groupId>com.akathist.maven.plugins.launch4j</groupId>
+            <artifactId>launch4j-maven-plugin</artifactId>
+            <version>2.5.0</version>
+            <executions>
+              <execution>
+                <id>l4j-clui</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>launch4j</goal>
+                </goals>
+                <configuration>
+                  <headerType>gui</headerType>
+                  <jar>${project.build.directory}/${project.artifactId}-${project.version}.jar</jar>
+                  <outfile>${project.build.directory}/${project.appName}-${project.version}.exe</outfile>
+                  <downloadUrl>https://github.com/mrzhenya/jjeopardy</downloadUrl>
+                  <errTitle>${project.appName}</errTitle>
+                  <classPath>
+                    <mainClass>${project.javaMainClass}</mainClass>
+                    <preCp>anything</preCp>
+                  </classPath>
+                  <icon>src/main/bundle/JJeopardy.ico</icon>
+                  <jre>
+                    <minVersion>1.8.0</minVersion>
+                    <jdkPreference>preferJre</jdkPreference>
+                  </jre>
+                  <singleInstance>
+                    <mutexName>${project.artifactId}</mutexName>
+                    <windowTitle>${project.appName}</windowTitle>
+                  </singleInstance>
+                  <versionInfo>
+                    <fileVersion>${project.windowsVersion}</fileVersion>
+                    <fileDescription>${project.appName} is game of questions and answers</fileDescription>
+                    <copyright>${project.appCopyright}</copyright>
+                    <productVersion>${project.windowsVersion}</productVersion>
+                    <productName>${project.appName}</productName>
+                    <companyName>Yevgeny Nyden</companyName>
+                    <internalName>${project.artifactId}</internalName>
+                    <originalFilename>${project.appName}-${project.version}.exe</originalFilename>
+                  </versionInfo>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
     <!--
       Profile that's activated on Mac OS X to create Mac specific package bundles:
@@ -121,7 +194,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-clean-plugin</artifactId>
-            <version>2.5</version>
+            <version>3.3.2</version>
             <executions>
               <execution>
                 <id>auto-clean</id>
@@ -147,7 +220,7 @@
             </executions>
           </plugin>
           <plugin>
-            <!-- https://github.com/perdian/macosappbundler-maven-plugin?tab=readme-ov-file -->
+            <!-- https://github.com/perdian/macosappbundler-maven-plugin -->
             <groupId>de.perdian.maven.plugins</groupId>
             <artifactId>macosappbundler-maven-plugin</artifactId>
             <version>1.20.0</version>
@@ -157,12 +230,12 @@
               </app>
               <plist>
                 <CFBundleIconFile>src/main/bundle/JJeopardy.icns</CFBundleIconFile>
-                <CFBundleDisplayName>JJeopardy</CFBundleDisplayName>
-                <CFBundleIdentifier>JJeopardy</CFBundleIdentifier>
+                <CFBundleDisplayName>${project.appName}</CFBundleDisplayName>
+                <CFBundleIdentifier>${project.appName}</CFBundleIdentifier>
                 <CFBundleDevelopmentRegion>English</CFBundleDevelopmentRegion>
-                <NSHumanReadableCopyright>Copyright © 2024 Yevgeny Nyden</NSHumanReadableCopyright>
-                <CFBundleName>JJeopardy</CFBundleName>
-                <JVMMainClassName>net.curre.jjeopardy.App</JVMMainClassName>
+                <NSHumanReadableCopyright>${project.appCopyright}</NSHumanReadableCopyright>
+                <CFBundleName>${project.appName}</CFBundleName>
+                <JVMMainClassName>${project.javaMainClass}</JVMMainClassName>
               </plist>
               <dmg>
                 <generate>true</generate>
