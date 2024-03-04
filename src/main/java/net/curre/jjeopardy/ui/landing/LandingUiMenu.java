@@ -16,8 +16,12 @@
 
 package net.curre.jjeopardy.ui.landing;
 
-import net.curre.jjeopardy.service.*;
+import net.curre.jjeopardy.bean.Settings;
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LafService;
+import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.service.Registry;
+import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.ui.laf.theme.LafThemeInterface;
 
 import javax.swing.ButtonGroup;
@@ -41,13 +45,28 @@ public class LandingUiMenu extends JMenuBar {
 
   /** Ctor. */
   public LandingUiMenu() {
-    // Creating the Themes menu items.
+    JMenu menu = new JMenu(LocaleService.getString("jj.landing.menu.title"));
+    menu.add(createThemeMenu());
+    menu.add(createSoundMenu());
+    menu.add(createLocaleMenu());
+    menu.addSeparator();
+    menu.add(createAboutItem());
+    menu.addSeparator();
+    menu.add(createExitItem());
+    this.add(menu);
+  }
+
+  /**
+   * Creates the LAF Themes settings menu group.
+   * @return themes menu
+   */
+  private JMenu createThemeMenu() {
     JMenu themeMenu = new JMenu(LocaleService.getString("jj.landing.menu.item.themes"));
     ButtonGroup themesGroup = new ButtonGroup();
     LafService lafService = AppRegistry.getInstance().getLafService();
     for (LafThemeInterface lafTheme : lafService.getSupportedThemes()) {
       JRadioButtonMenuItem themeItem = new JRadioButtonMenuItem(
-        LocaleService.getString(lafTheme.getNameResourceKey()));
+          LocaleService.getString(lafTheme.getNameResourceKey()));
       if (lafService.getCurrentLafTheme().equals(lafTheme)) {
         themeItem.setSelected(true);
       }
@@ -67,8 +86,67 @@ public class LandingUiMenu extends JMenuBar {
         }
       });
     }
+    return themeMenu;
+  }
 
-    // Creating the Locale menu.
+  /**
+   * Creates the Sound settings menu group.
+   * @return sounds menu
+   */
+  private JMenu createSoundMenu() {
+    SettingsService settingsService = AppRegistry.getInstance().getSettingsService();
+    Settings settings = settingsService.getSettings();
+    JMenu soundMenu = new JMenu(LocaleService.getString("jj.landing.menu.item.sound"));
+    ButtonGroup soundGroup = new ButtonGroup();
+
+    // Play all sounds menu item.
+    JRadioButtonMenuItem allItem = new JRadioButtonMenuItem(
+        LocaleService.getString("jj.landing.menu.item.sound.all"));
+    if (settings.isAllSoundOn()) {
+      allItem.setSelected(true);
+    }
+    allItem.addActionListener(evt -> {
+      settingsService.getSettings().enableAllSound();
+      settingsService.persistSettings();
+    });
+    soundGroup.add(allItem);
+    soundMenu.add(allItem);
+
+    // Play FX sounds menu item.
+    JRadioButtonMenuItem fxItem = new JRadioButtonMenuItem(
+        LocaleService.getString("jj.landing.menu.item.sound.fx"));
+    if (settings.isSoundEffectsOnly()) {
+      fxItem.setSelected(true);
+    }
+    fxItem.addActionListener(evt -> {
+      settingsService.getSettings().enableSoundEffectsOnly();
+      settingsService.persistSettings();
+    });
+    soundGroup.add(fxItem);
+    soundMenu.add(fxItem);
+
+    // Play FX sounds menu item.
+    JRadioButtonMenuItem noItem = new JRadioButtonMenuItem(
+        LocaleService.getString("jj.landing.menu.item.sound.no"));
+    if (settings.isAllSoundOff()) {
+      noItem.setSelected(true);
+    }
+    noItem.addActionListener(evt -> {
+      AppRegistry.getInstance().getSoundService().stopAllMusic();
+      settings.disableAllSound();
+      settingsService.persistSettings();
+    });
+    soundGroup.add(noItem);
+    soundMenu.add(noItem);
+
+    return soundMenu;
+  }
+
+  /**
+   * Creates the Locale settings menu group.
+   * @return locale menu
+   */
+  private JMenu createLocaleMenu() {
     JMenu localeMenu = new JMenu(LocaleService.getString("jj.landing.menu.item.locales"));
     ButtonGroup localesGroup = new ButtonGroup();
     LocaleService localeService = AppRegistry.getInstance().getLocaleService();
@@ -86,27 +164,33 @@ public class LandingUiMenu extends JMenuBar {
         settingsService.persistSettings();
       });
     }
+    return localeMenu;
+  }
 
+  /**
+   * Creates the About menu item.
+   * @return about menu item
+   */
+  private JMenuItem createAboutItem() {
     // Creating the About menu item.
     final JMenuItem aboutItem = new JMenuItem(LocaleService.getString("jj.landing.menu.item.about"));
     aboutItem.setMnemonic(KeyEvent.VK_A);
     aboutItem.addActionListener(evt -> AppRegistry.getInstance().getUiService().showInfoDialog(
-      LocaleService.getString("jj.landing.menu.about.title"),
-      LocaleService.getString("jj.landing.menu.about.message"),
-    null));
+        LocaleService.getString("jj.landing.menu.about.title"),
+        LocaleService.getString("jj.landing.menu.about.message"),
+        null));
+    return aboutItem;
+  }
 
+  /**
+   * Creates the Exit menu item.
+   * @return Exit menu item
+   */
+  private JMenuItem createExitItem() {
     // Creating the Exit menu item.
     final JMenuItem exitItem = new JMenuItem(LocaleService.getString("jj.landing.menu.item.exit"));
     exitItem.setMnemonic(KeyEvent.VK_Q);
     exitItem.addActionListener(evt -> AppRegistry.getInstance().getMainService().quitApp());
-
-    JMenu menu = new JMenu(LocaleService.getString("jj.landing.menu.title"));
-    menu.add(themeMenu);
-    menu.add(localeMenu);
-    menu.addSeparator();
-    menu.add(aboutItem);
-    menu.addSeparator();
-    menu.add(exitItem);
-    this.add(menu);
+    return exitItem;
   }
 }

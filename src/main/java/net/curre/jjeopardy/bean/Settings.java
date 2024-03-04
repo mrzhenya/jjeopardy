@@ -46,6 +46,12 @@ public class Settings implements Serializable {
   /** Look and Feel theme/skin ID. */
   private LafThemeId lafThemeId;
 
+  /** Sound FX only setting. */
+  private boolean soundFxOnly;
+
+  /** Sound Off setting. */
+  private boolean soundOff;
+
   /** Locale unique identifier (Locale.toString()). */
   private String localeId;
 
@@ -59,6 +65,8 @@ public class Settings implements Serializable {
     this.gameWindowWidth = JjDefaults.GAME_TABLE_MIN_WIDTH;
     this.gameWindowHeight = JjDefaults.GAME_TABLE_MIN_HEIGHT;
     this.lafThemeId = DEFAULT_LAF_THEME_ID;
+    this.soundFxOnly = false;
+    this.soundOff = false;
     this.localeId = LocaleService.DEFAULT_LOCALE.toString();
     this.lastCurrentDirectory = System.getProperty("user.home");
   }
@@ -109,6 +117,54 @@ public class Settings implements Serializable {
    */
   public void setLafThemeId(LafThemeId lafThemeId) {
     this.lafThemeId = lafThemeId;
+  }
+
+  /**
+   * Enables all sound effects.
+   */
+  public void enableAllSound() {
+    this.soundFxOnly = false;
+    this.soundOff = false;
+  }
+
+  /**
+   * Enables only sound effects.
+   */
+  public void enableSoundEffectsOnly() {
+    this.soundFxOnly = true;
+    this.soundOff = false;
+  }
+
+  /**
+   * Disables all sound effects.
+   */
+  public void disableAllSound() {
+    this.soundFxOnly = false;
+    this.soundOff = true;
+  }
+
+  /**
+   * Determines if all sound should be on.
+   * @return true if all sound should be on
+   */
+  public boolean isAllSoundOn() {
+    return !this.soundFxOnly && !this.soundOff;
+  }
+
+  /**
+   * Determines if only the sound effects should be on.
+   * @return true if only the sound effects should be on
+   */
+  public boolean isSoundEffectsOnly() {
+    return this.soundFxOnly;
+  }
+
+  /**
+   * Determines if the sound should be off.
+   * @return true if all sound should be off
+   */
+  public boolean isAllSoundOff() {
+    return this.soundOff;
   }
 
   /**

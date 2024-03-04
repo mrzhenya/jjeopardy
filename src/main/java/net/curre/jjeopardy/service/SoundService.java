@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.sounds.SoundEnum;
 
 import javax.sound.sampled.AudioFormat;
@@ -58,6 +59,14 @@ public class SoundService {
    * @return true if the stream has been started successfully; false if otherwise
    */
   public boolean startMusic(SoundEnum soundEnum, int count) {
+    Settings settings = AppRegistry.getInstance().getSettingsService().getSettings();
+    if (settings.isAllSoundOff()) {
+      return false;
+    }
+    if (settings.isSoundEffectsOnly() && !soundEnum.isEffect()) {
+      return false;
+    }
+
     try {
       Clip clip = this.currentClips.get(soundEnum);
       if (clip == null) {

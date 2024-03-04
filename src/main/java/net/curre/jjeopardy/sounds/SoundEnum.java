@@ -30,40 +30,40 @@ import java.io.InputStream;
 public enum SoundEnum {
 
   /** Music for the opening of the game (app start). */
-  OPENING("opening.wav"),
+  OPENING("opening.wav", false),
 
   /** Question time is up music. */
-  TIMES_UP("times_up.wav"),
+  TIMES_UP("times_up.wav", true),
 
   /** Thinking music. */
-  THINKING("short_dodododo.wav"),
+  THINKING("short_dodododo.wav", false),
 
   /** Wrong answer sound. */
-  BOO_0("boo.wav"),
+  BOO_0("boo.wav", true),
 
   /** Wrong answer sound. */
-  BOO_1("buzzer_long.wav"),
+  BOO_1("buzzer_long.wav", true),
 
   /** Wrong answer sound. */
-  BOO_2("buzzer_3.wav"),
+  BOO_2("buzzer_3.wav", true),
 
   /** Wrong answer sound. */
-  BOO_3("flush.wav"),
+  BOO_3("flush.wav", true),
 
   /** Correct answer sound. */
-  HOORAY_0("cheering.wav"),
+  HOORAY_0("cheering.wav", true),
 
   /** Correct answer sound. */
-  HOORAY_1("fanfare_0.wav"),
+  HOORAY_1("fanfare_0.wav", true),
 
   /** Correct answer sound. */
-  HOORAY_2("fanfare_1.wav"),
+  HOORAY_2("fanfare_1.wav", true),
 
   /** Correct answer sound. */
-  HOORAY_3("fanfare_2.wav"),
+  HOORAY_3("fanfare_2.wav", true),
 
   /** Music for the end of the game. */
-  FINAL("fanfare_2.wav"); // TODO - find final sound clip!
+  FINAL("fanfare_2.wav", false); // TODO - find final sound clip!
 
   /** Sounds associated with failure (wrong answer). */
   private static final SoundEnum[] BOOS = {
@@ -78,12 +78,24 @@ public enum SoundEnum {
   /** Filename for this sound. */
   private final String fileName;
 
+  /** Indicates this sound is a Sound FX. */
+  private final boolean effect;
+
   /**
    * Creates a new <code>SoundFileEnum</code>.
    * @param fileName filename to set
    */
-  SoundEnum(String fileName) {
+  SoundEnum(String fileName, boolean isEffect) {
     this.fileName = fileName;
+    this.effect = isEffect;
+  }
+
+  /**
+   * Determines if this sound is a sound effect.
+   * @return true if this is a sound fx
+   */
+  public boolean isEffect() {
+    return this.effect;
   }
 
   /**
