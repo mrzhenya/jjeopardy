@@ -16,19 +16,20 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.games.DefaultGames;
+import net.curre.jjeopardy.images.ImageUtilities;
+import net.curre.jjeopardy.ui.dialog.ProgressDialog;
 import net.curre.jjeopardy.util.JjDefaults;
-import net.curre.jjeopardy.util.Utilities;
+import net.curre.jjeopardy.util.XmlFileUtilities;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,12 +55,6 @@ public class GameDataService {
   /** Private class logger. */
   private static final Logger LOGGER = Logger.getLogger(GameDataService.class.getName());
 
-  /**
-   * Max value for the parse loops, it's not really used since every loop stops with/by an exception,
-   * but we need a large enough number for the parse for loop condition.
-   */
-  private static final int MAX_LOOP = 30;
-
   /** Name of the directory under settings where library games are stored. */
   private static final String GAME_DIRECTORY = "games";
 
@@ -73,12 +67,20 @@ public class GameDataService {
   /** All known games in the game library. */
   private final List<GameData> libraryGames;
 
+  /** Reference to the (game native format) XML parsing service. */
+  private final XmlParsingService xmlParser;
+
+  /** Reference to the HTML (game non-native format) parsing service. */
+  private final HtmlParsingService htmlParser;
+
   /**
    * Ctor.
    */
-  protected GameDataService() {
+  public GameDataService() {
     this.currentPlayers = new ArrayList<>();
     this.libraryGames = new ArrayList<>();
+    this.xmlParser = new XmlParsingService();
+    this.htmlParser = new HtmlParsingService();
   }
 
   /**
@@ -193,6 +195,7 @@ public class GameDataService {
    * Copied default (packaged games) to the library folder (under settings) if
    * they have not been copied there already.
    */
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static void copyDefaultGamesToLibraryIfNeeded() {
     Path gamesDir = Paths.get(getGameLibraryDirectoryPath());
     if (Files.exists(gamesDir)) {
@@ -258,13 +261,23 @@ public class GameDataService {
    */
   public boolean gameExistsInLibrary(GameData gameData) {
     Path libGamesDir = Paths.get(getGameLibraryDirectoryPath());
-    if (gameData.getBundlePath() == null) {
-      File originalFile = new File(gameData.getFilePath());
-      File destFile = new File(libGamesDir.toString() + File.separatorChar + originalFile.getName());
-      return destFile.exists();
+    if (gameData.isNativeData()) {
+      // For the native data, check if the bundle or game file exist in the library.
+      if (gameData.getBundlePath() == null) {
+        File originalFile = new File(gameData.getFilePath());
+        File destFile = new File(libGamesDir.toString() + File.separatorChar + originalFile.getName());
+        return destFile.exists();
+      } else {
+        File originalDir = new File(gameData.getBundlePath());
+        File destDir = new File(libGamesDir.toString() + File.separatorChar + originalDir.getName());
+        return destDir.exists();
+      }
     } else {
-      File originalDir = new File(gameData.getBundlePath());
-      File destDir = new File(libGamesDir.toString() + File.separatorChar + originalDir.getName());
+      // For non-native data, check for the library directory named the same as the file name (w/o extension).
+      File originalFile = new File(gameData.getFilePath());
+      String nameWoExtension = FilenameUtils.removeExtension(originalFile.getName());
+      File destDir = new File(
+          libGamesDir.toString() + File.separatorChar + nameWoExtension + BUNDLE_EXTENSION);
       return destDir.exists();
     }
   }
@@ -272,56 +285,145 @@ public class GameDataService {
   /**
    * Adds game to the game Library by copying original game files to the
    * settings game library folder if they don't exist there already.
-   * @param gameData game to add
+   *
+   * @param gameData       game to add
    */
   public void addGameToLibrary(GameData gameData) {
-    if (gameData.isGameDataUsable()) {
-      try {
-        boolean updateLibrary = false;
-        String gameFilePath = null;
-        String gameBundlePath = null;
-        Path libGamesDir = Paths.get(getGameLibraryDirectoryPath());
+    if (!gameData.isGameDataUsable()) {
+      // Don't add unusable games.
+      LOGGER.warning("Trying to add unusable game to the library: " + gameData.getFilePath());
+    }
+    try {
+      if (gameData.isNativeData()) {
+        copyNativeFormatGame(gameData);
+      } else {
+        copyNonNativeFormatGame(gameData);
+      }
+    } catch (Exception e) {
+      LOGGER.log(Level.WARNING, "Unable to copy game file: " + gameData.getFilePath(), e);
+    }
+  }
 
-        if (gameData.getBundlePath() == null) {
-          // If game is a single file, copy the file to the game library folder.
-          File originalFile = new File(gameData.getFilePath());
-          File destFile = new File(libGamesDir.toString() + File.separatorChar + originalFile.getName());
-          if (!destFile.exists()) {
-            FileUtils.copyFile(originalFile, destFile);
-            updateLibrary = true;
-          }
-          gameFilePath = destFile.getAbsolutePath();
-        } else {
-          // If game has a bundle directory, check if the directory exists in the library.
-          File bundleDir = new File(gameData.getBundlePath());
-          File destDir = new File(libGamesDir.toString() + File.separatorChar + bundleDir.getName());
-          if (!destDir.exists()) {
-            // Create a bundle directory in the library folder and copy all content there.
-            destDir.mkdir();
-            for (File gameItem : Objects.requireNonNull(bundleDir.listFiles())) {
-              File destFile = new File(destDir.toString() + File.separatorChar + gameItem.getName());
-              FileUtils.copyFile(gameItem, destFile);
-              if (StringUtils.endsWithIgnoreCase(gameItem.getName(), ".xml")) {
-                gameFilePath = destFile.getAbsolutePath();
-              }
-            }
-            updateLibrary = true;
-            gameBundlePath = destDir.getAbsolutePath();
+  /**
+   * Copies native formatted game (that's originated from a "game native" XML file or bundle)
+   * to the game Library folder.
+   *
+   * @param gameData       game to add
+   * @throws Exception on copy errors
+   */
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  private void copyNativeFormatGame(GameData gameData) throws Exception {
+    boolean isGameAdded = false;
+    String gameFilePath = null;
+    String gameBundlePath = null;
+    Path libGamesDir = Paths.get(getGameLibraryDirectoryPath());
+    if (gameData.getBundlePath() == null) {
+      // If game is a single (native format) file, copy the file to the game library folder.
+      File originalFile = new File(gameData.getFilePath());
+      File destFile = new File(libGamesDir.toString() + File.separatorChar + originalFile.getName());
+      if (!destFile.exists()) {
+        FileUtils.copyFile(originalFile, destFile);
+        isGameAdded = true;
+      }
+    } else {
+      // If game has a bundle directory, check if the directory exists in the library.
+      File bundleDir = new File(gameData.getBundlePath());
+      File destDir = new File(libGamesDir.toString() + File.separatorChar + bundleDir.getName());
+      if (!destDir.exists()) {
+        // Create a bundle directory in the library folder and copy all content there.
+        destDir.mkdir();
+        for (File gameItem : Objects.requireNonNull(bundleDir.listFiles())) {
+          File destFile = new File(destDir.toString() + File.separatorChar + gameItem.getName());
+          FileUtils.copyFile(gameItem, destFile);
+          if (StringUtils.endsWithIgnoreCase(gameItem.getName(), ".xml")) {
+            gameFilePath = destFile.getAbsolutePath();
           }
         }
-
-        if (updateLibrary) {
-          // Update game file path on the current game data.
-          gameData.setGameFilePaths(gameFilePath, gameBundlePath);
-
-          // Update library games if a new game was added to the library folder.
-          this.libraryGames.add(gameData);
-          Collections.sort(this.libraryGames);
-        }
-      } catch (Exception e) {
-        LOGGER.log(Level.WARNING, "Unable to copy game file: " + gameData.getFilePath(), e);
+        isGameAdded = true;
+        gameBundlePath = destDir.getAbsolutePath();
       }
     }
+
+    if (isGameAdded) {
+      // Update game file path on the current game data.
+      gameData.setGameFilePaths(gameFilePath, gameBundlePath);
+      updateLibraryGames(gameData);
+    }
+  }
+
+  /**
+   * Copies non-native formatted game (that's originated from a "3 party" file)
+   * to the game Library folder.
+   * @param gameData       game to add
+   */
+  @SuppressWarnings("ResultOfMethodCallIgnored")
+  private void copyNonNativeFormatGame(GameData gameData) {
+    ProgressDialog progressDialog = new ProgressDialog(AppRegistry.getInstance().getLandingUi(),
+        LocaleService.getString("jj.dialog.copy.title"),
+        LocaleService.getString("jj.dialog.copy.header"));
+    progressDialog.start(() -> {
+      List<String> failedUrls = null;
+      try {
+        // Check if a bundle directory with the same name as the file
+        File originalFile = new File(gameData.getFilePath());
+        String nameWoExtension = FilenameUtils.removeExtension(originalFile.getName());
+        Path libGamesDir = Paths.get(getGameLibraryDirectoryPath());
+        File destDir = new File(
+            libGamesDir.toString() + File.separatorChar + nameWoExtension + BUNDLE_EXTENSION);
+        if (!destDir.exists()) {
+          // Create a bundle directory in the library folder and copy all content there.
+          destDir.mkdir();
+          progressDialog.incrementProgress(1);
+
+          // First, update game file path on the current game data.
+          String destFilePath = destDir.toString() + File.separatorChar + nameWoExtension + ".xml";
+          gameData.setGameFilePaths(destFilePath, destDir.getAbsolutePath());
+
+          failedUrls = downloadImagesAndFinishGameCopy(gameData, destFilePath, progressDialog);
+          progressDialog.completeAndFinish();
+        }
+      } catch (Exception e) {
+        LOGGER.log(Level.WARNING, "Unable to copy files", e);
+        progressDialog.finish();
+      }
+
+      if (failedUrls != null && !failedUrls.isEmpty()) {
+        StringBuilder failedMessage = new StringBuilder(LocaleService.getString("jj.dialog.copy.failed.message") + "\n\n");
+        for (String failedUrl : failedUrls) {
+          failedMessage.append(failedUrl).append("\n");
+        }
+        AppRegistry.getInstance().getUiService().showWarningDialog(
+            LocaleService.getString("jj.dialog.copy.failed.title"),
+            failedMessage.toString(),
+            AppRegistry.getInstance().getLandingUi()
+        );
+      }
+    });
+  }
+
+  /**
+   * Downloads images for a given game data and finishes game copy.
+   * @param gameData       game data
+   * @param destFilePath   destination filepath of the game bundle
+   * @param progressDialog progress dialog
+   * @return list of failed downloads (image urls)
+   */
+  private List<String> downloadImagesAndFinishGameCopy(GameData gameData, String destFilePath,
+                                               ProgressDialog progressDialog) throws IOException {
+    // Download the image files if any and update the image filename on the game data.
+    List<String> imageUrls = ImageUtilities.downloadImagesAndUpdatePaths(gameData, progressDialog);
+
+    if (!imageUrls.isEmpty()) {
+      gameData.setImageDownloadFailure();
+    }
+
+    // Now, that the game data has been updated, create a game data file.
+    XmlFileUtilities.createGameFile(gameData, destFilePath);
+    gameData.changeToNativeData();
+    updateLibraryGames(gameData);
+    AppRegistry.getInstance().getLandingUi().updateLibrary();
+
+    return imageUrls;
   }
 
   /**
@@ -348,7 +450,7 @@ public class GameDataService {
   }
 
   /**
-   * Loads game data from a given game file (xml) or a game bundle (directory with a .jj extension).
+   * Loads game data from a given game file (xml or html) or a game bundle (directory with a .jj extension).
    * Note, that the parsed data is not validated and returned as is. No instance state on the service
    * object is modified as a result, so if this is the game to load, call <code>#setCurrentGameData</code> method.
    * @param fileName absolute path to the file or bundle directory
@@ -358,75 +460,24 @@ public class GameDataService {
   public GameData parseGameFileOrBundle(String fileName) {
     File gameFile = new File(fileName);
     if (gameFile.isDirectory()) {
+      // Try to parse a game-native bundle directory.
       for (File bundleFile : Objects.requireNonNull(gameFile.listFiles())) {
         if (StringUtils.endsWithIgnoreCase(bundleFile.getName(), ".xml")) {
           // It's assumed there is only one xml file in a game bundle.
-          return parseGameData(bundleFile.getAbsolutePath(), gameFile.getAbsolutePath());
+          return this.xmlParser.parseXmlGameData(bundleFile.getAbsolutePath(), gameFile.getAbsolutePath());
         }
       }
-    } else {
+    } else if (StringUtils.endsWithIgnoreCase(gameFile.getName(), ".xml")) {
       File parentDir = gameFile.getParentFile();
       String bundleDir = parentDir.getName().endsWith(BUNDLE_EXTENSION) ? parentDir.getAbsolutePath(): null;
-      return parseGameData(fileName, bundleDir);
+      return this.xmlParser.parseXmlGameData(fileName, bundleDir);
+    } else if (StringUtils.endsWithIgnoreCase(gameFile.getName(), ".html")) {
+      return this.htmlParser.parseJeopardyLabsHtmlFile(fileName);
+    } else {
+      LOGGER.warning("Unsupported game file extension, ignoring file: " + fileName);
     }
 
-    return new GameData(fileName, null);
-  }
-
-  /**
-   * Loads game data from a given file. Note, that the parsed data is not validated and returned
-   * as is. No instance state on the service object is modified as a result, so if this is the game
-   * to load, call <code>#setCurrentGameData</code> method.
-   * @param fileName absolute path to the file
-   * @param bundleOrNull absolute path to the game bundle if the file is in a bundle; or null if it's a standalone file
-   * @return parsed game data
-   * @see #setCurrentGameData(GameData)
-   */
-  private GameData parseGameData(String fileName, String bundleOrNull) {
-    GameData gameData = new GameData(fileName, bundleOrNull);
-
-    // Loading the game data from an XML file.
-    Properties props = new Properties();
-    try {
-      InputStream in = Files.newInputStream(Paths.get(fileName));
-      props.loadFromXML(in);
-    } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Unable to open or parse XML file: " + fileName, e);
-      return gameData;
-    }
-    gameData.setFileDataAcquired();
-
-    // ******* First, required game name.
-    try {
-      String gameName = Utilities.getProperty(props, "game.name");
-      if (StringUtils.isBlank(gameName)) {
-        LOGGER.severe("Game name is blank.");
-      } else {
-        gameData.setGameName(gameName.trim());
-      }
-    } catch (ServiceException e) {
-      LOGGER.severe("Unable to parse game name.");
-    }
-
-    // ******* Optional game description.
-    final String gameDescription;
-    try {
-      gameDescription = Utilities.getProperty(props, "game.description");
-      if (!StringUtils.isBlank(gameDescription)) {
-        gameData.setGameDescription(gameDescription.trim());
-      }
-    } catch (ServiceException e) {
-      // Ignore the error since description is optional.
-    }
-
-    // Now, parse categories and questions.
-    gameData.setCategories(this.parseCategories(props));
-
-    // ****** Now, parse optional data.
-    gameData.setPlayersNames(this.parsePlayersDataIfAny(props));
-    gameData.setBonusQuestions(this.parseBonusQuestionsIfAny(props));
-
-    return gameData;
+    return new GameData(fileName, null, false);
   }
 
   /**
@@ -441,123 +492,20 @@ public class GameDataService {
   }
 
   /**
-   * Parses the core of the games data - questions organized into categories.
-   * The parsed data has trimmed stings but returned not validated.
-   * @param props properties file to parse data from
-   * @return parsed categories (or empty list if none is parsed)
-   */
-  private List<Category> parseCategories(Properties props) {
-    List<Category> categories = new ArrayList<>();
-    try {
-      // Notice that the (user facing) index starts at 1.
-      for (int categoryNumber = 1; categoryNumber < MAX_LOOP; ++categoryNumber) {
-        String categoryName = Utilities.getProperty(props, "category." + categoryNumber + ".name");
-        if (StringUtils.isBlank(categoryName)) {
-          categoryName = "";
-          LOGGER.severe("Category " + categoryNumber + " name is blank.");
-        }
-        List<Question> questions = parseQuestions(props, categoryNumber);
-        categories.add(new Category(categoryName.trim(), questions));
-      }
-    } catch (ServiceException e) {
-      // Stop at first category parsing error.
-    }
-    return categories;
-  }
-
-  /**
-   * Parses questions for a specified category.
-   * The parsed data has trimmed stings but returned not validated.
-   * @param props properties to parse the data from
-   * @param categoryNumber category number to parse the questions for
-   * @return list of parsed questions (or none if parsed)
-   */
-  private List<Question> parseQuestions(Properties props, int categoryNumber) {
-    List<Question> questions = new ArrayList<>();
-    try {
-      for (int questionNumber = 1; questionNumber < MAX_LOOP; questionNumber++) {
-        int points;
-        try {
-          points = Utilities.getIntProperty(props, "question." + questionNumber + ".points");
-        } catch (ServiceException e) {
-          points = questionNumber * JjDefaults.QUESTION_POINTS_MULTIPLIER;
-        }
-        final String question = Utilities.getProperty(
-            props, "category." + categoryNumber + ".question." + questionNumber);
-        final String answer = Utilities.getProperty(
-            props, "category." + categoryNumber + ".answer." + questionNumber);
-        final String questionImage = Utilities.getPropertyOrNull(
-            props,"category." + categoryNumber + ".question." + questionNumber + ".img");
-        if (!StringUtils.isBlank(question) && !StringUtils.isBlank(answer)) {
-          questions.add(new Question(question, questionImage, answer, points));
-        }
-      }
-    } catch (Exception e) {
-      // Stop on first error - no further questions for this category is defined.
-    }
-    return questions;
-  }
-
-  /**
-   * Parses players from the passed game properties file.
-   * Empty player names are skipped/ignored.
-   * Note, that it doesn't update current game players - it's assumed
-   * to be updated from the code that initiated parsing the file.
-   * @param props  properties file
-   * @return parsed valid player names list (or empty if none is parsed)
-   */
-  private List<String> parsePlayersDataIfAny(Properties props) {
-    List<String> playerNames = new ArrayList<>();
-    try {
-      // Notice that the (user facing) index starts at 1.
-      for (int playerNumber = 1; playerNumber < MAX_LOOP; playerNumber++) {
-        String playerName = Utilities.getProperty(props, "player." + playerNumber + ".name");
-        if (!StringUtils.isBlank(playerName)) {
-          playerNames.add(playerName);
-        }
-      }
-    } catch (ServiceException e) {
-      // Stop on the first error, since there are no more players (or at all).
-    }
-    return playerNames;
-  }
-
-  /**
-   * Parses bonus questions if found. Empty string values are ignored/skipped.
-   * @param props  properties file
-   * @return parsed valid bonus questions (or empty list if no questions are parsed)
-   */
-  private List<Question> parseBonusQuestionsIfAny(Properties props) {
-    int bonusPoints;
-    try {
-      bonusPoints = Utilities.getIntProperty(props, "bonus.question.points");
-    } catch (ServiceException e) {
-      bonusPoints = JjDefaults.BONUS_QUESTION_POINTS;
-    }
-    final List<Question> questions = new ArrayList<>();
-    try {
-      // Notice that the (user facing) index starts at 1.
-      for (int questionNumber = 1; questionNumber < MAX_LOOP; questionNumber++) {
-        String questionStr = Utilities.getProperty(props, "bonus." + questionNumber + ".question");
-        String answerStr = Utilities.getProperty(props, "bonus." + questionNumber + ".answer");
-        final String questionImage = Utilities.getPropertyOrNull(
-            props,"bonus." + questionNumber + ".question.img");
-        if (!StringUtils.isBlank(questionStr) && !StringUtils.isBlank(answerStr)) {
-          questions.add(new Question(questionStr, questionImage, answerStr, bonusPoints));
-        }
-      }
-    } catch (ServiceException e) {
-      // Stop on the first error, since there are no more questions (or at all).
-    }
-    return questions;
-  }
-
-  /**
    * Returns an absolute path to the game library folder (under game settings).
    * Note, that the path may not exist yet.
    * @return absolute path to the games folder
    */
   private static String getGameLibraryDirectoryPath() {
     return SettingsService.getVerifiedSettingsDirectoryPath() + File.separatorChar + GAME_DIRECTORY;
+  }
+
+  /**
+   * Updates library games when a new game was added to the library folder.
+   * @param gameData game data
+   */
+  private void updateLibraryGames(GameData gameData) {
+    this.libraryGames.add(gameData);
+    Collections.sort(this.libraryGames);
   }
 }

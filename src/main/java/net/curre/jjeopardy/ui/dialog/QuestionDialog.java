@@ -137,7 +137,7 @@ public class QuestionDialog extends JDialog {
    * Hides this dialog.
    */
   public void hideQuestionDialog() {
-    this.questionPane.clearTextLabels();
+    this.questionPane.clearTextAndImageLabels();
     this.questionPane.switchToEmptyCard();
     this.titlePanel.reset();
 

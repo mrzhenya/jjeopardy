@@ -58,6 +58,9 @@ public abstract class BasicDialog extends JDialog {
   /** Width of the dialog text column. */
   protected static final int TEXT_COLUMN_WIDTH = 500;
 
+  /** Max height for the main content text area. */
+  private static final int MAX_TEXT_AREA_HEIGHT = 540;
+
   /** Ctor. */
   public BasicDialog() {
     this.setModal(true);
@@ -182,7 +185,10 @@ public abstract class BasicDialog extends JDialog {
     int newLineChars = countNewLineChars(message);
     int lineCount = (stringWidth / TEXT_COLUMN_WIDTH) + newLineChars + (/* add a few more */ 4);
     int textAreaHeight = lineCount * this.getFontMetrics(font).getHeight();
-    textArea.setPreferredSize(new Dimension(TEXT_COLUMN_WIDTH, textAreaHeight));
+    if (textAreaHeight > MAX_TEXT_AREA_HEIGHT) {
+      textAreaHeight = MAX_TEXT_AREA_HEIGHT;
+    }
+    textArea.setPreferredSize(new Dimension(TEXT_COLUMN_WIDTH, textAreaHeight - 200));
 
     return textArea;
   }

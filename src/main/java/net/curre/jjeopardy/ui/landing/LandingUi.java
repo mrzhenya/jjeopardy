@@ -461,13 +461,15 @@ public class LandingUi extends JFrame {
   private static class GameFileFilter extends FileFilter {
 
     /**
-     * Recognizes either directories or xml files.
+     * Recognizes either directories or xml/html files.
      * @param f the File to test
      * @return true to accept the file
      */
     @Override
     public boolean accept(File f) {
-      return f.isDirectory() || (f.isFile() && StringUtils.endsWithIgnoreCase(f.getName(), ".xml"));
+      return f.isDirectory() || (f.isFile() &&
+          (StringUtils.endsWithIgnoreCase(f.getName(), ".xml") ||
+              StringUtils.endsWithIgnoreCase(f.getName(), ".html")));
     }
 
     @Override

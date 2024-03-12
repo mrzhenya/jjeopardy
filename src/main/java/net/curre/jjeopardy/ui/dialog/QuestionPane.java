@@ -24,6 +24,7 @@ import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.event.BonusQuestionAction;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.event.YesNoAnswerAction;
+import net.curre.jjeopardy.images.ImageUtilities;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
@@ -73,7 +74,7 @@ public class QuestionPane extends JPanel {
   private static final int MAX_IMAGE_HEIGHT = 400;
 
   /** Reference to the question dialog. */
-  private final QuestionDialog questionDialog;
+  private final QuestionDialog parentDialog;
 
   /** Question label. */
   private JTextArea questionLabel;
@@ -84,18 +85,24 @@ public class QuestionPane extends JPanel {
   /** Answer label. */
   private JTextArea answerLabel;
 
+  /** Answer image label. */
+  private JLabel answerImageLabel;
+
   /** Bonus answer label. */
   private JTextArea bonusAnswerLabel;
+
+  /** Bonus answer image label. */
+  private JLabel bonusAnswerImageLabel;
 
   /** True if bonus questions round is active. */
   private boolean isBonusQuestionsRound;
 
   /**
    * Ctor.
-   * @param questionDialog reference to the question dialog
+   * @param parentDialog reference to the question dialog
    */
-  public QuestionPane(QuestionDialog questionDialog)     {
-    this.questionDialog = questionDialog;
+  public QuestionPane(QuestionDialog parentDialog)     {
+    this.parentDialog = parentDialog;
     this.isBonusQuestionsRound = false;
 
     this.setLayout(new CardLayout());
@@ -128,21 +135,25 @@ public class QuestionPane extends JPanel {
    */
   public void showQuestion(Question question, boolean isBonus) {
     this.questionLabel.setText(question.getQuestion());
-    updateQuestionImage(question);
     this.isBonusQuestionsRound = isBonus;
+    updateLabelIconImage(question.getQuestionImage(), this.questionImageLabel);
     if (isBonus) {
+      updateLabelIconImage(question.getAnswerImage(), this.bonusAnswerImageLabel);
       this.bonusAnswerLabel.setText(question.getAnswer());
     } else {
+      updateLabelIconImage(question.getAnswerImage(), this.answerImageLabel);
       this.answerLabel.setText(question.getAnswer());
     }
     CardLayout clay = (CardLayout) this.getLayout();
     clay.show(this, CARD_QUESTION_ID);
+    SwingUtilities.invokeLater(this.parentDialog::pack);
   }
 
   /**
    * Shows the bonus intro UI (card).
    */
   public void showBonusIntro() {
+    this.parentDialog.pack();
     CardLayout clay = (CardLayout) this.getLayout();
     clay.show(this, CARD_BONUS_INTRO_ID);
   }
@@ -174,11 +185,13 @@ public class QuestionPane extends JPanel {
   /**
    * Clears text labels to assist with transitioning to the new content.
    */
-  protected void clearTextLabels() {
+  protected void clearTextAndImageLabels() {
     this.questionLabel.setText("");
     this.questionImageLabel.setIcon(null);
     this.answerLabel.setText("");
+    this.answerImageLabel.setIcon(null);
     this.bonusAnswerLabel.setText("");
+    this.bonusAnswerImageLabel.setIcon(null);
   }
 
   /**
@@ -192,18 +205,10 @@ public class QuestionPane extends JPanel {
       {TableLayout.FILL}, // columns
       {TEXT_PANE_V_PADDING, TableLayout.FILL, TEXT_PANE_V_PADDING, TableLayout.PREFERRED}})); // rows
 
-    // Text are where the question is displayed.
-    JPanel questionContainer = new JPanel();
-    questionContainer.setLayout(new TableLayout(new double[][] {
-        {TableLayout.FILL}, // columns
-        {TableLayout.FILL, TableLayout.PREFERRED}})); // rows
+    // ******** Question text and image.
     this.questionLabel = BasicDialog.createDefaultTextArea(lafTheme.getQuestionTextFont());
-    questionContainer.add(this.questionLabel, new TableLayoutConstraints(
-        0, 0, 0, 0, TableLayout.FULL, TableLayout.FULL));
     this.questionImageLabel = new JLabel();
-    questionContainer.add(this.questionImageLabel, new TableLayoutConstraints(
-        0, 1, 0, 1, TableLayout.CENTER, TableLayout.CENTER));
-
+    JPanel questionContainer = createTextImageContainer(this.questionLabel, this.questionImageLabel);
     questionPanel.add(questionContainer, new TableLayoutConstraints(
       0, 1, 0, 1, TableLayout.FULL, TableLayout.FULL));
 
@@ -252,11 +257,13 @@ public class QuestionPane extends JPanel {
       {TableLayout.FILL}, // columns
       {TEXT_PANE_V_PADDING, TableLayout.FILL, TEXT_PANE_V_PADDING, TableLayout.PREFERRED}})); // rows
 
-    // ******* Answer text.
+    // ******** Answer text and image.
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.answerLabel = BasicDialog.createDefaultTextArea(lafTheme.getQuestionTextFont());
-    answerPanel.add(answerLabel, new TableLayoutConstraints(
-      0, 1, 0, 1, TableLayout.FULL, TableLayout.FULL));
+    this.answerImageLabel = new JLabel();
+    JPanel answerContainer = createTextImageContainer(this.answerLabel, this.answerImageLabel);
+    answerPanel.add(answerContainer, new TableLayoutConstraints(
+        0, 1, 0, 1, TableLayout.FULL, TableLayout.FULL));
 
     // ******* Main question Yes/No answer panels (for each player) - hidden for bonus answers.
     final JPanel mainAnswerPanel = new JPanel();
@@ -294,7 +301,9 @@ public class QuestionPane extends JPanel {
 
     // ******* Answer text.
     this.bonusAnswerLabel = BasicDialog.createDefaultTextArea(lafTheme.getQuestionTextFont());
-    panel.add(bonusAnswerLabel, new TableLayoutConstraints(
+    this.bonusAnswerImageLabel = new JLabel();
+    JPanel answerContainer = createTextImageContainer(this.bonusAnswerLabel, this.bonusAnswerImageLabel);
+    panel.add(answerContainer, new TableLayoutConstraints(
       0, 1, 0, 1, TableLayout.FULL, TableLayout.FULL));
 
     // ******* Yes/No buttons.
@@ -305,7 +314,7 @@ public class QuestionPane extends JPanel {
 
     // Yes button.
     final JButton yesButton = new JButton();
-    BonusQuestionAction yesAction = new BonusQuestionAction(this.questionDialog, true);
+    BonusQuestionAction yesAction = new BonusQuestionAction(this.parentDialog, true);
     yesButton.setAction(yesAction);
     yesButton.addKeyListener(yesAction);
     yesButton.setFont(lafTheme.getButtonFont());
@@ -315,7 +324,7 @@ public class QuestionPane extends JPanel {
 
     // No button.
     final JButton noButton = new JButton();
-    BonusQuestionAction noAction = new BonusQuestionAction(this.questionDialog, false);
+    BonusQuestionAction noAction = new BonusQuestionAction(this.parentDialog, false);
     noButton.setAction(noAction);
     noButton.addKeyListener(noAction);
     noButton.setFont(lafTheme.getButtonFont());
@@ -374,7 +383,7 @@ public class QuestionPane extends JPanel {
     // Yes button.
     JButton yesButton = new JButton();
     yesButton.setFont(lafTheme.getButtonFont());
-    YesNoAnswerAction yesAction = new YesNoAnswerAction(this.questionDialog, player.getIndex(), true);
+    YesNoAnswerAction yesAction = new YesNoAnswerAction(this.parentDialog, player.getIndex(), true);
     yesButton.setAction(yesAction);
     yesButton.addKeyListener(yesAction);
     yesButton.setText(LocaleService.getString("jj.game.answer.button.yes"));
@@ -384,7 +393,7 @@ public class QuestionPane extends JPanel {
     // No button.
     JButton noButton = new JButton();
     noButton.setFont(lafTheme.getButtonFont());
-    YesNoAnswerAction noAction = new YesNoAnswerAction(this.questionDialog, player.getIndex(), false);
+    YesNoAnswerAction noAction = new YesNoAnswerAction(this.parentDialog, player.getIndex(), false);
     noButton.setAction(noAction);
     noButton.addKeyListener(noAction);
     noButton.setText(LocaleService.getString("jj.game.answer.button.no"));
@@ -400,15 +409,25 @@ public class QuestionPane extends JPanel {
   }
 
   /**
-   * Updates question image. If no image is set on the current question, image data is erased on the UI.
-   * @param question question to get the image data from
+   * Updates labels icon image. If no image is provided, image data is erased on the label.
+   * @param imagePath image path
+   * @param label label on which the icon image is being updated
    */
-  private void updateQuestionImage(Question question) {
+  private void updateLabelIconImage(String imagePath, JLabel label) {
+    ImageIcon imageIcon = null;
     GameData gameData = AppRegistry.getInstance().getGameDataService().getCurrentGameData();
-    if (question.getQuestionImage() != null && gameData.getBundlePath() != null) {
-      ImageIcon icon = new ImageIcon(gameData.getBundlePath() + File.separatorChar + question.getQuestionImage());
-      int iconHeight = icon.getIconHeight();
-      int iconWidth = icon.getIconWidth();
+    if (imagePath != null && imagePath.startsWith("http")) {
+      imageIcon = ImageUtilities.downloadTempImageResource(imagePath);
+    } else if (imagePath != null && gameData.getBundlePath() != null) {
+      imageIcon = new ImageIcon(gameData.getBundlePath() + File.separatorChar + imagePath);
+    }
+    if (imageIcon == null) {
+      label.setIcon(null);
+      label.setPreferredSize(new Dimension(0, 0));
+      label.setSize(new Dimension(0, 0));
+    } else {
+      int iconHeight = imageIcon.getIconHeight();
+      int iconWidth = imageIcon.getIconWidth();
       // Resizing the image to the max width/height dimensions.
       boolean portraitOrient = iconHeight > iconWidth;
       if (portraitOrient) {
@@ -418,14 +437,11 @@ public class QuestionPane extends JPanel {
         iconHeight = (int) (iconHeight / ((double) iconWidth / MAX_IMAGE_WIDTH));
         iconWidth = MAX_IMAGE_WIDTH;
       }
-      icon.setImage(icon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_FAST));
-      this.questionImageLabel.setIcon(icon);
-      this.questionImageLabel.setPreferredSize(new Dimension(iconWidth, iconHeight));
-      this.questionImageLabel.repaint();
-    } else {
-      this.questionImageLabel.setIcon(null);
-      this.questionImageLabel.setPreferredSize(new Dimension(0, 0));
+      imageIcon.setImage(imageIcon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_FAST));
+      label.setIcon(imageIcon);
+      label.setPreferredSize(new Dimension(iconWidth, iconHeight));
     }
+    label.repaint();
   }
 
   /**
@@ -433,11 +449,29 @@ public class QuestionPane extends JPanel {
    */
   private void handleShowAnswerAction() {
     AppRegistry.getInstance().getSoundService().stopAllMusic();
-    this.questionDialog.stopTimer();
+    this.parentDialog.stopTimer();
     if (this.isBonusQuestionsRound) {
       this.showBonusAnswer();
     } else {
       this.showAnswer();
     }
+  }
+
+  /**
+   * Creates a container for the text and label (positioned below the text).
+   * @param textLabel text area component to add to the container
+   * @param imageLabel label that contains the image
+   * @return created container
+   */
+  private JPanel createTextImageContainer(JTextArea textLabel, JLabel imageLabel) {
+    JPanel answerContainer = new JPanel();
+    answerContainer.setLayout(new TableLayout(new double[][] {
+        {TableLayout.FILL}, // columns
+        {TableLayout.FILL, 15, TableLayout.PREFERRED}})); // rows
+    answerContainer.add(textLabel, new TableLayoutConstraints(
+        0, 0, 0, 0, TableLayout.FULL, TableLayout.FULL));
+    answerContainer.add(imageLabel, new TableLayoutConstraints(
+        0, 2, 0, 2, TableLayout.CENTER, TableLayout.CENTER));
+    return answerContainer;
   }
 }

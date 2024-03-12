@@ -35,7 +35,8 @@ public class CategoryTest {
   @Test
   public void testAll() {
     List<Question> questions = new ArrayList<>();
-    Question question = new Question("Question 1", null, "Answer 1", 11);
+    Question question = new Question(
+        "Question 1", null, "Answer 1", null,11);
     questions.add(question);
     Category category = new Category("Bum", questions);
 

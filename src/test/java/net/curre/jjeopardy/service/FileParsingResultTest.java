@@ -66,7 +66,7 @@ public class FileParsingResultTest {
   @Test
   public void testGetFileOrBundlePath() {
     assertEquals("Wrong file path", TEST_FILE_NAME, this.testResult.getFileOrBundlePath());
-    GameData gameData = new GameData(TEST_FILE_NAME, "testBundlePath");
+    GameData gameData = new GameData(TEST_FILE_NAME, "testBundlePath", true);
     this.testResult.setGameData(gameData);
     assertEquals("Wrong file path", "testBundlePath", this.testResult.getFileOrBundlePath());
   }

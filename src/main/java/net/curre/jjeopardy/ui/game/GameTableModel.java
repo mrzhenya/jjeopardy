@@ -98,7 +98,7 @@ public class GameTableModel extends AbstractTableModel {
   public Object getValueAt(int row, int column) {
     final Category category = this.gameData.getCategories().get(column);
     final Question question = category.getQuestion(row);
-    if (question.isHasBeenAsked()) {
+    if (question.isHasBeenAsked() || question.isNotAskable()) {
       this.emptyCells[row][column] = true;
       return ANSWERED_QUESTION_STRING;
     }

@@ -50,6 +50,9 @@ public class GameData implements Comparable<GameData> {
   /** Game bundle directory absolute path. */
   private String bundlePath;
 
+  /** Flag to indicate that the data was acquired from a game-native format (vs parsed from html file). */
+  private boolean nativeData;
+
   /**
    * Indicates that game file was opened and parsed successfully.
    * False indicates that no data in this object besides the file name is set.
@@ -74,18 +77,24 @@ public class GameData implements Comparable<GameData> {
   /** Optional bonus questions. */
   private final List<Question> bonusQuestions;
 
+  /** Indicates that some images failed to download. */
+  private boolean failedImageDownload;
+
   /**
    * Ctor.
    * @param filePath absolute path to the XML game file
    * @param bundleOrNull absolute path to the game bundle if the file is in a bundle; or null if it's a standalone file
+   * @param isNativeData true if the data was parsed from a game-native data format
    */
-  public GameData(String filePath, String bundleOrNull) {
+  public GameData(String filePath, String bundleOrNull, boolean isNativeData) {
     this.filePath = filePath;
     this.bundlePath = bundleOrNull;
+    this.nativeData = isNativeData;
     this.isFileDataAcquired = false;
     this.categories = new ArrayList<>();
     this.playerNames = new ArrayList<>();
     this.bonusQuestions = new ArrayList<>();
+    this.failedImageDownload = false;
   }
 
   /**
@@ -112,6 +121,23 @@ public class GameData implements Comparable<GameData> {
    */
   public String getBundlePath() {
     return this.bundlePath;
+  }
+
+  /**
+   * Determines whether the data was parsed from a game-native data formatted file
+   * (vs from an HTML file acquired elsewhere). This also means that there is an XML file
+   * which we can copy when adding this game to the library.
+   * @return true if this game data was acquired from a game native data file
+   */
+  public boolean isNativeData() {
+    return this.nativeData;
+  }
+
+  /**
+   * Marks this game data as backed by game native formatted file/bundle.
+   */
+  public void changeToNativeData() {
+    this.nativeData = true;
   }
 
   /**
@@ -207,11 +233,29 @@ public class GameData implements Comparable<GameData> {
     this.bonusQuestions.addAll(bonusQuestions);
   }
 
+  /**
+   * Marks this game data with an image download failure bit. This indicates that
+   * some images (one or more) failed to download.
+   */
+  public void setImageDownloadFailure() {
+    this.failedImageDownload = true;
+  }
+
+  /**
+   * Determines if there was an image file download failure.
+   * @return true if one or more images for this game data failed to download
+   */
+  public boolean isImageDownloadFailure() {
+    return this.failedImageDownload;
+  }
+
   @Override
   public int compareTo(GameData other) {
     if (this == other) {
       return 0;
     }
+    // TODO - implement a more intelligent comparison mechanism (count questions?).
+
     return this.gameName.compareTo(other.gameName);
   }
 
@@ -333,8 +377,9 @@ public class GameData implements Comparable<GameData> {
 
     // Generating the info messages for each data part if its parsing was successful.
     if (questionsUsable) {
+      int totalQuestions = this.categories.get(0).getQuestionsCount() * this.categories.size();
       result.addInfoMessage(MSG_QUESTIONS_PARSED,
-          String.valueOf(this.categories.get(0).getQuestionsCount()), String.valueOf(this.categories.size()));
+          String.valueOf(totalQuestions), String.valueOf(this.categories.size()));
     }
     if (isBonusQuestionsDataValid(result)) {
       result.addInfoMessage(MSG_BONUS_QUESTIONS_PARSED, String.valueOf(this.bonusQuestions.size()));

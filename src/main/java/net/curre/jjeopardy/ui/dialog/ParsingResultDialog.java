@@ -127,8 +127,8 @@ public class ParsingResultDialog extends BasicDialog {
     Registry registry = AppRegistry.getInstance();
     registry.getGameDataService().addGameToLibrary(result.getGameData());
     registry.getLandingUi().updateLibrary();
-    this.setVisible(false);
-    this.dispose();
+    ParsingResultDialog.this.setVisible(false);
+    ParsingResultDialog.this.dispose();
   }
 
   /**

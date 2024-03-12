@@ -63,7 +63,7 @@ public class LibraryGameItem extends JPanel {
     LafTheme lafTheme = this.lafService.getCurrentLafTheme();
     Font font = lafTheme.getDialogTextFont();
     this.setLayout(new TableLayout(new double[][] {
-        {10, 30, 10, 250, 5, 500, 10, TableLayout.FILL, 5, 40, 5, 40, 5, 35, 10}, // columns
+        {10, 30, 10, 250, 5, 470, 10, TableLayout.FILL, 5, 40, 5, 20, 5, 40, 5, 35, 10}, // columns
         {3, 30, 3}})); // rows
     this.setToolTipText(gameData.getGameDescription());
     this.setMaximumSize(new Dimension(JjDefaults.LANDING_UI_WIDTH, 36));
@@ -91,22 +91,31 @@ public class LibraryGameItem extends JPanel {
       JLabel playersLabel = new JLabel(ImageEnum.USER_24.toImageIcon());
       playersLabel.setFont(font);
       playersLabel.setText(String.valueOf(playersCount));
+      playersLabel.setToolTipText(LocaleService.getString("jj.landing.library.players.message"));
       this.add(playersLabel, new TableLayoutConstraints(
           9, 1, 9, 1, TableLayout.CENTER, TableLayout.CENTER));
+    }
+
+    // Image download failure icon.
+    if (gameData.isImageDownloadFailure()) {
+      JLabel failureLabel = new JLabel(ImageEnum.IMAGE_FAILURE_24.toImageIcon());
+      failureLabel.setToolTipText(LocaleService.getString("jj.landing.library.failed.image"));
+      this.add(failureLabel, new TableLayoutConstraints(
+          11, 1, 11, 1, TableLayout.CENTER, TableLayout.CENTER));
     }
 
     // Game size text label.
     JLabel sizeLabel = new JLabel(gameData.getCategoriesCount() + "x" + gameData.getCategoryQuestionsCount());
     sizeLabel.setFont(font);
     this.add(sizeLabel, new TableLayoutConstraints(
-        11, 1, 11, 1, TableLayout.CENTER, TableLayout.CENTER));
+        13, 1, 13, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Remove game button.
     JButton button  = new JButton();
     button.setAction(new RemoveGameAction());
     button.setText("-");
     this.add(button, new TableLayoutConstraints(
-        13, 1, 13, 1, TableLayout.CENTER, TableLayout.CENTER));
+        15, 1, 15, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Adding mouse hover and click actions.
     this.addMouseListener(new GameItemMouseAdapter());

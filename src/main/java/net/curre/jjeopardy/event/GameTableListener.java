@@ -69,7 +69,7 @@ public class GameTableListener implements ComponentListener, MouseListener {
       int row = this.gameTable.rowAtPoint(p);
       int column = this.gameTable.columnAtPoint(p);
       if (row >= 0 && column >= 0) {
-        openQuestionDialog(column, row);
+        maybeOpenQuestionDialog(column, row);
       }
     }
   }
@@ -81,15 +81,15 @@ public class GameTableListener implements ComponentListener, MouseListener {
   public void mouseExited(MouseEvent e) {}
 
   /**
-   * Displays the Question dialog for a given question.
+   * Displays the Question dialog for a given question if it's askable and it's hasn't been asked.
    * @param catIndex question category index
    * @param questIndex question index
    */
-  private void openQuestionDialog(int catIndex, int questIndex) {
+  private void maybeOpenQuestionDialog(int catIndex, int questIndex) {
     final Registry registry = AppRegistry.getInstance();
     GameDataService dataService = registry.getGameDataService();
     final Question question = dataService.getQuestion(catIndex, questIndex);
-    if (!question.isHasBeenAsked()) {
+    if (!question.isHasBeenAsked() && !question.isNotAskable()) {
       AppRegistry.getInstance().getSoundService().stopAllMusic();
 
       // marking the questions answered on the game board

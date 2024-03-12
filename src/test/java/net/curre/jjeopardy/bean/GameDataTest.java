@@ -36,9 +36,10 @@ public class GameDataTest {
   /** Tests initialization of the default object state. */
   @Test
   public void testDefault() {
-    GameData data = new GameData("TestFilePath", "TestDirPath");
+    GameData data = new GameData("TestFilePath", "TestDirPath", true);
     assertEquals("Wrong file path", "TestFilePath", data.getFilePath());
     assertEquals("Wrong dir path", "TestDirPath", data.getBundlePath());
+    assertTrue("Wrong nativeData", data.isNativeData());
     assertNull("Game name should not be set", data.getGameName());
     assertNotNull("List of categories should not be null", data.getCategories());
     assertEquals("Wrong size of categories list", 0, data.getCategories().size());
@@ -54,7 +55,7 @@ public class GameDataTest {
   /** Tests setGameFilePaths. */
   @Test
   public void testSetGameFilePaths() {
-    GameData data = new GameData("TestFilePath", "TestDirPath");
+    GameData data = new GameData("TestFilePath", "TestDirPath", true);
     assertEquals("Wrong file path", "TestFilePath", data.getFilePath());
     assertEquals("Wrong dir path", "TestDirPath", data.getBundlePath());
     data.setGameFilePaths("TestFilePath2", "TestDirPath2");
@@ -65,16 +66,25 @@ public class GameDataTest {
   /** Tests setGameName. */
   @Test
   public void testSetGameName() {
-    GameData data = new GameData("", null);
+    GameData data = new GameData("", null, true);
     assertNull(data.getGameName());
     data.setGameName("TestName");
     assertEquals("Wrong game name", "TestName", data.getGameName());
   }
 
+  /** Tests changeToNativeData. */
+  @Test
+  public void testChangeToNativeData() {
+    GameData data = new GameData("", null, false);
+    assertFalse("Wrong nativeData", data.isNativeData());
+    data.changeToNativeData();
+    assertTrue("Wrong nativeData", data.isNativeData());
+  }
+
   /** Tests setCategories. */
   @Test
   public void testSetCategories() {
-    GameData data = new GameData("", null);
+    GameData data = new GameData("", null, true);
     List<Category> categories = new ArrayList<>();
     categories.add(createTestCategory("Category 1"));
     categories.add(createTestCategory("Category 2"));
@@ -95,7 +105,7 @@ public class GameDataTest {
   /** Tests updateBonusQuestions and related logic. */
   @Test
   public void testPlayers() {
-    GameData data = new GameData("", null);
+    GameData data = new GameData("", null, true);
     List<String> playerNames = new ArrayList<>();
     playerNames.add("One");
     playerNames.add("Two");
@@ -119,7 +129,7 @@ public class GameDataTest {
   /** Tests updateBonusQuestions and related logic. */
   @Test
   public void testBonusQuestions() {
-    GameData data = new GameData("", null);
+    GameData data = new GameData("", null, true);
     assertFalse("There should be no bonus questions", data.bonusQuestionsHaveBeenAsked());
 
     List<Question> questions = createTestQuestions(3);
@@ -142,7 +152,7 @@ public class GameDataTest {
   /** Tests isGameDataUsable. */
   @Test
   public void testIsGameDataUsable() {
-    GameData data = new GameData("", null);
+    GameData data = new GameData("", null, true);
     assertFalse("Game data should not be usable", data.isGameDataUsable());
     data.setFileDataAcquired();
     assertFalse("Game data should not be usable", data.isGameDataUsable());
@@ -163,7 +173,7 @@ public class GameDataTest {
   /** Tests isPlayersValid with null argument. */
   @Test
   public void testPlayersValid() {
-    GameData data = new GameData("", null);
+    GameData data = new GameData("", null, true);
     assertTrue("Players data considered valid with 0 players", data.isPlayersValid(null));
     List<String> players = new ArrayList<>();
     players.add("One");
@@ -178,7 +188,7 @@ public class GameDataTest {
   /** Tests hasEnoughPlayers. */
   @Test
   public void testHasEnoughPlayers() {
-    GameData data = new GameData("", null);
+    GameData data = new GameData("", null, true);
     assertFalse("Should not have enough players for a game", data.hasEnoughPlayers());
     List<String> players = new ArrayList<>();
     players.add("One");
@@ -218,7 +228,7 @@ public class GameDataTest {
   /** Tests generateFileParsingResult with empty data. */
   @Test
   public void testGenerateFileParsingResultWithEmptyData() {
-    GameData data = new GameData("", null);
+    GameData data = new GameData("", null, true);
     FileParsingResult result = data.generateFileParsingResult();
     assertResultMessageNumbers(result, 1, 0, 0);
     assertFalse("Short result message should not be blank", StringUtils.isBlank(result.getResulTitleShort()));
@@ -369,7 +379,7 @@ public class GameDataTest {
    * @return game data to test
    */
   private static GameData createMinViableTestGameData() {
-    GameData data = new GameData("filepathdoesntmatter", null);
+    GameData data = new GameData("filepathdoesntmatter", null, true);
     data.setGameName("TestName");
     List<Category> categories = new ArrayList<>();
     categories.add(createTestCategory("Category 1"));
@@ -397,7 +407,7 @@ public class GameDataTest {
   private static List<Question> createTestQuestions(int count) {
     List<Question> questions = new ArrayList<>();
     for (int i = 0; i < count; i++) {
-      questions.add(new Question("", null, "", 0));
+      questions.add(new Question("", null, "", null,0));
     }
     return questions;
   }

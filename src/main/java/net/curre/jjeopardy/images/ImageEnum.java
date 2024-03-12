@@ -22,10 +22,9 @@ import java.awt.Toolkit;
 import java.util.Objects;
 
 /**
- * Represents various icons used by the app.
- * The image files are expected to be in a resource directory under
- * net/curre/jjeopardy/images/. You can load them using the #toImageIcon method
- * on this enum.
+ * Represents various icons used by the app. The image files are expected to be in a resource
+ * directory under net/curre/jjeopardy/images/. You can load them using the <code>toImageIcon</code>
+ * or <code>toImage</code> method on this enum.
  *
  * @author Yevgeny Nyden
  */
@@ -122,7 +121,13 @@ public enum ImageEnum {
   SIZE_S_24("size-small-24.png"),
 
   /** User small icon. */
-  USER_24("user-24.png");
+  USER_24("user-24.png"),
+
+  /** Image download failure large icon. */
+  IMAGE_FAILURE_64("image-failure-64.png"),
+
+  /** Image download failure small icon. */
+  IMAGE_FAILURE_24("image-failure-24.png");
 
   /** Icon's filename. */
   private final String fileName;

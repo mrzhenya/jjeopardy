@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <!-- Reduced file of christmas-jeopardy-20251.html -->
+  <meta charset="utf-8">
+
+  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+
+  <title>
+    Test Jlabs Game
+  </title>
+  <meta
+      content="   Test Jlabs Description    "
+      name="description"/>
+  <meta content="NOODP" name="ROBOTS"/>
+  <meta content="UYS7arlGlbDobqQSsucWwkbZyiC-6_cCWlUn9Eb5b2M" name="google-site-verification"/>
+  <link href="/static/1696687285/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+  <link href="/static/1696687285/favicon.ico" rel="icon" type="image/x-icon"/>
+
+  <base href="https://jeopardylabs.com"/>
+
+  <link href="/play/christmas-jeopardy-20251" rel="canonical"/>
+</head>
+
+<body>
+<div id="gameplay">
+  <div aria-label="Game Board" class="grid grid-play " role="table" style="height:100vh; ">
+    <div class="grid-row grid-row-cats" role="row" style="">
+
+      <div class="grid-cell " data-col="0" data-row="0">
+        <div class="cell">
+          <div class="cell-inner cat-cell" role="columnheader">  Christmas songs
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="grid-row grid-row-questions  grid-first-row"
+         role="row">
+
+      <div aria-label="100"
+           class="
+                    cell-group
+                    grid-cell
+
+                "
+           data-col="0"
+           data-row="1"
+
+           id="cell-2308643454"
+
+           role="cell" tabindex="0">
+
+
+        <div class="cell points">
+          <div class="cell-inner" data-category="  Christmas songs">   100   </div>
+          <div class="front answer" tabindex="0">  <p>   Which song?
+          </p>
+            <p>    "...open sleigh"  </p>
+          </div>
+          <div class="back question" tabindex="0">
+            <p>
+              Jingle Bells
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid-row grid-row-questions  "
+         role="row"
+
+    >
+
+      <div aria-label="200"
+           class="
+                    cell-group
+                    grid-cell
+
+                "
+           data-col="0"
+           data-row="2"
+
+           id="cell-2308643456"
+
+           role="cell" tabindex="0">
+
+
+        <div class="cell points">
+          <div class="cell-inner" data-category="  Christmas songs   ">
+            200
+          </div>
+          <div class="front answer" tabindex="0"><p>  Finish!</p>
+            <p>
+              "I'm ______"   </p>
+          </div>
+          <div class="back question" tabindex="0">  <p>  white  </p>  </div>
+        </div>
+
+
+      </div>
+
+    </div>
+
+    <div class="click-to-zoom">
+      <span>Click to zoom</span>
+    </div>
+  </div>
+
+
+  <div aria-label="Prompt" aria-modal="true" class="modal-wrapper" id="question-modal" role="dialog">
+    <div id="modal-header">
+      <div aria-label="Close prompt (escape)" id="continue-button" role="button" tabindex="0">
+        <div>Continue <kbd>ESC</kbd></div>
+      </div>
+      <div id="question-title"></div>
+      <div aria-label="Reveal answer (spacebar)" id="answer-button" role="button" tabindex="0" tabindex="0">
+        <div>Reveal Correct Response <kbd>Spacebar</kbd></div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-inner"></div>
+    </div>
+  </div>
+
+  <div id="teams">
+    <a aria-label="Menu Button" class="menu-picker" href="javascript:backToMenu('menu')" role="button">
+      M<br>e<br>n<br>u
+    </a>
+    <div style="display:flex; margin-left:auto; margin-right:auto; overflow:auto;">
+
+      <div class="team" style="display:none">
+        <div class="name" contenteditable="true" role="textbox">Team 1</div>
+        <div class="points" contenteditable="true" role="textbox">0</div>
+        <div class="pointer">
+          <span aria-label="Add points" class="plus" role="button" tabindex="0">+</span>
+          <span aria-label="Subtract points" class="minus" role="button" tabindex="0">-</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div aria-label="Menu" aria-modal="true" class="modal-wrapper" id="options" role="dialog">
+  <div class="modal">
+
+    <h1>Christmas Jeopardy</h1>
+
+    <div id="team-chooser-wrapper">
+      <select id="team-chooser">
+        <option value="0">No teams</option>
+        <option value="1">1 team</option>
+        <option value="2">2 teams</option>
+        <option selected="true" value="3">3 teams</option>
+        <option value="4">4 teams</option>
+        <option value="5">5 teams</option>
+        <option value="6">6 teams</option>
+        <option value="7">7 teams</option>
+        <option value="8">8 teams</option>
+        <option value="9">9 teams</option>
+        <option value="10">10 teams</option>
+        <option id="last-option" value="more">Custom</option>
+      </select>
+      <input class="submit" id="submit" onclick="game.init()" type="button" value="Start"/>
+      <span id="reset-all">
+                    <input id="re-init" type="button" value="Reset"/>
+                </span>
+    </div>
+
+    <p align="center" id="fullscreen" style="display:none"><span id="windows"
+                                                                 style="display:none">Press <kbd>F11</kbd></span>
+      <span id="mac" style="display:none">Select menu option <kbd>View &gt; Enter Fullscreen</kbd></span> for
+      full-screen mode</p>
+    <script>
+      if(window.navigator.platform.indexOf("Mac") == 0){
+          document.getElementById("fullscreen").style.display = "block";
+          document.getElementById("mac").style.display = "inline";
+      } else if(window.navigator.platform.indexOf("Win") == 0){
+          document.getElementById("fullscreen").style.display = "block";
+          document.getElementById("windows").style.display = "inline";
+      }
+    </script>
+
+    <div align="center" id="menu-links">
+
+      <a href="https://jeopardylabs.com/edit/christmas-jeopardy-20251" rel="nofollow">Edit</a>
+
+    </div>
+  </div>
+</div>
+
+<!--
+<div class="points-instructions">
+    Use the up/down arrow to add or remove points from the highlighted team. Then press <kbd>ESC</kbd>
+</div>-->
+
+
+</body>
+</html>

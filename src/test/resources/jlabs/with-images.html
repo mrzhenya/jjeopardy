@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>School School School!</title>
+  <meta name="description" content="What do you use to cut paper?, What do you use to write?, what do students forget in their classrooms mostly, what device are we playing this game on?, What colors are in the rainbow " />
+  <meta name="ROBOTS" content="NOODP" />
+  <meta name="google-site-verification" content="UYS7arlGlbDobqQSsucWwkbZyiC-6_cCWlUn9Eb5b2M" />
+  <link rel="shortcut icon" href="/static/1696687285/favicon.ico" type="image/x-icon" />
+  <link rel="icon" href="/static/1696687285/favicon.ico" type="image/x-icon" />
+
+  <base href="https://jeopardylabs.com" />
+
+  <link rel="canonical" href="/play/school-school-school-923" />
+
+</head>
+
+<body>
+
+
+<div id="gameplay">
+  <div class="grid grid-play " style="height:100vh; " role="table" aria-label="Game Board">
+    <div class="grid-row grid-row-cats" style="" role="row">
+
+      <div class="grid-cell " data-row="0" data-col="0">
+        <div class="cell">
+          <div class="cell-inner cat-cell" role="columnheader">RANDOM 1</div>
+        </div>
+      </div>
+
+      <div class="grid-cell " data-row="0" data-col="1">
+        <div class="cell">
+          <div class="cell-inner cat-cell" role="columnheader">Math Facts</div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="grid-row grid-row-questions  grid-first-row"
+         role="row"
+
+    >
+
+      <div class="
+                    cell-group
+                    grid-cell
+
+                "
+           role="cell"
+           id="cell-1323382540"
+           tabindex="0"
+
+           aria-label="100"
+
+           data-row="1" data-col="0">
+
+
+        <div class="cell points" >
+          <div class="cell-inner" data-category="RANDOM 1">100</div>
+          <div class="front answer" tabindex="0"><p>What do you use to cut paper?</p></div>
+          <div class="back question" tabindex="0"><p>We use scissors.<img src="https://th.bing.com/th/id/OIP.vXth1ZgAdr5AUS5Cbw-65QHaHZ?pid=ImgDet&amp;rs=1"></p></div>
+        </div>
+
+
+      </div>
+
+      <div class="
+                    cell-group
+                    grid-cell
+
+                "
+           role="cell"
+           id="cell-1323382564"
+           tabindex="0"
+
+           aria-label="100"
+
+           data-row="1" data-col="2">
+
+
+        <div class="cell points" >
+          <div class="cell-inner" data-category="Math Facts">100</div>
+          <div class="front answer" tabindex="0"><p>17+_=62</p><p><img src="https://clipartspub.com/images/math-clipart-clear-background.png"><br></p></div>
+          <div class="back question" tabindex="0"><p>45&nbsp;</p><p><img src="https://clipartcraft.com/images/math-clipart-8.png"><br></p></div>
+        </div>
+
+
+      </div>
+
+    </div>
+
+    <div class="click-to-zoom">
+      <span>Click to zoom</span>
+    </div>
+  </div>
+
+
+  <div id="question-modal" class="modal-wrapper" role="dialog" aria-label="Prompt" aria-modal="true">
+    <div id="modal-header">
+      <div tabindex="0" role="button" aria-label="Close prompt (escape)" id="continue-button"><div>Continue <kbd>ESC</kbd></div></div>
+      <div id="question-title"></div>
+      <div tabindex="0" role="button" aria-label="Reveal answer (spacebar)" id="answer-button" tabindex="0"><div>Reveal Correct Response <kbd>Spacebar</kbd></div></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-inner"></div>
+    </div>
+  </div>
+
+  <div id="teams">
+    <a role="button" class="menu-picker" href="javascript:backToMenu('menu')" aria-label="Menu Button">
+      M<br>e<br>n<br>u
+    </a>
+    <div style="display:flex; margin-left:auto; margin-right:auto; overflow:auto;">
+
+      <div class="team" style="display:none">
+        <div class="name" role="textbox" contenteditable="true">Team 1</div>
+        <div class="points" role="textbox" contenteditable="true">0</div>
+        <div class="pointer">
+          <span tabindex="0" aria-label="Add points" role="button" class="plus">+</span>
+          <span tabindex="0" aria-label="Subtract points" role="button" class="minus">-</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div id="options" class="modal-wrapper" role="dialog" aria-label="Menu" aria-modal="true">
+  <div class="modal">
+
+    <h1>School School School!</h1>
+
+    <div id="team-chooser-wrapper">
+      <select id="team-chooser">
+        <option value="0">No teams</option>
+        <option value="1">1 team</option>
+        <option value="2">2 teams</option>
+        <option value="3" selected="true">3 teams</option>
+        <option value="4">4 teams</option>
+        <option value="5">5 teams</option>
+        <option value="6">6 teams</option>
+        <option value="7">7 teams</option>
+        <option value="8">8 teams</option>
+        <option value="9">9 teams</option>
+        <option value="10">10 teams</option>
+        <option id="last-option" value="more">Custom</option>
+      </select>
+      <input class="submit" type="button" id="submit" value="Start" onclick="game.init()" />
+      <span id="reset-all">
+                    <input type="button" id="re-init" value="Reset" />
+                </span>
+    </div>
+
+    <p id="fullscreen" style="display:none" align="center"><span id="windows" style="display:none">Press <kbd >F11</kbd></span> <span id="mac" style="display:none">Select menu option <kbd >View &gt; Enter Fullscreen</kbd></span> for full-screen mode</p>
+    <script>
+      if(window.navigator.platform.indexOf("Mac") == 0){
+          document.getElementById("fullscreen").style.display = "block";
+          document.getElementById("mac").style.display = "inline";
+      } else if(window.navigator.platform.indexOf("Win") == 0){
+          document.getElementById("fullscreen").style.display = "block";
+          document.getElementById("windows").style.display = "inline";
+      }
+    </script>
+
+    <div align="center" id="menu-links">
+
+      <a href="https://jeopardylabs.com/edit/school-school-school-923" rel="nofollow">Edit</a>
+
+    </div>
+  </div>
+</div>
+
+<!--
+<div class="points-instructions">
+    Use the up/down arrow to add or remove points from the highlighted team. Then press <kbd>ESC</kbd>
+</div>-->
+
+
+
+
+
+
+
+
+</body>
+</html>
