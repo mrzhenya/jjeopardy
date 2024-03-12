@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class ProgressDialog {
 
   /** Max progress value. */
-  private static final int FULL_PROGRESS = 100;
+  public static final int FULL_PROGRESS = 100;
 
   /** Reference to the parent component. */
   private final Component parent;
@@ -90,7 +90,7 @@ public class ProgressDialog {
   public void incrementProgress(int progressIncrement) {
     this.progress += progressIncrement;
     if (this.progress >= FULL_PROGRESS) {
-      this.progress = FULL_PROGRESS - 1;
+      this.progress = FULL_PROGRESS - 5;
     }
     this.progressMonitor.setNote(
         LocaleService.getString("jj.dialog.copy.progress", String.valueOf(this.progress)));
