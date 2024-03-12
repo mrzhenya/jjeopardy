@@ -30,26 +30,38 @@ public class QuestionTest {
   /** Tests Ctor and the getter methods. */
   @Test
   public void testDefault() {
-    Question question = new Question("Question 1", null,"Answer 1", 11);
-    assertEquals("Wrong question", "Question 1", question.getQuestion());
-    assertEquals("Wrong answer", "Answer 1", question.getAnswer());
-    assertEquals("Wrong points", 11, question.getPoints());
-    assertNull("Paren name should be null", question.getParentName());
-    assertFalse("Question should not be asked yet", question.isHasBeenAsked());
+    Question question = new Question(
+        "Question 1", "IMG1","Answer 1", "IMG2", 11);
+    assertQuestion(question, "Question 1", "IMG1",
+        "Answer 1", "IMG2", 11, false);
+    assertNull("Parent name should be null", question.getParentName());
   }
 
-  /** Tests Ctor with image filename. */
+  /** Tests question/answer image related code. */
   @Test
-  public void testCtorWithImage() {
-    Question question = new Question("Question 1", "test-image.jpg","Answer 1", 11);
+  public void testImageMethods() {
+    Question question = new Question(
+        "Question 1", "question-image","Answer 1", "answer-image", 11);
     assertEquals("Wrong question", "Question 1", question.getQuestion());
-    assertEquals("Wrong question image", "test-image.jpg", question.getQuestionImage());
+    assertEquals("Wrong question image", "question-image", question.getQuestionImage());
+    assertEquals("Wrong answer image", "answer-image", question.getAnswerImage());
+
+    question.setQuestionImage("");
+    assertNull("Question image should be null", question.getQuestionImage());
+    question.setAnswerImage("  ");
+    assertNull("Answer image should be null", question.getAnswerImage());
+
+    question.setQuestionImage("question-image-2");
+    assertEquals("Wrong question image", "question-image-2", question.getQuestionImage());
+    question.setAnswerImage("answer-image-2");
+    assertEquals("Wrong answer image", "answer-image-2", question.getAnswerImage());
   }
 
   /** Tests hasBeenAsked methods. */
   @Test
   public void testHasBeenAsked() {
-    Question question = new Question("", null,"", 0);
+    Question question = new Question(
+        "", null,"", null,0);
     assertFalse("Question should not be asked yet", question.isHasBeenAsked());
 
     question.resetHasBeenAsked();
@@ -62,13 +74,74 @@ public class QuestionTest {
     assertFalse("Question should not be asked", question.isHasBeenAsked());
   }
 
+  /** Tests isNotAskable. */
+  @Test
+  public void testIsNotAskable() {
+    // ******* Askable questions.
+    Question question1 = new Question(
+        "What?", null,"Nothing!", null,0);
+    assertFalse("Question 1 should be askable", question1.isNotAskable());
+
+    Question question2 = new Question(
+        "", "question-image","Nothing!", null,0);
+    assertFalse("Question 2 should be askable", question2.isNotAskable());
+
+    Question question3 = new Question(
+        "What?", null,"", "answer-image",0);
+    assertFalse("Question 3 should be askable", question3.isNotAskable());
+
+    Question question4 = new Question(
+        null, "question-image","", "answer-image",0);
+    assertFalse("Question 4 should be askable", question4.isNotAskable());
+
+    // ******* NOT askable questions.
+    Question question5 = new Question(
+        "", "","", "answer-image",0);
+    assertTrue("Question 5 should not be askable", question5.isNotAskable());
+
+    Question question6 = new Question(
+        "", "question-image","", "",0);
+    assertTrue("Question 6 should not be askable", question6.isNotAskable());
+
+    Question question7 = new Question(
+        null, null,null, null,0);
+    assertTrue("Question 7 should not be askable", question7.isNotAskable());
+
+    // ******* Making not askable question - askable.
+    question7.setAnswerImage("test-image");
+    assertTrue("Question 7 should still be unaskable", question7.isNotAskable());
+    question7.setQuestionImage("test-image");
+    assertFalse("Question 7 should now be askable", question7.isNotAskable());
+  }
+
   /** Tests parentWithName methods. */
   @Test
   public void testParentWithName() {
-    Question question = new Question("", null, "", 0);
+    Question question = new Question("", null, "", null,0);
     assertNull("Paren name should be null", question.getParentName());
     HasName parent = () -> "TestParent";
     question.setParentWithName(parent);
     assertEquals("Wrong parent name", "TestParent", question.getParentName());
+  }
+
+  /**
+   * Asserts question object's state.
+   * @param question question to test
+   * @param text question's text to assert
+   * @param questionImg question's image to assert
+   * @param answer question's answer to assert
+   * @param answerImg answer's image to assert
+   * @param points question's points to assert
+   * @param hasBeenAsked question's hasBeenAsked value
+   */
+  public static void assertQuestion(
+      Question question, String text, String questionImg, String answer,
+      String answerImg, int points, boolean hasBeenAsked) {
+    assertEquals("Wrong question", text, question.getQuestion());
+    assertEquals("Wrong question image", questionImg, question.getQuestionImage());
+    assertEquals("Wrong answer", answer, question.getAnswer());
+    assertEquals("Wrong answer image", answerImg, question.getAnswerImage());
+    assertEquals("Wrong question points", points, question.getPoints());
+    assertEquals("Wrong question hasBeenAsked", hasBeenAsked, question.isHasBeenAsked());
   }
 }

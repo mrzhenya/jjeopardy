@@ -16,9 +16,16 @@
 
 package net.curre.jjeopardy.bean;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
- * Represents a player in the game.
- * Use GameData service to obtain the list of players for the current game.
+ * Represents a single question (regular or bonus) asked a player in the game.
+ * A list of question for the current game is stored in a <code>GameData</code> object and
+ * can be obtained via the <code>GameDataService</code> service.
+ * <br><br>
+ * Note, that a valid question object must have at least text or image for both - the question
+ * and the answer part; otherwise, it will not be displayed on the game table - will be 'blanked out'
+ * as it has been asked.
  *
  * @see net.curre.jjeopardy.service.GameDataService
  * @author Yevgeny Nyden
@@ -28,11 +35,20 @@ public class Question {
   /** The question text for this Question. */
   private final String question;
 
-  /** An image filename for the question if any. */
-  private final String questionImage;
+  /**
+   * An image filename for the question if any - a filename of an image
+   * in the game bundle directory or a URL.
+   */
+  private String questionImage;
 
   /** The answer text of this Question. */
   private final String answer;
+
+  /**
+   * An image filename for the answer if any - a filename of an image
+   * in the game bundle directory or a URL.
+   */
+  private String answerImage;
 
   /** Points value of this question. */
   private final int points;
@@ -48,14 +64,16 @@ public class Question {
    * @param question the question string
    * @param questionImage question image filename if any
    * @param answer the answer string
+   * @param answerImage the answer image filename if any
    * @param points points value of this question
    */
-  public Question(String question, String questionImage, String answer, int points) {
+  public Question(String question, String questionImage, String answer, String answerImage, int points) {
     this.question = question;
-    this.questionImage = questionImage;
     this.answer = answer;
     this.points = points;
     this.hasBeenAsked = false;
+    this.setQuestionImage(questionImage);
+    this.setAnswerImage(answerImage);
   }
 
   /**
@@ -63,11 +81,12 @@ public class Question {
    * @return the question
    */
   public String getQuestion() {
-    return this.question;
+    return this.question == null ? "" : this.question;
   }
 
   /**
-   * Gets the question image filename.
+   * Gets the question image filename - a filename of an image
+   * in the game bundle directory or a URL.
    * @return the question image or null if none
    */
   public String getQuestionImage() {
@@ -75,11 +94,36 @@ public class Question {
   }
 
   /**
+   * Sets the question image filename -  a filename of an image
+   * in the game bundle directory or a URL.
+   * @param questionImage the question image or null if none
+   */
+  public void setQuestionImage(String questionImage) {
+    this.questionImage = StringUtils.isBlank(questionImage) ? null : questionImage;
+  }
+
+  /**
    * Gets the answer text.
    * @return the answer
    */
   public String getAnswer() {
-    return answer;
+    return this.answer == null ? "" : this.answer;
+  }
+
+  /**
+   * Gets the answer image filename.
+   * @return the answer image or null if none
+   */
+  public String getAnswerImage() {
+    return this.answerImage;
+  }
+
+  /**
+   * Sets the answer image filename.
+   * @param answerImage the answer image or null if none
+   */
+  public void setAnswerImage(String answerImage) {
+    this.answerImage = StringUtils.isBlank(answerImage) ? null : answerImage;
   }
 
   /**
@@ -126,5 +170,15 @@ public class Question {
    */
   public String getParentName() {
     return this.parentWithName == null ? null : this.parentWithName.getNameString();
+  }
+
+  /**
+   * Determines if the question is askable, meaning that there is enough data for asking a question
+   * or showing an answer.
+   * @return true if both text and image is not present for either question or answer
+   */
+  public boolean isNotAskable() {
+    return (StringUtils.isBlank(this.question) && this.questionImage == null) ||
+        (StringUtils.isBlank(this.answer) && this.answerImage == null);
   }
 }
