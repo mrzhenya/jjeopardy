@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.bean;
 
+import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.LocaleService;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -225,6 +226,84 @@ public class GameDataTest {
     assertFalse("Bonus question should not have been asked", questions.get(1).isHasBeenAsked());
   }
 
+  /** Tests getGameSizeIconLarge. */
+  @Test
+  public void testGetGameSizeIconLarge() {
+    GameData data1 = new GameData("dosntmatter", null, true);
+    ImageEnum imageEnum1 = data1.getGameSizeIconLarge();
+    assertNotNull("Image enum 1 is null", imageEnum1);
+
+    GameData data2 = createMinViableTestGameData();
+    ImageEnum imageEnum2 = data2.getGameSizeIconLarge();
+    assertNotNull("Image enum 2 is null", imageEnum2);
+  }
+
+  /** Tests getGameSizeIconSmall. */
+  @Test
+  public void testGetGameSizeIconSmall() {
+    GameData data1 = new GameData("dosntmatter", null, true);
+    ImageEnum imageEnum1 = data1.getGameSizeIconSmall();
+    assertNotNull("Image enum 1 is null", imageEnum1);
+
+    GameData data2 = createMinViableTestGameData();
+    ImageEnum imageEnum2 = data2.getGameSizeIconSmall();
+    assertNotNull("Image enum 2 is null", imageEnum2);
+  }
+
+  /** Tests getGameSizeText. */
+  @Test
+  public void testGetGameSizeText() {
+    GameData data1 = new GameData("dosntmatter", null, true);
+    String text1 = data1.getGameSizeText();
+    assertNotNull("Size string 1 is null", text1);
+    assertTrue("Size string 1 is too short", text1.length() > 5);
+
+    GameData data2 = createMinViableTestGameData();
+    String text2 = data2.getGameSizeText();
+    assertNotNull("Size string 2 is null", text2);
+    assertTrue("Size string 2 is too short", text2.length() > 5);
+  }
+
+  /** Tests getGameDimensionShortText. */
+  @Test
+  public void testGetGameDimensionShortText() {
+    GameData data1 = new GameData("dosntmatter", null, true);
+    String text1 = data1.getGameDimensionShortText();
+    assertEquals("Dimension string 1 is wrong", "0x0", text1);
+
+    GameData data2 = createMinViableTestGameData();
+    String text2 = data2.getGameDimensionShortText();
+    assertEquals("Dimension string 2 is wrong", "3x3", text2);
+  }
+
+  /** Tests getGameDimensionLongMessage. */
+  @Test
+  public void testGetGameDimensionLongMessage() {
+    GameData data1 = new GameData("dosntmatter", null, true);
+    String text1 = data1.getGameDimensionLongMessage();
+    assertNotNull("Dimension string 1 is null", text1);
+    assertTrue("Dimension string 1 is too short", text1.length() > 5);
+
+    GameData data2 = createMinViableTestGameData();
+    String text2 = data2.getGameDimensionLongMessage();
+    assertNotNull("Dimension string 2 is null", text2);
+    assertTrue("Dimension string 2 is too short", text2.length() > 5);
+  }
+
+  /** Tests getGameEstimatedLengthMessage. */
+  @Test
+  public void testGetGameEstimatedLengthMessage() {
+    GameData data1 = new GameData("dosntmatter", null, true);
+    String text1 = data1.getGameEstimatedLengthMessage();
+    assertNotNull("Game duration string 1 is null", text1);
+    assertTrue("Game duration string 1 is too short", text1.length() > 5);
+
+    GameData data2 = createMinViableTestGameData();
+    String text2 = data2.getGameEstimatedLengthMessage();
+    assertNotNull("Game duration string 2 is null", text2);
+    assertTrue("Game duration string 2 is too short", text2.length() > 5);
+  }
+
   /** Tests generateFileParsingResult with empty data. */
   @Test
   public void testGenerateFileParsingResultWithEmptyData() {
@@ -241,7 +320,7 @@ public class GameDataTest {
     GameData data = createMinViableTestGameData();
     FileParsingResult result = data.generateFileParsingResult();
     assertResultMessageNumbers(result, 0, 0, 3);
-    assertThreeInfoMessages(result.getInfoMessages(), 3, 3, 0, 0);
+    assertThreeInfoMessages(result.getInfoMessages(), 9, 3, 0, 0);
   }
 
   /** Tests generateFileParsingResult with valid data and players. */
@@ -251,7 +330,7 @@ public class GameDataTest {
     data.setPlayersNames(createTestPlayerNames(3));
     FileParsingResult result = data.generateFileParsingResult();
     assertResultMessageNumbers(result, 0, 0, 3);
-    assertThreeInfoMessages(result.getInfoMessages(), 3, 3, 3, 0);
+    assertThreeInfoMessages(result.getInfoMessages(), 9, 3, 3, 0);
   }
 
   /** Tests generateFileParsingResult with valid data and players and bonus questions. */
@@ -262,7 +341,7 @@ public class GameDataTest {
     data.setBonusQuestions(createTestQuestions(6));
     FileParsingResult result = data.generateFileParsingResult();
     assertResultMessageNumbers(result, 0, 0, 3);
-    assertThreeInfoMessages(result.getInfoMessages(), 3, 3, 3, 6);
+    assertThreeInfoMessages(result.getInfoMessages(), 9, 3, 3, 6);
   }
 
   /** Tests generateFileParsingResult with valid data and not enough players. */

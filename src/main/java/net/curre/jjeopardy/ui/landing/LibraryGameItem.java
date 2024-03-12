@@ -65,23 +65,26 @@ public class LibraryGameItem extends JPanel {
     this.setLayout(new TableLayout(new double[][] {
         {10, 30, 10, 250, 5, 470, 10, TableLayout.FILL, 5, 40, 5, 20, 5, 40, 5, 35, 10}, // columns
         {3, 30, 3}})); // rows
-    this.setToolTipText(gameData.getGameDescription());
     this.setMaximumSize(new Dimension(JjDefaults.LANDING_UI_WIDTH, 36));
 
     // Game size icon.
     ImageEnum sizeIcon = gameData.getGameSizeIconSmall();
-    this.add(new JLabel(sizeIcon.toImageIcon()), new TableLayoutConstraints(
+    JLabel sizeLabel = new JLabel(sizeIcon.toImageIcon());
+    sizeLabel.setToolTipText(gameData.getGameSizeText());
+    this.add(sizeLabel, new TableLayoutConstraints(
         1, 1, 1, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Game name label.
     JLabel nameLabel = new JLabel(gameData.getGameName());
     nameLabel.setFont(font);
+    nameLabel.setToolTipText(gameData.getGameName());
     this.add(nameLabel, new TableLayoutConstraints(
         3, 1, 3, 1, TableLayout.FULL, TableLayout.CENTER));
 
     // Game description label.
     JLabel descriptionLabel = new JLabel(gameData.getGameDescription());
     descriptionLabel.setFont(font);
+    descriptionLabel.setToolTipText(gameData.getGameDescription());
     this.add(descriptionLabel, new TableLayoutConstraints(
         5, 1, 5, 1, TableLayout.LEFT, TableLayout.CENTER));
 
@@ -91,7 +94,8 @@ public class LibraryGameItem extends JPanel {
       JLabel playersLabel = new JLabel(ImageEnum.USER_24.toImageIcon());
       playersLabel.setFont(font);
       playersLabel.setText(String.valueOf(playersCount));
-      playersLabel.setToolTipText(LocaleService.getString("jj.landing.library.players.message"));
+      playersLabel.setToolTipText(
+          LocaleService.getString("jj.landing.library.players.message", String.valueOf(playersCount)));
       this.add(playersLabel, new TableLayoutConstraints(
           9, 1, 9, 1, TableLayout.CENTER, TableLayout.CENTER));
     }
@@ -105,15 +109,17 @@ public class LibraryGameItem extends JPanel {
     }
 
     // Game size text label.
-    JLabel sizeLabel = new JLabel(gameData.getCategoriesCount() + "x" + gameData.getCategoryQuestionsCount());
-    sizeLabel.setFont(font);
-    this.add(sizeLabel, new TableLayoutConstraints(
+    JLabel dimensionLabel = new JLabel(gameData.getGameDimensionShortText());
+    dimensionLabel.setFont(font);
+    dimensionLabel.setToolTipText(gameData.getGameDimensionLongMessage());
+    this.add(dimensionLabel, new TableLayoutConstraints(
         13, 1, 13, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Remove game button.
     JButton button  = new JButton();
     button.setAction(new RemoveGameAction());
     button.setText("-");
+    button.setToolTipText(LocaleService.getString("jj.file.info.remove.message"));
     this.add(button, new TableLayoutConstraints(
         15, 1, 15, 1, TableLayout.CENTER, TableLayout.CENTER));
 

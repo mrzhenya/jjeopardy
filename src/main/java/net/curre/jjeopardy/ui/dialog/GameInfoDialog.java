@@ -25,7 +25,6 @@ import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.ui.landing.LandingUi;
-import net.curre.jjeopardy.util.JjDefaults;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -86,12 +85,7 @@ public class GameInfoDialog extends BasicDialog {
     panel.add(textArea, new TableLayoutConstraints(
         1, 0, 1, 0, TableLayout.FULL, TableLayout.CENTER));
 
-    int categoriesCount = this.gameData.getCategories().size();
-    int questionsCount = this.gameData.getCategories().get(0).getQuestionsCount();
-    int totalCount = questionsCount * categoriesCount;
-    JLabel label1 = new JLabel(LocaleService.getString("jj.file.info.msg1",
-        String.valueOf(totalCount), String.valueOf(categoriesCount),
-        String.valueOf(categoriesCount), String.valueOf(questionsCount)));
+    JLabel label1 = new JLabel(this.gameData.getGameDimensionLongMessage());
     panel.add(label1, new TableLayoutConstraints(
         1, 2, 1, 2, TableLayout.CENTER, TableLayout.CENTER));
 
@@ -104,10 +98,7 @@ public class GameInfoDialog extends BasicDialog {
           1, 4, 1, 4, TableLayout.CENTER, TableLayout.CENTER));
     }
 
-    int additionalQuestionTimeSec = 40;
-    int estimatedMin = (totalCount + bonusQuestionsCount) * (JjDefaults.QUESTION_TIME + additionalQuestionTimeSec) / 60;
-    JLabel label3 = new JLabel(LocaleService.getString("jj.file.info.msg3",
-        String.valueOf(estimatedMin)));
+    JLabel label3 = new JLabel(this.gameData.getGameEstimatedLengthMessage());
     panel.add(label3, new TableLayoutConstraints(
         1, 6, 1, 6, TableLayout.CENTER, TableLayout.CENTER));
 

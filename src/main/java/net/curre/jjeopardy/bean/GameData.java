@@ -17,6 +17,7 @@
 package net.curre.jjeopardy.bean;
 
 import net.curre.jjeopardy.images.ImageEnum;
+import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,6 +44,9 @@ public class GameData implements Comparable<GameData> {
 
   /** Min total question count to consider game to be Medium. */
   private static final int MEDIUM_GAME_SIZE = 30;
+
+  /** Estimated question game time worth (to estimate the length of the game). */
+  private static final int APPROX_QUESTION_TIME_SEC = JjDefaults.QUESTION_TIME + 40;
 
   /** Game data file absolute path. */
   private String filePath;
@@ -315,6 +319,72 @@ public class GameData implements Comparable<GameData> {
     } else {
       return ImageEnum.SIZE_S_24;
     }
+  }
+
+  /**
+   * Gets a message describing the size of the current game including the game length.
+   * @return game size text string
+   * @see #getGameDimensionLongMessage()
+   */
+  public String getGameSizeText() {
+    StringBuilder text = new StringBuilder();
+    int totalCount = getTotalQuestionsCount();
+    if (totalCount > XLARGE_GAME_SIZE) {
+      text.append(LocaleService.getString("jj.file.info.size.xlarge"));
+    } else if (totalCount > LARGE_GAME_SIZE) {
+      text.append(LocaleService.getString("jj.file.info.size.large"));
+    } else if (totalCount > MEDIUM_GAME_SIZE) {
+      text.append(LocaleService.getString("jj.file.info.size.medium"));
+    } else {
+      text.append(LocaleService.getString("jj.file.info.size.small"));
+    }
+    text.append(" - ").append(this.getGameEstimatedLengthMessage());
+    return text.toString();
+  }
+
+  /**
+   * Gets short game dimension string (e.g. 6x5).
+   * @return short game dimension string
+   */
+  public String getGameDimensionShortText() {
+    return this.getCategoriesCount() + "x" + this.getCategoryQuestionsCount();
+  }
+
+  /**
+   * Gets a short text string describing the size / dimension of the game
+   * (x questions in y categories).
+   * @return game dimension message
+   */
+  public String getGameDimensionLongMessage() {
+    int categoriesCount = this.getCategoriesCount();
+    if (categoriesCount == 0) {
+      return LocaleService.getString("jj.file.info.msg0");
+    }
+    int questionsCount = this.getCategoryQuestionsCount();
+    int totalCount = questionsCount * categoriesCount;
+    return LocaleService.getString("jj.file.info.msg1",
+        String.valueOf(totalCount), String.valueOf(categoriesCount),
+        String.valueOf(categoriesCount), String.valueOf(questionsCount));
+  }
+
+  /**
+   * Gets the estimated game duration.
+   * @return string describing the length of the game
+   */
+  public String getGameEstimatedLengthMessage() {
+    int estimatedMin = 0;
+    int categoriesCount = this.getCategoriesCount();
+    if (categoriesCount > 0) {
+      int totalQuestions = categoriesCount * this.getCategoryQuestionsCount();
+      int bonusQuestionsCount = this.bonusQuestions.size();
+      if (bonusQuestionsCount > 0) {
+        totalQuestions += bonusQuestionsCount;
+      }
+
+      // TODO - take the number of players into account.
+      estimatedMin = totalQuestions * APPROX_QUESTION_TIME_SEC / 60;
+    }
+    return LocaleService.getString("jj.file.info.msg3", String.valueOf(estimatedMin));
   }
 
   /**
