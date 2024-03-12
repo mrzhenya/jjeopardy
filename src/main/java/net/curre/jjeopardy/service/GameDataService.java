@@ -431,11 +431,16 @@ public class GameDataService {
    * @param gameData game to delete
    */
   public void deleteGameFromLibrary(GameData gameData) {
-    this.libraryGames.remove(gameData);
-    Collections.sort(this.libraryGames);
-    File gameFile = new File(gameData.getFilePath());
     try {
-      FileUtils.delete(gameFile);
+      if (gameData.getBundlePath() == null) {
+        File gameFile = new File(gameData.getFilePath());
+        FileUtils.delete(gameFile);
+      } else {
+        File gameDir = new File(gameData.getBundlePath());
+        FileUtils.deleteDirectory(gameDir);
+      }
+      this.libraryGames.remove(gameData);
+      Collections.sort(this.libraryGames);
     } catch (IOException e) {
       LOGGER.log(Level.WARNING, "Unable to delete game file: " + gameData.getFilePath(), e);
     }

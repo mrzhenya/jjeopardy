@@ -188,7 +188,7 @@ public abstract class BasicDialog extends JDialog {
     if (textAreaHeight > MAX_TEXT_AREA_HEIGHT) {
       textAreaHeight = MAX_TEXT_AREA_HEIGHT;
     }
-    textArea.setPreferredSize(new Dimension(TEXT_COLUMN_WIDTH, textAreaHeight - 200));
+    textArea.setPreferredSize(new Dimension(TEXT_COLUMN_WIDTH, textAreaHeight));
 
     return textArea;
   }
