@@ -272,13 +272,14 @@ public class MainWindow extends JFrame {
 
   /** Handles the End game button action. */
   private void handleEndGameAction() {
-    // End the game.
     Registry registry = AppRegistry.getInstance();
-    registry.getSoundService().startMusic(SoundEnum.FINAL, 1);
     Player winner = registry.getGameDataService().getWinner();
-    registry.getUiService().showEndGameDialog(
-        LocaleService.getString("jj.game.enddialog.header", winner.getName()),
-        LocaleService.getString("jj.game.enddialog.message", winner.getName(), String.valueOf(winner.getScore())));
+    if (winner.getScore() > 0) {
+      registry.getSoundService().startMusic(SoundEnum.FINAL, 1);
+      registry.getUiService().showEndGameDialog(
+          LocaleService.getString("jj.game.enddialog.header", winner.getName()),
+          LocaleService.getString("jj.game.enddialog.message", winner.getName(), String.valueOf(winner.getScore())));
+    }
     MainWindow.this.setVisible(false);
     registry.getLandingUi().setVisible(true);
   }
