@@ -18,6 +18,7 @@ package net.curre.jjeopardy.bean;
 
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
@@ -378,6 +379,35 @@ public class GameDataTest {
     data.setBonusQuestions(createTestQuestions(30));
     FileParsingResult result = data.generateFileParsingResult();
     assertResultMessageNumbers(result, 0, 1, 3);
+  }
+
+  /** Tests ensureMaxCategoriesAndQuestions. */
+  @Test
+  public void testEnsureMaxCategoriesAndQuestions() {
+    GameData data = new GameData("filepathdoesntmatter", null, true);
+    data.setGameName("TestName");
+    List<Category> categories = new ArrayList<>();
+    categories.add(new Category("Category 1", createTestQuestions(15)));
+    categories.add(new Category("Category 2", createTestQuestions(15)));
+    categories.add(new Category("Category 3", createTestQuestions(15)));
+    categories.add(new Category("Category 4", createTestQuestions(15)));
+    categories.add(new Category("Category 5", createTestQuestions(15)));
+    categories.add(new Category("Category 6", createTestQuestions(15)));
+    categories.add(new Category("Category 7", createTestQuestions(15)));
+    categories.add(new Category("Category 8", createTestQuestions(15)));
+    categories.add(new Category("Category 9", createTestQuestions(15)));
+    categories.add(new Category("Category 10", createTestQuestions(15)));
+    categories.add(new Category("Category 11", createTestQuestions(15)));
+    categories.add(new Category("Category 12", createTestQuestions(15)));
+    categories.add(new Category("Category 13", createTestQuestions(15)));
+    data.setCategories(categories);
+
+    assertEquals("Wrong categories count", 13, data.getCategoriesCount());
+    assertEquals("Wrong questions count", 15, data.getCategoryQuestionsCount());
+
+    data.ensureMaxCategoriesAndQuestions();
+    assertEquals("Wrong categories count", JjDefaults.MAX_NUMBER_OF_CATEGORIES, data.getCategoriesCount());
+    assertEquals("Wrong questions count", JjDefaults.MAX_NUMBER_OF_QUESTIONS, data.getCategoryQuestionsCount());
   }
 
   /**

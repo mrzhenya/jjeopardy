@@ -21,7 +21,6 @@ import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Question;
 
 import javax.swing.table.AbstractTableModel;
-import java.util.List;
 
 /**
  * Game table model.
@@ -71,7 +70,7 @@ public class GameTableModel extends AbstractTableModel {
    * @return column count
    */
   public int getColumnCount() {
-    return this.gameData.getCategories().size();
+    return this.gameData.getCategoriesCount();
   }
 
   /**
@@ -79,8 +78,7 @@ public class GameTableModel extends AbstractTableModel {
    * @return the number of questions in each category
    */
   public int getRowCount() {
-    final List<Category> categories = this.gameData.getCategories();
-    return categories.get(0).getQuestionsCount();
+    return this.gameData.getCategoryQuestionsCount();
   }
 
   /** {@inheritDoc} */

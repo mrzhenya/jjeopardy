@@ -124,7 +124,11 @@ public class PlayersPane extends JPanel {
    */
   protected void updatePlayersPane(List<Player> players) {
     if (players.size() < JjDefaults.MIN_NUMBER_OF_PLAYERS) {
-      logger.warn("Provided too few players, ignoring.");
+      if (players.isEmpty()) {
+        logger.warn("No players are found.");
+      } else {
+        logger.warn("Provided too few players, ignoring.");
+      }
       if (this.containerPane.getComponentCount() == 0) {
         this.initDefaultPlayersPane();
       }

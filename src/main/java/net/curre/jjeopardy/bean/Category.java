@@ -17,6 +17,7 @@
 package net.curre.jjeopardy.bean;
 
 import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.util.JjDefaults;
 
 import java.util.List;
 
@@ -83,5 +84,15 @@ public class Category implements HasName {
    */
   public int getQuestionsCount() {
     return this.questions.size();
+  }
+
+  /**
+   * Ensures the max number of questions on this category. Extra questions are
+   * removed.
+   */
+  public void ensureMaxQuestionsCount() {
+    while (this.questions.size() > JjDefaults.MAX_NUMBER_OF_QUESTIONS) {
+      this.questions.remove(this.questions.size() - 1);
+    }
   }
 }

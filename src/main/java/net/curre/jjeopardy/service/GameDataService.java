@@ -113,6 +113,7 @@ public class GameDataService {
     * @param gameData game data to set as the current game
    */
   public void setCurrentGameData(GameData gameData) {
+    gameData.ensureMaxCategoriesAndQuestions();
     this.currentGameData = gameData;
 
     // If there are enough players, updating the current state.

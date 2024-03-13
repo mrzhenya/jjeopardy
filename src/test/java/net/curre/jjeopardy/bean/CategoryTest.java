@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.bean;
 
+import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
@@ -49,5 +50,29 @@ public class CategoryTest {
 
     assertNotNull("Parent name should not be blank", question.getParentName());
     assertTrue("Wrong parent question name", question.getParentName().contains("Bum"));
+  }
+
+  /** Tests ensureMaxQuestionsCount. */
+  @Test
+  public void testEnsureMaxQuestionsCount() {
+    List<Question> questions = new ArrayList<>();
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    questions.add(new Question("a", null, "a", null, 1));
+    Category category = new Category("Bum", questions);
+    assertEquals("Wrong number of questions", 13, category.getQuestionsCount());
+
+    category.ensureMaxQuestionsCount();
+    assertEquals("Wrong number of questions", JjDefaults.MAX_NUMBER_OF_QUESTIONS, category.getQuestionsCount());
   }
 }

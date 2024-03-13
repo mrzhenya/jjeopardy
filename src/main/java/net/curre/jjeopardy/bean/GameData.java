@@ -490,6 +490,19 @@ public class GameData implements Comparable<GameData> {
   }
 
   /**
+   * Ensures the game has max categories and questions. If more categories or
+   * questions are found than the max allowed, they are removed from this game data.
+   */
+  public void ensureMaxCategoriesAndQuestions() {
+    while (this.categories.size() > JjDefaults.MAX_NUMBER_OF_CATEGORIES) {
+      this.categories.remove(this.categories.size() - 1);
+    }
+    for (Category category : this.categories) {
+      category.ensureMaxQuestionsCount();
+    }
+  }
+
+  /**
    * Determines if the game name valid.
    * @return true if game name is valid
    */
@@ -511,7 +524,7 @@ public class GameData implements Comparable<GameData> {
       if (this.categories.size() < JjDefaults.MIN_NUMBER_OF_CATEGORIES) {
         maybeAddError(resultOrNull, MSG_NOT_ENOUGH_CATEGORIES, String.valueOf(JjDefaults.MIN_NUMBER_OF_CATEGORIES));
         isValid = false;
-      } else if (this.categories.size() >= JjDefaults.MAX_NUMBER_OF_CATEGORIES) {
+      } else if (this.categories.size() > JjDefaults.MAX_NUMBER_OF_CATEGORIES) {
         // Too many categories is just a warning, extra categories will be ignored.
         maybeAddWarning(resultOrNull, MSG_TOO_MANY_CATEGORIES, String.valueOf(JjDefaults.MAX_NUMBER_OF_CATEGORIES));
       }
