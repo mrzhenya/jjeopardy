@@ -16,11 +16,15 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Question;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
@@ -32,8 +36,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * HTML parsing service to parse games from the jeopardylabs.com HTML files.
@@ -46,7 +48,7 @@ public class HtmlParsingService {
   protected static final int MAX_DESCRIPTION_LENGTH = 250;
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(HtmlParsingService.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Base URL for the jeopardylabs.com site. */
   private static final String JLABS_BASE_URL = "https://jeopardylabs.com";
@@ -65,7 +67,7 @@ public class HtmlParsingService {
   protected GameData parseJeopardyLabsHtmlFile(String filePath) {
     GameData gameData = new GameData(filePath, null, false);
     try {
-      LOGGER.info("Parsing HTML file: " + filePath);
+      logger.info("Parsing HTML file: " + filePath);
       Document doc = Jsoup.parse(new File(filePath), "UTF-8", JLABS_BASE_URL);
 
       gameData.setFileDataAcquired();
@@ -76,7 +78,7 @@ public class HtmlParsingService {
       Elements gameBoard = doc.select("div.grid > div");
       if (gameBoard.size() < 3) {
         // Something is not right, too few elements.
-        LOGGER.log(Level.SEVERE, "Game grid doesn't have enough rows: " + gameBoard.size());
+        logger.log(Level.ERROR, "Game grid doesn't have enough rows: " + gameBoard.size());
         return gameData;
       }
 
@@ -105,7 +107,7 @@ public class HtmlParsingService {
       }
       gameData.setCategories(categories);
     } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Unable to open or parse HTML file: " + filePath, e);
+      logger.log(Level.FATAL, "Unable to open or parse HTML file: " + filePath, e);
     }
     return gameData;
   }
@@ -126,7 +128,7 @@ public class HtmlParsingService {
     try {
       points = Integer.parseInt(categoryEl.text());
     } catch (NumberFormatException e) {
-      LOGGER.warning("Unable to parse question points: \"" + categoryEl.text() + "\"!");
+      logger.warn("Unable to parse question points: \"" + categoryEl.text() + "\"!");
     }
     List<Question> categoryQuestions = questionsMap.get(category);
     if (categoryQuestions == null) {

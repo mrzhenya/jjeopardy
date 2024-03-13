@@ -36,6 +36,8 @@ import net.curre.jjeopardy.ui.player.PlayerDialog;
 import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -51,7 +53,6 @@ import java.awt.Image;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 /**
  * Main landing UI that's shown to the user after application start.
@@ -69,7 +70,7 @@ public class LandingUi extends JFrame {
   private static final String CARD_BACKGROUND_ID = "BackgroundCardId";
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(LandingUi.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Reference to the PlayerDialog. */
   private final PlayerDialog playerDialog;
@@ -100,7 +101,7 @@ public class LandingUi extends JFrame {
     this.initComponents();
 
     SwingUtilities.invokeLater(() -> {
-      LOGGER.info("Displaying the main Landing UI...");
+      logger.info("Displaying the main Landing UI...");
       LandingUi.this.pack();
       LandingUi.this.setLocationRelativeTo(null);
       LandingUi.this.setVisible(true);
@@ -414,7 +415,7 @@ public class LandingUi extends JFrame {
    * Opens file chooser dialog to load a new game file.
    */
   private void handleLoadGameAction() {
-    LOGGER.info("Handling the Load button action.");
+    logger.info("Handling the Load button action.");
     Registry registry = AppRegistry.getInstance();
     SettingsService settingsService = registry.getSettingsService();
 
@@ -445,7 +446,7 @@ public class LandingUi extends JFrame {
    * Starts a new game (assuming all data is ready and valid).
    */
   private void handleStartGameAction() {
-    LOGGER.info("Handling the Start Game button action.");
+    logger.info("Handling the Start Game button action.");
     Registry registry = AppRegistry.getInstance();
     registry.getSoundService().stopAllMusic();
     this.setVisible(false);

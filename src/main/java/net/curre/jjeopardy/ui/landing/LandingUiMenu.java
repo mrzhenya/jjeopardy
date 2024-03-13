@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.ui.landing;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LafService;
@@ -23,6 +24,9 @@ import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.ui.laf.theme.LafThemeInterface;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
@@ -31,8 +35,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Represents the menu displayed on the Landing UI.
@@ -41,7 +43,7 @@ import java.util.logging.Logger;
 public class LandingUiMenu extends JMenuBar {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(LandingUiMenu.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Ctor. */
   public LandingUiMenu() {
@@ -82,7 +84,7 @@ public class LandingUiMenu extends JMenuBar {
           registry.getLandingUi().updateLandingUi();
           registry.getUiService().showRestartGameDialog();
         } catch (Exception e) {
-          LOGGER.log(Level.WARNING, "Unable to save settings.", e);
+          logger.log(Level.WARN,"Unable to save settings.", e);
         }
       });
     }

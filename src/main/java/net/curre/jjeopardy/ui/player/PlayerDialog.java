@@ -18,6 +18,7 @@ package net.curre.jjeopardy.ui.player;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.service.AppRegistry;
@@ -26,6 +27,8 @@ import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.ui.landing.LandingUi;
 import net.curre.jjeopardy.util.JjDefaults;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -36,7 +39,6 @@ import java.awt.Font;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Dialog to add or update players joining the game.
@@ -45,7 +47,7 @@ import java.util.logging.Logger;
 public class PlayerDialog extends JDialog {
 
   /** Class logger. */
-  private static final Logger LOGGER = Logger.getLogger(PlayerDialog.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Reference to the main Landing dialog. */
   private final LandingUi landingUi;
@@ -113,14 +115,14 @@ public class PlayerDialog extends JDialog {
 
   /** Handles the Save players action. */
   private void handleSavePlayersAction() {
-    LOGGER.info("Saving players.");
+    logger.info("Saving players.");
     Registry registry = AppRegistry.getInstance();
     GameDataService gameService = registry.getGameDataService();
 
     PlayerDialog.this.playersPane.cleanEmptyPlayers();
     List<String> playerNames = playersPane.getPlayerNames();
     if (playerNames.size() < JjDefaults.MIN_NUMBER_OF_PLAYERS) {
-      LOGGER.info("Not enough non-blank player names");
+      logger.info("Not enough non-blank player names");
       PlayerDialog.this.setVisible(false);
       registry.getUiService().showWarningDialog(
           LocaleService.getString("jj.playerdialog.addplayers.warn.title"),

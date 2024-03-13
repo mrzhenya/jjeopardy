@@ -16,15 +16,17 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.ui.laf.LafThemeId;
 import net.curre.jjeopardy.ui.laf.theme.*;
 import net.curre.jjeopardy.util.Utilities;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Service responsible for some common Look and Feel support.
@@ -37,7 +39,7 @@ public class LafService {
   public static final LafThemeId DEFAULT_LAF_THEME_ID = LafThemeId.DEFAULT;
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(LafService.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** List of available themes/skins. */
   private final ArrayList<LafTheme> supportedLafThemes;
@@ -107,7 +109,7 @@ public class LafService {
       return findLafThemeById(this.currentLafThemeId);
     } catch (ServiceException e) {
       // This should never occur, only at development time.
-      LOGGER.log(Level.SEVERE, "Unable to set LAF theme: " + this.currentLafThemeId, e);
+      logger.log(Level.FATAL, "Unable to set LAF theme: " + this.currentLafThemeId, e);
       System.exit(1);
     }
     return null;
@@ -129,7 +131,7 @@ public class LafService {
   public void activateLafTheme(final LafThemeId lafThemeId) {
     JFrame.setDefaultLookAndFeelDecorated(true);
     try {
-      LOGGER.info("Activating LAF theme " + lafThemeId);
+      logger.info("Activating LAF theme " + lafThemeId);
        if (findLafThemeById(lafThemeId).activateTheme()) {
         this.currentLafThemeId = lafThemeId;
 
@@ -139,10 +141,10 @@ public class LafService {
            component.pack();
          }
       } else {
-        LOGGER.warning("Unable to set LAF theme: " + lafThemeId);
+         logger.warn("Unable to set LAF theme: " + lafThemeId);
       }
     } catch (Exception e) {
-      LOGGER.log(Level.WARNING, "Unable to set LAF theme: " + lafThemeId, e);
+      logger.log(Level.WARN, "Unable to set LAF theme: " + lafThemeId, e);
     }
   }
 

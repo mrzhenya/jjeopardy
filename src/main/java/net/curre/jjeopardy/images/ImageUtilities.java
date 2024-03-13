@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.images;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.ImageTask;
@@ -24,11 +25,14 @@ import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.ui.dialog.ProgressDialog;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -38,8 +42,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A set of utility method to assist with handling and downloading image files.
@@ -55,7 +57,7 @@ public class ImageUtilities {
   private static final int READ_TIMEOUT_MS = 10000;
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(ImageUtilities.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** File that represents temp image directory. */
   private static final File TEMP_IMAGE_PATH = new File(getTempImageDirectory());
@@ -194,7 +196,7 @@ public class ImageUtilities {
       }
       return reader.getFormatName();
     } catch (Exception e) {
-      LOGGER.log(Level.WARNING, "Unable to determine image type of : " + file.getName(), e);
+      logger.log(Level.WARN, "Unable to determine image type of : " + file.getName(), e);
     }
     return null;
   }
@@ -234,7 +236,7 @@ public class ImageUtilities {
           FileUtils.moveFile(tempImagePath, destFile);
         } catch (IOException e) {
           failedUrls.add(imageTask.getUrl());
-          LOGGER.log(Level.WARNING, "Unable to copy file: " + tempImagePath, e);
+          logger.log(Level.WARN, "Unable to copy file: " + tempImagePath, e);
           continue;
         }
       }
@@ -249,7 +251,7 @@ public class ImageUtilities {
 
     }
     for (String failedUrl : failedUrls) {
-      LOGGER.warning("Failed to download image " + failedUrl);
+      logger.warn("Failed to download image " + failedUrl);
     }
     return failedUrls;
   }
@@ -266,7 +268,7 @@ public class ImageUtilities {
       }
       return true;
     } catch (Exception e) {
-      LOGGER.log(Level.WARNING, "Unable to download image: " + imageUrl, e);
+      logger.log(Level.WARN, "Unable to download image: " + imageUrl, e);
     }
     return false;
   }

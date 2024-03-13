@@ -18,15 +18,17 @@ package net.curre.jjeopardy.ui.player;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * UI container for the player data - rows of items, each of which has
@@ -36,7 +38,7 @@ import java.util.logging.Logger;
 public class PlayersPane extends JPanel {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(PlayersPane.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Container (ONLY!) for the player item components. */
   private final JPanel containerPane;
@@ -79,7 +81,7 @@ public class PlayersPane extends JPanel {
     // Redundant check to ensure we don't go above max players.
     int nextPlayerIndex = this.containerPane.getComponentCount();
     if (nextPlayerIndex == JjDefaults.MAX_NUMBER_OF_PLAYERS) {
-      LOGGER.warning("Trying to add too many players, ignoring...");
+      logger.warn("Trying to add too many players, ignoring...");
       return;
     }
 
@@ -122,7 +124,7 @@ public class PlayersPane extends JPanel {
    */
   protected void updatePlayersPane(List<Player> players) {
     if (players.size() < JjDefaults.MIN_NUMBER_OF_PLAYERS) {
-      LOGGER.warning("Provided too few players, ignoring.");
+      logger.warn("Provided too few players, ignoring.");
       if (this.containerPane.getComponentCount() == 0) {
         this.initDefaultPlayersPane();
       }

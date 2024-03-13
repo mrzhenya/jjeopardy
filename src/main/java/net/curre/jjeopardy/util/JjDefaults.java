@@ -16,9 +16,12 @@
 
 package net.curre.jjeopardy.util;
 
+import net.curre.jjeopardy.App;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
+
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The app default settings that are initialized from a locale
@@ -86,7 +89,7 @@ public class JjDefaults {
   public static final int QUESTION_TIME;
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(JjDefaults.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Name of the default properties bundle. */
   private static final String BUNDLE_NAME = "default";
@@ -123,7 +126,7 @@ public class JjDefaults {
       ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME);
       return Integer.parseInt(bundle.getString(messageName).trim());
     } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Unable to load default property \"" + messageName + "\"", e);
+      logger.log(Level.FATAL,"Unable to load default property \"" + messageName + "\"", e);
       throw new RuntimeException("Unable to load default properties");
     }
   }

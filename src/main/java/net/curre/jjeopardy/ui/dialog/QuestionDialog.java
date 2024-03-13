@@ -18,6 +18,7 @@ package net.curre.jjeopardy.ui.dialog;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.images.ImageEnum;
@@ -28,20 +29,16 @@ import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.game.TimerLabel;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.Utilities;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.Clip;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-import java.awt.Container;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Question dialog UI that could be adapted to three different versions:
@@ -56,7 +53,7 @@ import java.util.logging.Logger;
 public class QuestionDialog extends JDialog {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(QuestionDialog.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Width of the Question pane (where question text is rendered). */
   private static final int QUESTION_COLUMN_WIDTH = 600;
@@ -217,7 +214,7 @@ public class QuestionDialog extends JDialog {
       try {
         Thread.sleep(BONUS_GETREADY_TIME);
       } catch (InterruptedException e) {
-        LOGGER.log(Level.WARNING, "Error in Runnable", e);
+        logger.log(Level.WARN, "Error in Runnable", e);
       }
       QuestionDialog.this.askQuestion(question, true);
     });

@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.FileParsingResult;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.ui.dialog.BasicDialog;
@@ -23,9 +24,10 @@ import net.curre.jjeopardy.ui.dialog.ConfirmDialog;
 import net.curre.jjeopardy.ui.dialog.InfoDialog;
 import net.curre.jjeopardy.ui.dialog.GameInfoDialog;
 import net.curre.jjeopardy.ui.dialog.ParsingResultDialog;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.Component;
-import java.util.logging.Logger;
 
 /**
  * Service responsible for common UI tasks like opening dialogs.
@@ -35,7 +37,7 @@ import java.util.logging.Logger;
 public class UiService {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(UiService.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Ctor. */
   protected UiService() {}
@@ -47,7 +49,7 @@ public class UiService {
    * @param parentComponent reference to the relative parent for component position
    */
   public void showInfoDialog(String title, String message, Component parentComponent) {
-    LOGGER.info("Showing info dialog: " + title);
+    logger.info("Showing info dialog: " + title);
     InfoDialog dialog = new InfoDialog(title, message, InfoDialog.Type.INFO);
     dialog.showDialog(parentComponent);
   }
@@ -60,7 +62,7 @@ public class UiService {
    * @param parentComponent reference to the relative parent for component position
    */
   public void showConfirmationDialog(String title, String message, Runnable yesHandler, Component parentComponent) {
-    LOGGER.info("Showing confirmation dialog: " + title);
+    logger.info("Showing confirmation dialog: " + title);
     ConfirmDialog dialog = new ConfirmDialog(title, message, yesHandler);
     dialog.showDialog(parentComponent);
   }
@@ -72,7 +74,7 @@ public class UiService {
    * @param parentComponent reference to the relative parent for component position
    */
   public void showWarningDialog(String title, String message, Component parentComponent) {
-    LOGGER.info("Showing warning dialog: " + title);
+    logger.info("Showing warning dialog: " + title);
     InfoDialog dialog = new InfoDialog(title, message, InfoDialog.Type.WARNING);
     dialog.showDialog(parentComponent);
   }
@@ -83,7 +85,7 @@ public class UiService {
    * @param message text content for the dialog
    */
   public void showEndGameDialog(String title, String message) {
-    LOGGER.info("Showing end game dialog: " + title);
+    logger.info("Showing end game dialog: " + title);
     InfoDialog dialog = new InfoDialog(title, message, InfoDialog.Type.END);
     dialog.showDialog(null);
   }
@@ -94,7 +96,7 @@ public class UiService {
    * @param parent parent UI component to show this dialog relative to
    */
   public void showParsingResult(FileParsingResult result, Component parent) {
-    LOGGER.info("Showing parsing result dialog");
+    logger.info("Showing parsing result dialog");
     BasicDialog dialog = new ParsingResultDialog(result);
     dialog.showDialog(parent);
   }
@@ -105,7 +107,7 @@ public class UiService {
    * @param parent parent UI component to show this dialog relative to
    */
   public void showGameInfoDialog(GameData gameData, Component parent) {
-    LOGGER.info("Showing parsing result dialog");
+    logger.info("Showing parsing result dialog");
     BasicDialog dialog = new GameInfoDialog(gameData);
     dialog.pack();
     dialog.showDialog(parent);
@@ -115,7 +117,7 @@ public class UiService {
    * Displays a dialog to tell the user to restart the app.
    */
   public void showRestartGameDialog() {
-    LOGGER.info("Showing restart game info dialog");
+    logger.info("Showing restart game info dialog");
     this.showInfoDialog(
       LocaleService.getString("jj.dialog.restart.title"),
       LocaleService.getString("jj.dialog.restart.message"),

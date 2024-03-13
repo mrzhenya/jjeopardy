@@ -16,11 +16,12 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.ui.landing.LandingUi;
 import net.curre.jjeopardy.ui.dialog.QuestionDialog;
 import net.curre.jjeopardy.ui.game.MainWindow;
-
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This is the central registry place for most of the app UI frames/dialogs and service objects.
@@ -30,7 +31,7 @@ import java.util.logging.Logger;
 public class AppRegistry implements Registry {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(AppRegistry.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Reference to the singleton instance of this class. */
   private static Registry instance;
@@ -82,7 +83,7 @@ public class AppRegistry implements Registry {
    * @param registryOrNull reference to the (test) registry or null to initialize the default registry
    */
   public static void initialize(Registry registryOrNull) {
-    LOGGER.info("Initializing registry with a " +
+    logger.info("Initializing registry with a " +
       (registryOrNull == null ? "default" : "passed") + " one.");
     instance = registryOrNull == null ? new AppRegistry() : registryOrNull;
   }

@@ -16,7 +16,9 @@
 
 package net.curre.jjeopardy.service;
 
-import java.util.logging.Logger;
+import net.curre.jjeopardy.App;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This service bean is responsible for handling various general tasks such as quitting,
@@ -27,7 +29,7 @@ import java.util.logging.Logger;
 public class MainService {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(MainService.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Private constructor to prevent instantiation. */
   protected MainService() {}
@@ -36,7 +38,7 @@ public class MainService {
    * Starts a new game.
    */
   public void startGame() {
-    LOGGER.info("Starting a new game...");
+    logger.info("Starting a new game...");
 
     Registry registry = AppRegistry.getInstance();
     registry.getGameDataService().resetPlayerScores();
@@ -45,7 +47,7 @@ public class MainService {
 
   /** Disposes all frames and quits the application. */
   public void quitApp() {
-    LOGGER.info("Handling application exit...");
+    logger.info("Handling application exit...");
     System.exit(0);
   }
 }

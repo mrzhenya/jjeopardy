@@ -22,9 +22,10 @@ import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.ui.landing.LandingUi;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.SwingUtilities;
-import java.util.logging.Logger;
 
 /**
  * The driver to run the JJeopardy application.
@@ -33,14 +34,14 @@ import java.util.logging.Logger;
 public class App {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /**
    * Main method to run the JJeopardy application.
    * @param args Argument array.
    */
   public static void main(String[] args) {
-    LOGGER.info("Starting application...");
+    logger.info("Starting application...");
 
     // Initialize the main service registry with a default (non-test) one.
     AppRegistry.initialize(null);

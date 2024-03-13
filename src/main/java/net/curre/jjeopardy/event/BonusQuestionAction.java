@@ -16,19 +16,21 @@
 
 package net.curre.jjeopardy.event;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SoundService;
 import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.dialog.QuestionDialog;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import javax.swing.AbstractAction;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Handler for the Bonus questions button.
@@ -38,7 +40,7 @@ import java.util.logging.Logger;
 public class BonusQuestionAction extends AbstractAction implements KeyListener {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(BonusQuestionAction.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Reference to the parent Question dialog. */
   private final QuestionDialog questionDialog;
@@ -91,7 +93,7 @@ public class BonusQuestionAction extends AbstractAction implements KeyListener {
     try {
       Thread.sleep(500);
     } catch (InterruptedException e) {
-      LOGGER.log(Level.WARNING, "Sleeping thread was interrupted", e);
+      logger.log(Level.WARN, "Sleeping thread was interrupted", e);
     }
 
     this.questionDialog.continueAskingBonusQuestions();

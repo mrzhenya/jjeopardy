@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Question;
@@ -27,6 +28,9 @@ import net.curre.jjeopardy.util.XmlFileUtilities;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +41,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Service to assist with player handling, keeping game scores,
@@ -53,7 +55,7 @@ public class GameDataService {
   private static final String BUNDLE_EXTENSION = ".jj";
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(GameDataService.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Name of the directory under settings where library games are stored. */
   private static final String GAME_DIRECTORY = "games";
@@ -214,7 +216,7 @@ public class GameDataService {
         }
       }
     } catch (Exception e) {
-      LOGGER.log(Level.WARNING, "Unable to copy default game files", e);
+      logger.log(Level.WARN, "Unable to copy default game files", e);
     }
   }
 
@@ -291,7 +293,7 @@ public class GameDataService {
   public void addGameToLibrary(GameData gameData) {
     if (!gameData.isGameDataUsable()) {
       // Don't add unusable games.
-      LOGGER.warning("Trying to add unusable game to the library: " + gameData.getFilePath());
+      logger.warn("Trying to add unusable game to the library: " + gameData.getFilePath());
     }
     try {
       if (gameData.isNativeData()) {
@@ -300,7 +302,7 @@ public class GameDataService {
         copyNonNativeFormatGame(gameData);
       }
     } catch (Exception e) {
-      LOGGER.log(Level.WARNING, "Unable to copy game file: " + gameData.getFilePath(), e);
+      logger.log(Level.WARN, "Unable to copy game file: " + gameData.getFilePath(), e);
     }
   }
 
@@ -383,7 +385,7 @@ public class GameDataService {
           progressDialog.completeAndFinish();
         }
       } catch (Exception e) {
-        LOGGER.log(Level.WARNING, "Unable to copy files", e);
+        logger.log(Level.WARN, "Unable to copy files", e);
         progressDialog.finish();
       }
 
@@ -442,7 +444,7 @@ public class GameDataService {
       this.libraryGames.remove(gameData);
       Collections.sort(this.libraryGames);
     } catch (IOException e) {
-      LOGGER.log(Level.WARNING, "Unable to delete game file: " + gameData.getFilePath(), e);
+      logger.log(Level.WARN, "Unable to delete game file: " + gameData.getFilePath(), e);
     }
   }
 
@@ -479,7 +481,7 @@ public class GameDataService {
     } else if (StringUtils.endsWithIgnoreCase(gameFile.getName(), ".html")) {
       return this.htmlParser.parseJeopardyLabsHtmlFile(fileName);
     } else {
-      LOGGER.warning("Unsupported game file extension, ignoring file: " + fileName);
+      logger.warn("Unsupported game file extension, ignoring file: " + fileName);
     }
 
     return new GameData(fileName, null, false);

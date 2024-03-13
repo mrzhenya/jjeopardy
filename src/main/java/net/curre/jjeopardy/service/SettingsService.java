@@ -16,18 +16,16 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.Utilities;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static net.curre.jjeopardy.service.LafService.DEFAULT_LAF_THEME_ID;
 
@@ -58,7 +56,7 @@ public class SettingsService {
   private static final String SETTINGS_DIR_NAME = "JJeopardy";
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(SettingsService.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Reference to the settings object. */
   private final Settings settings;
@@ -94,7 +92,7 @@ public class SettingsService {
       ObjectOutputStream oStream = new ObjectOutputStream(fStream);
       oStream.writeObject(this.settings);
     } catch (Exception e) {
-      LOGGER.log(Level.WARNING, "Unable to save the settings!", e);
+      logger.log(Level.WARN, "Unable to save the settings!", e);
     }
   }
 
@@ -167,7 +165,7 @@ public class SettingsService {
         return settings;
       }
     } catch (Exception e) {
-      LOGGER.log(Level.WARNING, "Unable to load a settings file. Creating a default one.", e);
+      logger.log(Level.WARN, "Unable to load a settings file. Creating a default one.", e);
     }
     return new Settings();
   }

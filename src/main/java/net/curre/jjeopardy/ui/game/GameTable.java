@@ -16,10 +16,13 @@
 
 package net.curre.jjeopardy.ui.game;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.event.GameTableListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.util.JjDefaults;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JTable;
 import javax.swing.ToolTipManager;
@@ -29,7 +32,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.util.logging.Logger;
 
 /**
  * Represents the Game table.
@@ -41,7 +43,7 @@ import java.util.logging.Logger;
 public class GameTable extends JTable {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(GameTable.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Reference to the table cell renderer. */
   private final TableCellRenderer renderer;
@@ -51,7 +53,7 @@ public class GameTable extends JTable {
 
   /** Constructs a new game table. */
   public GameTable() {
-    LOGGER.info("Creating game table");
+    logger.info("Creating game table");
 
     // Initializing game data.
     GameData data = AppRegistry.getInstance().getGameDataService().getCurrentGameData();

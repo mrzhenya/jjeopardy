@@ -16,12 +16,16 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -29,8 +33,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static net.curre.jjeopardy.util.XmlFileUtilities.*;
 
@@ -44,7 +46,7 @@ import static net.curre.jjeopardy.util.XmlFileUtilities.*;
 public class XmlParsingService {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(XmlParsingService.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /**
    * Max value for the parse loops, it's not really used since every loop stops with/by an exception,
@@ -73,7 +75,7 @@ public class XmlParsingService {
       InputStream in = Files.newInputStream(Paths.get(fileName));
       props.loadFromXML(in);
     } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Unable to open or parse XML file: " + fileName, e);
+      logger.log(Level.ERROR, "Unable to open or parse XML file: " + fileName, e);
       return gameData;
     }
     gameData.setFileDataAcquired();
@@ -82,12 +84,12 @@ public class XmlParsingService {
     try {
       String gameName = Utilities.getProperty(props, PROPERTY_NAME);
       if (StringUtils.isBlank(gameName)) {
-        LOGGER.severe("Game name is blank.");
+        logger.error("Game name is blank.");
       } else {
         gameData.setGameName(gameName.trim());
       }
     } catch (ServiceException e) {
-      LOGGER.severe("Unable to parse game name.");
+      logger.error("Unable to parse game name.");
     }
 
     // ******* Optional game description.
@@ -130,7 +132,7 @@ public class XmlParsingService {
         String categoryName = Utilities.getProperty(props, getPropertyCategoryName(categoryNumber));
         if (StringUtils.isBlank(categoryName)) {
           categoryName = "";
-          LOGGER.severe("Category " + categoryNumber + " name is blank.");
+          logger.error("Category " + categoryNumber + " name is blank.");
         }
         List<Question> questions = parseQuestions(props, categoryNumber);
         categories.add(new Category(categoryName.trim(), questions));

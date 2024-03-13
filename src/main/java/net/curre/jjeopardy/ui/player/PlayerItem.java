@@ -18,14 +18,16 @@ package net.curre.jjeopardy.ui.player;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.service.LocaleService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.util.logging.Logger;
 
 /**
  * Represents a single row component where player name is provided with
@@ -36,7 +38,7 @@ import java.util.logging.Logger;
 class PlayerItem extends JPanel {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(PlayerItem.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Reference to the PlayersPane component. */
   private final PlayersPane playersPane;
@@ -152,13 +154,13 @@ class PlayerItem extends JPanel {
 
   /** Handles add player button action. */
   protected void handleAddPlayerAction() {
-    LOGGER.info("Adding player.");
+    logger.info("Adding player.");
     this.playersPane.addNewPlayerItem(null);
   }
 
   /** Handles remove player button action. */
   protected void handleRemovePlayerAction() {
-    LOGGER.info("Removing player.");
+    logger.info("Removing player.");
     this.playersPane.removePlayerItem(this.playerIndex);
   }
 }

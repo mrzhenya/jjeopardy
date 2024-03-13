@@ -2,6 +2,7 @@
   <configuration default="false" name="App" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="net.curre.jjeopardy.App" />
     <module name="gs-maven" />
+    <option name="PROGRAM_PARAMETERS" value="-Dlog4j.debug" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

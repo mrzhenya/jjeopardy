@@ -16,20 +16,18 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.sounds.SoundEnum;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
+import javax.sound.sampled.*;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Sound service responsible for playing sound clips.
@@ -40,7 +38,7 @@ import java.util.logging.Logger;
 public class SoundService {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(SoundService.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Map to hold all currently opened clips. */
   private final Map<SoundEnum, Clip> currentClips;
@@ -70,12 +68,12 @@ public class SoundService {
     try {
       Clip clip = this.currentClips.get(soundEnum);
       if (clip == null) {
-        LOGGER.fine("Opening audio stream for \"" + soundEnum + "\".");
+        logger.info("Opening audio stream for \"" + soundEnum + "\".");
         clip = openAudioStreamHelper(soundEnum);
         this.currentClips.put(soundEnum, clip);
       }
       if (clip.isRunning()) {
-        LOGGER.warning("Audio stream for \"" + soundEnum + "\" is already running!");
+        logger.warn("Audio stream for \"" + soundEnum + "\" is already running!");
         return false;
       }
 
@@ -88,7 +86,7 @@ public class SoundService {
         clip.loop(count - 1);
       }
     } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Unable to open/start audio stream for \"" + soundEnum + "\"!", e);
+      logger.log(Level.ERROR, "Unable to open/start audio stream for \"" + soundEnum + "\"!", e);
       return false;
     }
     return true;
@@ -131,7 +129,7 @@ public class SoundService {
       return clip;
 
     } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Exception when opening audio stream \"" + soundEnum + "\"!", e);
+      logger.log(Level.ERROR, "Exception when opening audio stream \"" + soundEnum + "\"!", e);
       throw new RuntimeException("Unable to open audio stream for file \"" + soundEnum + "\"!", e);
     }
   }
@@ -156,11 +154,11 @@ public class SoundService {
     try {
       Clip clip = this.currentClips.get(what);
       if (clip == null) {
-        LOGGER.warning("Audio stream for \"" + what + "\" hasn't been opened!");
+        logger.warn("Audio stream for \"" + what + "\" hasn't been opened!");
         return false;
       }
       if (!clip.isRunning()) {
-        LOGGER.warning("Audio stream for \"" + what + "\" is not running!");
+        logger.warn("Audio stream for \"" + what + "\" is not running!");
         return false;
       }
 
@@ -169,7 +167,7 @@ public class SoundService {
         clip.setMicrosecondPosition(0L);
       }
     } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Unable to " + (stop ? "stop" : "pause") +
+      logger.log(Level.ERROR, "Unable to " + (stop ? "stop" : "pause") +
                             " audio stream for \"" + what + "\"!", e);
       return false;
     }

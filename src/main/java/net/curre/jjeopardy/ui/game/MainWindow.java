@@ -18,6 +18,7 @@ package net.curre.jjeopardy.ui.game;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Settings;
@@ -31,6 +32,8 @@ import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.dialog.QuestionDialog;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -43,7 +46,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.util.logging.Logger;
 
 /**
  * Main Game window UI that contains the game table, player scores, and some action buttons.
@@ -55,7 +57,7 @@ import java.util.logging.Logger;
 public class MainWindow extends JFrame {
 
   /** Private class logger. */
-  private static final Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   /** Reference to the panel that contains player scores. */
   private PlayerScoresPanel playerScoresPanel;
@@ -79,7 +81,7 @@ public class MainWindow extends JFrame {
    * Ctor.
    */
   public MainWindow() {
-    LOGGER.info("Creating the main Game UI.");
+    logger.info("Creating the main Game UI.");
     this.gameTable = new GameTable();
     this.actionsEnabled = true;
 
