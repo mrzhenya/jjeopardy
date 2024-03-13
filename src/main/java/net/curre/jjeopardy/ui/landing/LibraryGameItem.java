@@ -63,7 +63,7 @@ public class LibraryGameItem extends JPanel {
     LafTheme lafTheme = this.lafService.getCurrentLafTheme();
     Font font = lafTheme.getDialogTextFont();
     this.setLayout(new TableLayout(new double[][] {
-        {10, 30, 10, 250, 5, 470, 10, TableLayout.FILL, 5, 40, 5, 20, 5, 40, 5, 35, 10}, // columns
+        {10, 30, 10, 250, 5, 465, 10, TableLayout.FILL, 5, 40, 5, 24, 5, 40, 5, 35, 10}, // columns
         {3, 30, 3}})); // rows
     this.setMaximumSize(new Dimension(JjDefaults.LANDING_UI_WIDTH, 36));
 
@@ -77,14 +77,12 @@ public class LibraryGameItem extends JPanel {
     // Game name label.
     JLabel nameLabel = new JLabel(gameData.getGameName());
     nameLabel.setFont(font);
-    nameLabel.setToolTipText(gameData.getGameName());
     this.add(nameLabel, new TableLayoutConstraints(
         3, 1, 3, 1, TableLayout.FULL, TableLayout.CENTER));
 
     // Game description label.
     JLabel descriptionLabel = new JLabel(gameData.getGameDescription());
     descriptionLabel.setFont(font);
-    descriptionLabel.setToolTipText(gameData.getGameDescription());
     this.add(descriptionLabel, new TableLayoutConstraints(
         5, 1, 5, 1, TableLayout.LEFT, TableLayout.CENTER));
 
@@ -108,7 +106,7 @@ public class LibraryGameItem extends JPanel {
           11, 1, 11, 1, TableLayout.CENTER, TableLayout.CENTER));
     }
 
-    // Game size text label.
+    // Game dimension label.
     JLabel dimensionLabel = new JLabel(gameData.getGameDimensionShortText());
     dimensionLabel.setFont(font);
     dimensionLabel.setToolTipText(gameData.getGameDimensionLongMessage());
@@ -134,6 +132,21 @@ public class LibraryGameItem extends JPanel {
     Registry registry = AppRegistry.getInstance();
     registry.getGameDataService().deleteGameFromLibrary(this.gameData);
     registry.getLandingUi().updateLibrary();
+  }
+
+  /**
+   * Action handler for the info game button.
+   */
+  private class InfoGameAction extends AbstractAction {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      AppRegistry.getInstance().getUiService().showInfoDialog(
+          "Boo",
+          "Baaaaa",
+          null
+      );
+    }
   }
 
   /**
