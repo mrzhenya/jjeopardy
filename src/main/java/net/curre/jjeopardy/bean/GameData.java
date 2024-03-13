@@ -253,14 +253,17 @@ public class GameData implements Comparable<GameData> {
     return this.failedImageDownload;
   }
 
+  /** @inheritDoc */
   @Override
   public int compareTo(GameData other) {
     if (this == other) {
       return 0;
     }
-    // TODO - implement a more intelligent comparison mechanism (count questions?).
-
-    return this.gameName.compareTo(other.gameName);
+    int compareValue = this.gameName.compareTo(other.gameName);
+    if (compareValue == 0) {
+      return this.filePath.compareTo(other.filePath);
+    }
+    return compareValue;
   }
 
   /**
