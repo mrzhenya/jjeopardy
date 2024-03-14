@@ -135,7 +135,7 @@ public class QuestionDialog extends JDialog {
    */
   public void hideQuestionDialog() {
     this.questionPane.clearTextAndImageLabels();
-    this.questionPane.switchToEmptyCard();
+    this.questionPane.showAnswer();
     this.titlePanel.reset();
 
     // Helps to avoid a glitch when switching UI to the next question.
@@ -154,6 +154,12 @@ public class QuestionDialog extends JDialog {
     this.pack();
 
     SwingUtilities.invokeLater(() -> {
+      try {
+        // This delay helps to avoid a card flip visual transition glitch.
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
       QuestionDialog.this.setVisible(true);
       startTimer();
     });

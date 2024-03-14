@@ -56,9 +56,6 @@ public class QuestionPane extends JPanel {
   /** String unique ID to use with CardLayout for the bonus answer card. */
   private static final String CARD_BONUS_ANSWER_ID = "bonusAnswer";
 
-  /** String unique ID to use with CardLayout for the empty card. */
-  private static final String CARD_EMPTY_ID = "empty";
-
   /** Vertical padding for the text field (e.g. where question or answer if displayed). */
   private static final int TEXT_PANE_V_PADDING = 40;
 
@@ -123,10 +120,6 @@ public class QuestionPane extends JPanel {
     // The bonus answer panel.
     JPanel bonusAnswerPanel = this.createBonusAnswerPanel();
     this.add(bonusAnswerPanel, CARD_BONUS_ANSWER_ID);
-
-    // The empty panel (to assist with transitions).
-    JPanel emptyPanel = this.createEmptyPanel();
-    this.add(emptyPanel, CARD_EMPTY_ID);
   }
 
   /**
@@ -165,24 +158,16 @@ public class QuestionPane extends JPanel {
    * Shows the appropriate answer UI (card) - regular or bonus answer.
    */
   protected void showAnswer() {
+    // Clearing the previous card's UI so that we can resize the dialog.
+    this.clearQuestionUi();
+    this.questionDialog.pack();
+    this.questionDialog.setLocationRelativeTo(this.questionDialog.getOwner());
+
     if (this.isBonusQuestionsRound) {
       this.switchToBonusAnswerCard();
     } else {
       this.switchToRegularAnswerCard();
     }
-    // Clearing the previous card's UI so that we can resize the dialog.
-    this.clearQuestionUi();
-
-    this.questionDialog.pack();
-    this.questionDialog.setLocationRelativeTo(this.questionDialog.getOwner());
-  }
-
-  /**
-   * Switches card layout to the empty card.
-   */
-  protected void switchToEmptyCard() {
-    CardLayout clay = (CardLayout) this.getLayout();
-    clay.show(this, CARD_EMPTY_ID);
   }
 
   /**
@@ -345,18 +330,6 @@ public class QuestionPane extends JPanel {
     panel.add(yesNoPanel, new TableLayoutConstraints(
       0, 3, 0, 3, TableLayout.CENTER, TableLayout.FULL));
 
-    return panel;
-  }
-
-  /**
-   * Creates an empty JPanel to assist with transitions.
-   * @return empty JPanel
-   */
-  private JPanel createEmptyPanel() {
-    final JPanel panel = new JPanel();
-    panel.setLayout(new TableLayout(new double[][] {
-      {TableLayout.FILL}, // columns
-      {TableLayout.FILL}})); // rows
     return panel;
   }
 
