@@ -78,8 +78,9 @@ public class YesNoAnswerAction extends AbstractAction implements KeyListener {
   public void keyReleased(KeyEvent e) {
   }
 
-  /** Handles action. */
+  /** Handles the action. */
   private void handleAction() {
+    this.questionDialog.stopTimer();
     final Registry registry = AppRegistry.getInstance();
     final SoundService soundService = registry.getSoundService();
     if (this.isYes) {
@@ -93,6 +94,8 @@ public class YesNoAnswerAction extends AbstractAction implements KeyListener {
     dataService.addToPlayerScore(this.playerIndex, cost);
     registry.getMainWindow().updateScores();
 
-    this.questionDialog.hideQuestionDialog();
+    if (this.isYes) {
+      this.questionDialog.showAnswer();
+    }
   }
 }

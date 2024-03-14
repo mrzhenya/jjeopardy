@@ -33,9 +33,7 @@ import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.Image;
+import java.awt.*;
 import java.io.File;
 import java.util.List;
 
@@ -74,7 +72,7 @@ public class QuestionPane extends JPanel {
   private static final int MAX_IMAGE_HEIGHT = 400;
 
   /** Reference to the question dialog. */
-  private final QuestionDialog parentDialog;
+  private final QuestionDialog questionDialog;
 
   /** Question label. */
   private JTextArea questionLabel;
@@ -97,12 +95,15 @@ public class QuestionPane extends JPanel {
   /** True if bonus questions round is active. */
   private boolean isBonusQuestionsRound;
 
+  /** Answer's yes/no buttons panel. */
+  private JPanel answerYesNoButtonsPanel;
+
   /**
    * Ctor.
-   * @param parentDialog reference to the question dialog
+   * @param questionDialog reference to the question dialog
    */
-  public QuestionPane(QuestionDialog parentDialog)     {
-    this.parentDialog = parentDialog;
+  public QuestionPane(QuestionDialog questionDialog)     {
+    this.questionDialog = questionDialog;
     this.isBonusQuestionsRound = false;
 
     this.setLayout(new CardLayout());
@@ -140,38 +141,40 @@ public class QuestionPane extends JPanel {
     if (isBonus) {
       updateLabelIconImage(question.getAnswerImage(), this.bonusAnswerImageLabel);
       this.bonusAnswerLabel.setText(question.getAnswer());
+      this.answerYesNoButtonsPanel.setVisible(false);
     } else {
       updateLabelIconImage(question.getAnswerImage(), this.answerImageLabel);
       this.answerLabel.setText(question.getAnswer());
+      this.answerYesNoButtonsPanel.setVisible(true);
     }
     CardLayout clay = (CardLayout) this.getLayout();
     clay.show(this, CARD_QUESTION_ID);
-    SwingUtilities.invokeLater(this.parentDialog::pack);
+    SwingUtilities.invokeLater(this.questionDialog::pack);
   }
 
   /**
    * Shows the bonus intro UI (card).
    */
   public void showBonusIntro() {
-    this.parentDialog.pack();
+    this.questionDialog.pack();
     CardLayout clay = (CardLayout) this.getLayout();
     clay.show(this, CARD_BONUS_INTRO_ID);
   }
 
   /**
-   * Shows the answer UI (card).
+   * Shows the appropriate answer UI (card) - regular or bonus answer.
    */
-  public void showAnswer() {
-    CardLayout clay = (CardLayout) this.getLayout();
-    clay.show(this, CARD_ANSWER_ID);
-  }
+  protected void showAnswer() {
+    if (this.isBonusQuestionsRound) {
+      this.switchToBonusAnswerCard();
+    } else {
+      this.switchToRegularAnswerCard();
+    }
+    // Clearing the previous card's UI so that we can resize the dialog.
+    this.clearQuestionUi();
 
-  /**
-   * Shows the bonus answer UI (card).
-   */
-  public void showBonusAnswer() {
-    CardLayout clay = (CardLayout) this.getLayout();
-    clay.show(this, CARD_BONUS_ANSWER_ID);
+    this.questionDialog.pack();
+    this.questionDialog.setLocationRelativeTo(this.questionDialog.getOwner());
   }
 
   /**
@@ -186,10 +189,10 @@ public class QuestionPane extends JPanel {
    * Clears text labels to assist with transitioning to the new content.
    */
   protected void clearTextAndImageLabels() {
-    this.questionLabel.setText("");
-    this.questionImageLabel.setIcon(null);
+    this.clearQuestionUi();
     this.answerLabel.setText("");
     this.answerImageLabel.setIcon(null);
+    this.answerImageLabel.setPreferredSize(new Dimension(0, 0));
     this.bonusAnswerLabel.setText("");
     this.bonusAnswerImageLabel.setIcon(null);
   }
@@ -203,7 +206,7 @@ public class QuestionPane extends JPanel {
     JPanel questionPanel = new JPanel();
     questionPanel.setLayout(new TableLayout(new double[][] {
       {TableLayout.FILL}, // columns
-      {TEXT_PANE_V_PADDING, TableLayout.FILL, TEXT_PANE_V_PADDING, TableLayout.PREFERRED}})); // rows
+      {TEXT_PANE_V_PADDING, TableLayout.FILL, TEXT_PANE_V_PADDING, TableLayout.PREFERRED, TEXT_PANE_V_PADDING, TableLayout.PREFERRED}})); // rows
 
     // ******** Question text and image.
     this.questionLabel = BasicDialog.createDefaultTextArea(lafTheme.getQuestionTextFont());
@@ -212,13 +215,30 @@ public class QuestionPane extends JPanel {
     questionPanel.add(questionContainer, new TableLayoutConstraints(
       0, 1, 0, 1, TableLayout.FULL, TableLayout.FULL));
 
+    // ******* Question's Yes/No answer panel - hidden for bonus answers.
+    this.answerYesNoButtonsPanel = new JPanel();
+    this.answerYesNoButtonsPanel.setLayout(new TableLayout(new double[][] {
+        {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED,
+            TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED}, // columns
+        {TableLayout.FILL}})); // rows
+
+    List<Player> players = AppRegistry.getInstance().getGameDataService().getCurrentPlayers();
+    for (int index = 0; index < players.size(); index++) {
+      Player player = players.get(index);
+      JPanel aPanel = this.createYesNoAnswerPanel(player);
+      this.answerYesNoButtonsPanel.add(aPanel, new TableLayoutConstraints(
+          index, 0, index, 0, TableLayout.FULL, TableLayout.FULL));
+    }
+    questionPanel.add(this.answerYesNoButtonsPanel, new TableLayoutConstraints(
+        0, 3, 0, 3, TableLayout.CENTER, TableLayout.FULL));
+
     // ******** Show answer button.
     JButton answerButton = new JButton();
     ClickAndKeyAction.createAndAddAction(answerButton, this::handleShowAnswerAction);
     answerButton.setFont(lafTheme.getButtonFont());
     answerButton.setText(LocaleService.getString("jj.game.question.buttons.show.name"));
     questionPanel.add(answerButton, new TableLayoutConstraints(
-      0, 3, 0, 3, TableLayout.CENTER, TableLayout.CENTER));
+      0, 5, 0, 5, TableLayout.CENTER, TableLayout.CENTER));
 
     return questionPanel;
   }
@@ -265,23 +285,13 @@ public class QuestionPane extends JPanel {
     answerPanel.add(answerContainer, new TableLayoutConstraints(
         0, 1, 0, 1, TableLayout.FULL, TableLayout.FULL));
 
-    // ******* Main question Yes/No answer panels (for each player) - hidden for bonus answers.
-    final JPanel mainAnswerPanel = new JPanel();
-    mainAnswerPanel.setVisible(true);
-    mainAnswerPanel.setLayout(new TableLayout(new double[][] {
-      {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED,
-        TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED}, // columns
-      {TableLayout.FILL}})); // rows
-
-    List<Player> players = AppRegistry.getInstance().getGameDataService().getCurrentPlayers();
-    for (int index = 0; index < players.size(); index++) {
-      Player player = players.get(index);
-      JPanel aPanel = this.createYesNoAnswerPanel(player);
-      mainAnswerPanel.add(aPanel, new TableLayoutConstraints(
-        index, 0, index, 0, TableLayout.FULL, TableLayout.FULL));
-    }
-    answerPanel.add(mainAnswerPanel, new TableLayoutConstraints(
-      0, 3, 0, 3, TableLayout.CENTER, TableLayout.FULL));
+    // ******** Close dialog button.
+    JButton closeButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(closeButton, this::handleCloseDialogAction);
+    closeButton.setFont(lafTheme.getButtonFont());
+    closeButton.setText(LocaleService.getString("jj.game.question.buttons.close.name"));
+    answerPanel.add(closeButton, new TableLayoutConstraints(
+        0, 3, 0, 3, TableLayout.CENTER, TableLayout.CENTER));
 
     return answerPanel;
   }
@@ -314,7 +324,7 @@ public class QuestionPane extends JPanel {
 
     // Yes button.
     final JButton yesButton = new JButton();
-    BonusQuestionAction yesAction = new BonusQuestionAction(this.parentDialog, true);
+    BonusQuestionAction yesAction = new BonusQuestionAction(this.questionDialog, true);
     yesButton.setAction(yesAction);
     yesButton.addKeyListener(yesAction);
     yesButton.setFont(lafTheme.getButtonFont());
@@ -324,7 +334,7 @@ public class QuestionPane extends JPanel {
 
     // No button.
     final JButton noButton = new JButton();
-    BonusQuestionAction noAction = new BonusQuestionAction(this.parentDialog, false);
+    BonusQuestionAction noAction = new BonusQuestionAction(this.questionDialog, false);
     noButton.setAction(noAction);
     noButton.addKeyListener(noAction);
     noButton.setFont(lafTheme.getButtonFont());
@@ -383,7 +393,7 @@ public class QuestionPane extends JPanel {
     // Yes button.
     JButton yesButton = new JButton();
     yesButton.setFont(lafTheme.getButtonFont());
-    YesNoAnswerAction yesAction = new YesNoAnswerAction(this.parentDialog, player.getIndex(), true);
+    YesNoAnswerAction yesAction = new YesNoAnswerAction(this.questionDialog, player.getIndex(), true);
     yesButton.setAction(yesAction);
     yesButton.addKeyListener(yesAction);
     yesButton.setText(LocaleService.getString("jj.game.answer.button.yes"));
@@ -393,7 +403,7 @@ public class QuestionPane extends JPanel {
     // No button.
     JButton noButton = new JButton();
     noButton.setFont(lafTheme.getButtonFont());
-    YesNoAnswerAction noAction = new YesNoAnswerAction(this.parentDialog, player.getIndex(), false);
+    YesNoAnswerAction noAction = new YesNoAnswerAction(this.questionDialog, player.getIndex(), false);
     noButton.setAction(noAction);
     noButton.addKeyListener(noAction);
     noButton.setText(LocaleService.getString("jj.game.answer.button.no"));
@@ -445,16 +455,35 @@ public class QuestionPane extends JPanel {
   }
 
   /**
+   * Handles closing of the question dialog.
+   */
+  private void handleCloseDialogAction() {
+    this.questionDialog.hideQuestionDialog();
+  }
+
+  /**
    * Handles the Show answer button action.
    */
   private void handleShowAnswerAction() {
     AppRegistry.getInstance().getSoundService().stopAllMusic();
-    this.parentDialog.stopTimer();
-    if (this.isBonusQuestionsRound) {
-      this.showBonusAnswer();
-    } else {
-      this.showAnswer();
-    }
+    this.questionDialog.stopTimer();
+    this.showAnswer();
+  }
+
+  /**
+   * Shows the answer UI (card).
+   */
+  private void switchToRegularAnswerCard() {
+    CardLayout clay = (CardLayout) this.getLayout();
+    clay.show(this, CARD_ANSWER_ID);
+  }
+
+  /**
+   * Shows the bonus answer UI (card).
+   */
+  private void switchToBonusAnswerCard() {
+    CardLayout clay = (CardLayout) this.getLayout();
+    clay.show(this, CARD_BONUS_ANSWER_ID);
   }
 
   /**
@@ -473,5 +502,14 @@ public class QuestionPane extends JPanel {
     answerContainer.add(imageLabel, new TableLayoutConstraints(
         0, 2, 0, 2, TableLayout.CENTER, TableLayout.CENTER));
     return answerContainer;
+  }
+
+  /**
+   * Clears question UI data.
+   */
+  private void clearQuestionUi() {
+    this.questionLabel.setText("");
+    this.questionImageLabel.setIcon(null);
+    this.questionImageLabel.setPreferredSize(new Dimension(0, 0));
   }
 }

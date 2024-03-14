@@ -63,7 +63,7 @@ public enum SoundEnum {
   HOORAY_3("fanfare_2.wav", true),
 
   /** Music for the end of the game. */
-  FINAL("fanfare_2.wav", false); // TODO - find final sound clip!
+  FINAL("fanfare_2.wav", true); // TODO - find final sound clip!
 
   /** Sounds associated with failure (wrong answer). */
   private static final SoundEnum[] BOOS = {

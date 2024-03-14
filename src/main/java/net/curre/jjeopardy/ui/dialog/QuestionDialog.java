@@ -186,6 +186,28 @@ public class QuestionDialog extends JDialog {
   }
 
   /**
+   * Shows the appropriate answer UI (card) - regular or bonus answer.
+   */
+  public void showAnswer() {
+    this.questionPane.showAnswer();
+  }
+
+  /**
+   * Starts the question timer.
+   */
+  public void startTimer() {
+    Thread timerThread = new Thread(this.timeLabel, "Timer");
+    timerThread.start();
+  }
+
+  /**
+   * Stops the timer.
+   */
+  public void stopTimer() {
+    this.timeLabel.stopTimer();
+  }
+
+  /**
    * Asks a bonus question. Stops if there are no more questions to offer
    * or if there are no more non-asked players to ask.
    * @param playerIndex index of the player who is going to be asked
@@ -267,20 +289,5 @@ public class QuestionDialog extends JDialog {
 
     pack();
     setLocationRelativeTo(getOwner());
-  }
-
-  /**
-   * Starts the question timer.
-   */
-  private void startTimer() {
-    Thread timerThread = new Thread(this.timeLabel, "Timer");
-    timerThread.start();
-  }
-
-  /**
-   * Stops the timer.
-   */
-  protected void stopTimer() {
-    this.timeLabel.stopTimer();
   }
 }
