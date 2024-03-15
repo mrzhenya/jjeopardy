@@ -25,7 +25,8 @@ import org.junit.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -75,23 +76,6 @@ public class UiServiceTest {
         })) {
 
       this.testUiService.showWarningDialog("TestTitle", "TestMessage", null);
-      assertEquals(1, mockConfirmDialog.constructed().size());
-      verify(mockConfirmDialog.constructed().get(0)).showDialog(null);
-    }
-  }
-
-  /** Tests showEndGameDialog. */
-  @Test
-  public void testShowEndGameDialog() {
-    try(MockedConstruction<InfoDialog> mockConfirmDialog = Mockito.mockConstruction(
-        InfoDialog.class, (mock, context) -> {
-          assertEquals("Wrong number of arguments", 3, context.arguments().size());
-          assertEquals("Wrong title", "TestTitle", context.arguments().get(0));
-          assertEquals("Wrong message", "TestMessage", context.arguments().get(1));
-          assertEquals("Wrong dialog type", InfoDialog.Type.END, context.arguments().get(2));
-        })) {
-
-      this.testUiService.showEndGameDialog("TestTitle", "TestMessage");
       assertEquals(1, mockConfirmDialog.constructed().size());
       verify(mockConfirmDialog.constructed().get(0)).showDialog(null);
     }
