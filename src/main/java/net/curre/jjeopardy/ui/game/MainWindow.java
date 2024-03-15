@@ -276,9 +276,7 @@ public class MainWindow extends JFrame {
     Player winner = registry.getGameDataService().getWinner();
     if (winner.getScore() > 0) {
       registry.getSoundService().startMusic(SoundEnum.FINAL, 1);
-      registry.getUiService().showEndGameDialog(
-          LocaleService.getString("jj.game.enddialog.header", winner.getName()),
-          LocaleService.getString("jj.game.enddialog.message", winner.getName(), String.valueOf(winner.getScore())));
+      registry.getUiService().showEndGameDialog(winner.getName(), winner.getScore());
     }
     MainWindow.this.setVisible(false);
     registry.getLandingUi().setVisible(true);

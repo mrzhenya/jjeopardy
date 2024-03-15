@@ -19,11 +19,7 @@ package net.curre.jjeopardy.service;
 import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.FileParsingResult;
 import net.curre.jjeopardy.bean.GameData;
-import net.curre.jjeopardy.ui.dialog.BasicDialog;
-import net.curre.jjeopardy.ui.dialog.ConfirmDialog;
-import net.curre.jjeopardy.ui.dialog.InfoDialog;
-import net.curre.jjeopardy.ui.dialog.GameInfoDialog;
-import net.curre.jjeopardy.ui.dialog.ParsingResultDialog;
+import net.curre.jjeopardy.ui.dialog.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -81,12 +77,12 @@ public class UiService {
 
   /**
    * Displays the final, end game dialog.
-   * @param title the title text
-   * @param message text content for the dialog
+   * @param winnerName the winner name
+   * @param winnerScore winner's final score
    */
-  public void showEndGameDialog(String title, String message) {
-    logger.info("Showing end game dialog: " + title);
-    InfoDialog dialog = new InfoDialog(title, message, InfoDialog.Type.END);
+  public void showEndGameDialog(String winnerName, int winnerScore) {
+    logger.info("Showing end game dialog");
+    EndGameDialog dialog = new EndGameDialog(winnerName, winnerScore);
     dialog.showDialog(null);
   }
 

@@ -3,8 +3,8 @@ package net.curre.jjeopardy.ui.dialog;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 
-import javax.swing.JLabel;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Represents a game informational dialog (with only one action to acknowledge).
@@ -48,15 +48,29 @@ public class InfoDialog extends BasicDialog {
     this.initializeDialog(title, icon);
   }
 
+  /** @inheritDoc */
   @Override
   public Component getHeaderComponent() {
     JLabel label = new JLabel(this.title);
-    label.setFont(AppRegistry.getInstance().getLafService().getCurrentLafTheme().getDialogHeaderFont());
+    Font font = AppRegistry.getInstance().getLafService().getCurrentLafTheme().getDialogHeaderFont();
+    if (this.getFontSizeScale() != 1f) {
+      font = font.deriveFont(font.getStyle(), font.getSize() * this.getFontSizeScale());
+    }
+    label.setFont(font);
     return label;
   }
 
+  /** @inheritDoc */
   @Override
   public Component getContentComponent() {
-    return this.createTextArea(this.message);
+    return this.createTextArea(this.message, this.getFontSizeScale());
+  }
+
+  /**
+   * Gets the multiplier to scale the font.
+   * @return the multiplier to scale the font
+   */
+  protected float getFontSizeScale() {
+    return 1f;
   }
 }

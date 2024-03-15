@@ -68,7 +68,7 @@ public class ConfirmDialog extends BasicDialog {
 
   @Override
   public Component getContentComponent() {
-    return this.createTextArea(this.message);
+    return this.createTextArea(this.message, 1);
   }
 
   /**

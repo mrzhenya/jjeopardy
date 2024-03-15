@@ -107,7 +107,6 @@ public abstract class BasicDialog extends JDialog {
 
     // The header.
     Component header = this.getHeaderComponent();
-    header.setFont(lafTheme.getDialogHeaderFont());
     this.add(header, new TableLayoutConstraints(
       1 + columnShift, 1, 1 + columnShift, 1, TableLayout.CENTER, TableLayout.CENTER));
 
@@ -172,18 +171,22 @@ public abstract class BasicDialog extends JDialog {
    * Creates a text area component to use for displaying
    * multi-line text in the dialogs.
    * @param message string to set as the area's text
+   * @param fontSizeScale the multiplier to scale the font
    * @return created and initialized JTextArea component
    */
-  protected JTextArea createTextArea(String message) {
+  protected JTextArea createTextArea(String message, float fontSizeScale) {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
-    final Font font = lafTheme.getDialogTextFont();
+    Font font = lafTheme.getDialogTextFont();
+    if (fontSizeScale != 1f) {
+      font = font.deriveFont(font.getStyle(), font.getSize() * fontSizeScale);
+    }
     JTextArea textArea = createDefaultTextArea(font);
     textArea.setText(message);
 
     // Determine the approximate minimum height of the text pane.
     int stringWidth = this.getFontMetrics(font).stringWidth(message);
     int newLineChars = countNewLineChars(message);
-    int lineCount = (stringWidth / TEXT_COLUMN_WIDTH) + newLineChars + (/* add a few more */ 4);
+    int lineCount = (stringWidth / TEXT_COLUMN_WIDTH) + newLineChars + (/* add a few more */ 3);
     int textAreaHeight = lineCount * this.getFontMetrics(font).getHeight();
     if (textAreaHeight > MAX_TEXT_AREA_HEIGHT) {
       textAreaHeight = MAX_TEXT_AREA_HEIGHT;
