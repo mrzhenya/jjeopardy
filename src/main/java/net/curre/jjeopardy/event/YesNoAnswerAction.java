@@ -83,6 +83,7 @@ public class YesNoAnswerAction extends AbstractAction implements KeyListener {
     this.questionDialog.stopTimer();
     final Registry registry = AppRegistry.getInstance();
     final SoundService soundService = registry.getSoundService();
+    soundService.stopAllMusic();
     if (this.isYes) {
       soundService.startMusic(SoundEnum.getRandomHooray(), 1);
     } else {
