@@ -29,11 +29,9 @@ import java.awt.event.MouseMotionListener;
  * Game table mouse event handler.
  * This class is responsible for highlighting and "graying out" the cells.
  *
- * TODO - rename this class to GameTableMotionListener
- *
  * @author Yevgeny Nyden
  */
-public class GameTableMouseListener extends MouseAdapter implements MouseMotionListener {
+public class GameTableMouseMotionListener extends MouseAdapter implements MouseMotionListener {
 
   /** Reference to the game table. */
   private final GameTable gameTable;
@@ -42,7 +40,7 @@ public class GameTableMouseListener extends MouseAdapter implements MouseMotionL
    * Ctor.
    * @param gameTable reference to the game table
    */
-  public GameTableMouseListener(GameTable gameTable) {
+  public GameTableMouseMotionListener(GameTable gameTable) {
     this.gameTable = gameTable;
   }
 
