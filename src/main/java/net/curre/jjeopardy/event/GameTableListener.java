@@ -44,7 +44,7 @@ public class GameTableListener implements ComponentListener, MouseListener {
 
   @Override
   public void componentResized(ComponentEvent e) {
-    this.gameTable.resizeAndRefreshTable();
+    this.gameTable.refreshAndResizeTable();
   }
 
   @Override
@@ -94,7 +94,7 @@ public class GameTableListener implements ComponentListener, MouseListener {
 
       // marking the questions answered on the game board
       question.setHasBeenAsked();
-      this.gameTable.resizeAndRefreshTable();
+      this.gameTable.refreshAndResizeTable();
 
       // opening the question dialog
       registry.getQuestionDialog().askQuestion(question, false);

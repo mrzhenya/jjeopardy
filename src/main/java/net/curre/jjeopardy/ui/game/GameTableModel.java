@@ -105,8 +105,9 @@ public class GameTableModel extends AbstractTableModel {
 
   /** {@inheritDoc} */
   @Override
-  public Class getColumnClass(int column) {
-    return getValueAt(0, column).getClass();
+  public Class<?> getColumnClass(int column) {
+    // Every value in the table is a string.
+    return String.class;
   }
 
   /**

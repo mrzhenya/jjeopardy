@@ -16,20 +16,22 @@
 
 package net.curre.jjeopardy.ui.game;
 
-import info.clearthought.layout.TableLayout;
-import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 /**
  * Represents a Game table header cell.
@@ -37,17 +39,16 @@ import java.awt.Dimension;
  * @see GameTableCellRenderer
  * @author Yevgeny Nyden
  */
-public class GameTableHeaderRenderer extends JPanel implements javax.swing.table.TableCellRenderer {
+public class GameTableHeaderRenderer extends JPanel implements TableCellRenderer {
 
   /** Text area where category name is rendered. */
   private final JTextPane textPane;
 
   /** Ctor. */
   public GameTableHeaderRenderer() {
+    this.setLayout(new GridBagLayout());
+
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
-    this.setLayout(new TableLayout(new double[][] {
-      {10, TableLayout.FILL, 10},  // columns
-      {TableLayout.FILL}})); // rows
     this.setBackground(lafTheme.getGameTableHeaderBackgroundColor());
     this.textPane = new JTextPane();
     this.textPane.setEditable(false);
@@ -66,17 +67,20 @@ public class GameTableHeaderRenderer extends JPanel implements javax.swing.table
     StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
     doc.setParagraphAttributes(0, doc.getLength(), center, false);
 
-    this.add(this.textPane, new TableLayoutConstraints(
-      1, 0, 1, 0, TableLayout.CENTER, TableLayoutConstraints.CENTER));  }
+    this.add(this.textPane, new GridBagConstraints());
+  }
 
   /** {@inheritDoc} */
   @Override
   public Component getTableCellRendererComponent(
     JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
+    String text = value.toString().toUpperCase();
+    this.textPane.setText(text);
     int width = table.getColumnModel().getColumn(column).getWidth();
-    this.textPane.setText(value.toString().toUpperCase());
-    this.setPreferredSize(new Dimension(width - 20, getPreferredSize().height));
+    int height = UiService.getHeightOfTextArea(this, lafTheme.getGameTableHeaderFont(), text, width, 2);
+    this.textPane.setPreferredSize(new Dimension(width, height));
+    this.setPreferredSize(new Dimension(width, height));
     return this;
   }
 }
