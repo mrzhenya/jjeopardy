@@ -59,6 +59,7 @@ public class TableCell extends JPanel {
   private Image cellBackgroundImage;
 
   /** Ctor. */
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public TableCell() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
 
@@ -90,6 +91,7 @@ public class TableCell extends JPanel {
     this.add(this.label, BorderLayout.CENTER);
   }
 
+  @SuppressWarnings("SuspiciousNameCombination")
   @Override
   protected void paintComponent(Graphics g) {
     this.label.repaint();

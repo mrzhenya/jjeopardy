@@ -64,7 +64,7 @@ public class GameTableListener implements ComponentListener, MouseListener {
 
   @Override
   public void mouseReleased(MouseEvent e) {
-    if (AppRegistry.getInstance().getGameWindow().isActionsEnabled()) {
+    if (!AppRegistry.getInstance().getGameService().gameActionsDisabled()) {
       Point p = e.getPoint();
       int row = this.gameTable.rowAtPoint(p);
       int column = this.gameTable.columnAtPoint(p);
@@ -81,7 +81,7 @@ public class GameTableListener implements ComponentListener, MouseListener {
   public void mouseExited(MouseEvent e) {}
 
   /**
-   * Displays the Question dialog for a given question if it's askable and it's hasn't been asked.
+   * Displays the Question dialog for a given question if it's askable and it hasn't been asked.
    * @param catIndex question category index
    * @param questIndex question index
    */
@@ -97,7 +97,7 @@ public class GameTableListener implements ComponentListener, MouseListener {
       this.gameTable.refreshAndResizeTable();
 
       // opening the question dialog
-      registry.getQuestionDialog().askQuestion(question, false);
+      this.gameTable.openQuestionDialogForQuestion(question);
     }
   }
 }

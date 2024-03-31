@@ -100,7 +100,7 @@ public class LandingUi extends JFrame {
     this.setTitle(LocaleService.getString("jj.app.name"));
     this.setResizable(false);
     this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    this.addWindowListener(new ClosingWindowListener(() -> AppRegistry.getInstance().getMainService().quitApp()));
+    this.addWindowListener(new ClosingWindowListener(this::quitApp));
     this.initComponents();
 
     SwingUtilities.invokeLater(() -> {
@@ -219,6 +219,12 @@ public class LandingUi extends JFrame {
     cardLayout.next(this.bottomPanel);
   }
 
+  /** Quits the application. */
+  public void quitApp() {
+    logger.info("Handling application exit...");
+    System.exit(0);
+  }
+
   /** Initializes UI components. */
   private void initComponents() {
     // Setting the main layout.
@@ -241,7 +247,7 @@ public class LandingUi extends JFrame {
         0, 1, 0, 1, TableLayout.FULL, TableLayout.BOTTOM));
 
     // ********* Adding a menu bar
-    this.menuBar = new LandingUiMenu();
+    this.menuBar = new LandingUiMenu(this);
     this.setJMenuBar(menuBar);
   }
 
@@ -456,7 +462,7 @@ public class LandingUi extends JFrame {
     Registry registry = AppRegistry.getInstance();
     registry.getSoundService().stopAllMusic();
     this.setVisible(false);
-    registry.getMainService().startGame();
+    registry.getGameService().startGame();
   }
 
   /** Handles the Show library button action. */

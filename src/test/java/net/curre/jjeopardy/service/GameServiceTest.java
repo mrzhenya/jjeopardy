@@ -22,21 +22,21 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Tests for the main service.
+ * Tests for the game service.
  *
  * @author Yevgeny Nyden
  */
-public class MainServiceTest {
+public class GameServiceTest {
 
-  /** Reference to the main service in test. */
-  private MainService testMainService;
+  /** Reference to the game service in test. */
+  private GameService testGameService;
 
   /**
    * Initializes the state before each test run.
    */
   @Before
   public void init() {
-    this.testMainService = new MainService();
+    this.testGameService = new GameService();
   }
 
   /**
@@ -44,6 +44,6 @@ public class MainServiceTest {
    */
   @Test
   public void testDefault() {
-    assertNotNull(this.testMainService);
+    assertNotNull(this.testGameService);
   }
 }

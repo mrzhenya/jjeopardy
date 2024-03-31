@@ -43,10 +43,15 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Service to assist with player handling, keeping game scores,
- * handling questions.<br><br>
+ * Service responsible for handling an active game data. This service assists
+ * with handling player names, keeping game scores, loading library games,
+ * storing and copying game data/files, and other game data related tasks.<br><br>
+ *
+ * Game UI actions (such as starting a new game) are handled in the <code>GameService</code>.
+ * <br><br>
  * An instance of this service object should be obtained from the AppRegistry.
  *
+ * @see GameService
  * @author Yevgeny Nyden
  */
 public class GameDataService {

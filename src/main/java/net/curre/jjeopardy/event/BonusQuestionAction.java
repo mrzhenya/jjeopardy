@@ -89,7 +89,7 @@ public class BonusQuestionAction extends AbstractAction implements KeyListener {
     final int cost = (this.isYes ? 1 : -1) * this.questionDialog.getCurrentQuestionCost();
     GameDataService dataService = registry.getGameDataService();
     dataService.addToPlayerScore(this.questionDialog.getCurrentBonusPlayerIndex(), cost);
-    registry.getGameWindow().updateScores();
+    registry.getGameService().updateScores();
     try {
       Thread.sleep(500);
     } catch (InterruptedException e) {

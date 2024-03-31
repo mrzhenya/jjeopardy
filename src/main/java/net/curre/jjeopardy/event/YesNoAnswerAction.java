@@ -93,7 +93,7 @@ public class YesNoAnswerAction extends AbstractAction implements KeyListener {
     GameDataService dataService = registry.getGameDataService();
     final int cost = (this.isYes ? 1 : -1) * this.questionDialog.getCurrentQuestionCost();
     dataService.addToPlayerScore(this.playerIndex, cost);
-    registry.getGameWindow().updateScores();
+    registry.getGameService().updateScores();
 
     if (this.isYes) {
       this.questionDialog.showAnswer();

@@ -54,12 +54,12 @@ public class GameTableModel extends AbstractTableModel {
    * Prepares the game model for a new game.
    */
   public void prepareGame() {
-    int columnCount = gameData.getCategories().size();
+    int columnCount = this.gameData.getCategories().size();
     int rowCount = 0;
     if (columnCount > 0) {
       // This shouldn't happen, but just in case we ensure there are categories.
       // Also, we assume here that the number of questions is the same across all categories.
-      rowCount = gameData.getCategories().get(0).getQuestionsCount();
+      rowCount = this.gameData.getCategories().get(0).getQuestionsCount();
     }
     this.emptyCells = new boolean[rowCount][columnCount];
     this.gameData.resetGameData();

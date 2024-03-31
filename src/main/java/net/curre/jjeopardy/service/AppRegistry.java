@@ -18,8 +18,6 @@ package net.curre.jjeopardy.service;
 
 import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.ui.landing.LandingUi;
-import net.curre.jjeopardy.ui.dialog.QuestionDialog;
-import net.curre.jjeopardy.ui.game.GameWindow;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,8 +34,8 @@ public class AppRegistry implements Registry {
   /** Reference to the singleton instance of this class. */
   private static Registry instance;
 
-  /** Reference to the main service. */
-  private final MainService mainService;
+  /** Reference to the game service. */
+  private final GameService gameService;
 
   /** Reference to the game data service. */
   private final GameDataService gameDataService;
@@ -59,12 +57,6 @@ public class AppRegistry implements Registry {
 
   /** Reference to the main landing UI. */
   private LandingUi landingUi;
-
-  /** Reference to the main window. */
-  private GameWindow gameWindow;
-
-  /** Reference to the question dialog. */
-  private QuestionDialog questionDialog;
 
   /**
    * Returns the singleton instance of this class.
@@ -93,7 +85,7 @@ public class AppRegistry implements Registry {
    * the result of the getSettingsFilePathHelper() method.
    */
   public AppRegistry() {
-    this.mainService = new MainService();
+    this.gameService = new GameService();
     this.gameDataService = new GameDataService();
     this.settingsService = new SettingsService(null);
     this.localeService = new LocaleService();
@@ -104,8 +96,8 @@ public class AppRegistry implements Registry {
 
   /** {@inheritDoc} */
   @Override
-  public MainService getMainService() {
-    return this.mainService;
+  public GameService getGameService() {
+    return this.gameService;
   }
 
   /** {@inheritDoc} */
@@ -154,29 +146,5 @@ public class AppRegistry implements Registry {
   @Override
   public void setLandingUi(LandingUi landingUi) {
     this.landingUi = landingUi;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public GameWindow getGameWindow() {
-    synchronized (this) {
-      // Lazy initialize the main game window UI when requested.
-      if (this.gameWindow == null) {
-        this.gameWindow = new GameWindow();
-      }
-    }
-    return this.gameWindow;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public QuestionDialog getQuestionDialog() {
-    return this.questionDialog;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void setQuestionDialog(QuestionDialog questionDialog) {
-    this.questionDialog = questionDialog;
   }
 }

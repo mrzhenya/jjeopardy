@@ -17,8 +17,6 @@
 package net.curre.jjeopardy.service;
 
 import net.curre.jjeopardy.ui.landing.LandingUi;
-import net.curre.jjeopardy.ui.dialog.QuestionDialog;
-import net.curre.jjeopardy.ui.game.GameWindow;
 
 /**
  * Represents a registry interface to set and retrieve application
@@ -29,11 +27,11 @@ import net.curre.jjeopardy.ui.game.GameWindow;
 public interface Registry {
 
   /**
-   * Gets the main service (a generic service to handle common tasks like
-   * starting a new game or quitting the app).
-   * @return a reference to the main service
+   * Gets the game service (to handle tasks like starting a new game,
+   * game restart, and other active game tasks).
+   * @return a reference to the game service
    */
-  MainService getMainService();
+  GameService getGameService();
 
   /**
    * Gets the game data service. This service is responsible for loading and handling
@@ -83,22 +81,4 @@ public interface Registry {
    * @param landingUi reference to the main landing UI
    */
   void setLandingUi(LandingUi landingUi);
-
-  /**
-   * Getter for the main game window reference.
-   * @return The reference to the game window object
-   */
-  GameWindow getGameWindow();
-
-  /**
-   * Gets a reference to the question dialog.
-   * @return a reference to the question dialog
-   */
-  QuestionDialog getQuestionDialog();
-
-  /**
-   * Sets the reference to the question dialog.
-   * @param questionDialog reference to the question dialog
-   */
-  void setQuestionDialog(QuestionDialog questionDialog);
 }

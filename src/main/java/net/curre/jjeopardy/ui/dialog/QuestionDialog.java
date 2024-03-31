@@ -122,12 +122,8 @@ public class QuestionDialog extends JDialog {
   public void setVisible(boolean isVisible) {
     setLocationRelativeTo(getOwner());
     super.setVisible(isVisible);
-    if (isVisible) {
-      AppRegistry.getInstance().getGameWindow().disableActions();
-      super.setAlwaysOnTop(true);
-    } else {
-      AppRegistry.getInstance().getGameWindow().enableActions();
-    }
+    AppRegistry.getInstance().getGameService().setGameActionsEnabled(!isVisible);
+    super.setAlwaysOnTop(isVisible);
   }
 
   /**

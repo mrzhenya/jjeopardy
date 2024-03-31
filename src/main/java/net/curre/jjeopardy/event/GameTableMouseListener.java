@@ -48,7 +48,7 @@ public class GameTableMouseListener extends MouseAdapter implements MouseMotionL
 
   @Override
   public void mouseMoved(MouseEvent e) {
-    if (!AppRegistry.getInstance().getGameWindow().isActionsEnabled()) {
+    if (AppRegistry.getInstance().getGameService().gameActionsDisabled()) {
       return;
     }
     Point p = e.getPoint();
@@ -64,7 +64,7 @@ public class GameTableMouseListener extends MouseAdapter implements MouseMotionL
 
   @Override
   public void mouseExited(MouseEvent e) {
-    if (!AppRegistry.getInstance().getGameWindow().isActionsEnabled()) {
+    if (AppRegistry.getInstance().getGameService().gameActionsDisabled()) {
       return;
     }
     // Clearing out the currently hovered cell state and repainting the table.

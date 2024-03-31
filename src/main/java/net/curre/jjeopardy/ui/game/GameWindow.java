@@ -23,15 +23,14 @@ import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
-import net.curre.jjeopardy.event.GameTableMouseListener;
 import net.curre.jjeopardy.event.ClosingWindowListener;
+import net.curre.jjeopardy.event.GameTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.sounds.SoundEnum;
-import net.curre.jjeopardy.ui.dialog.QuestionDialog;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -94,12 +93,6 @@ public class GameWindow extends JFrame {
     initComponents();
 
     AppRegistry.getInstance().getLafService().registerUITreeForUpdates(this);
-
-    Registry registry = AppRegistry.getInstance();
-    if (registry.getQuestionDialog() == null) {
-      QuestionDialog dialog = new QuestionDialog();
-      registry.setQuestionDialog(dialog);
-    }
   }
 
   /** {@inheritDoc} */
@@ -137,16 +130,14 @@ public class GameWindow extends JFrame {
   }
 
   /**
-   * Determines if the actions are enabled on the main game window.
-   * @return true if actions are enabled; false if otherwise
+   * Determines if the actions are disabled on the main game window.
+   * @return true if actions are disabled; false if otherwise
    */
-  public boolean isActionsEnabled() {
-    return this.actionsEnabled;
+  public boolean actionsDisabled() {
+    return !this.actionsEnabled;
   }
 
-  /**
-   * Enables actions on the main game window (this) dialog.
-   */
+  /** Enables actions on this game window. */
   public void enableActions() {
     this.actionsEnabled = true;
     GameDataService gameService = AppRegistry.getInstance().getGameDataService();
@@ -162,9 +153,7 @@ public class GameWindow extends JFrame {
     }
   }
 
-  /**
-   * Disables actions on the main game window (this) dialog.
-   */
+  /** Disables actions on this game window. */
   public void disableActions() {
     this.actionsEnabled = false;
     this.bonusQuestionsButton.setEnabled(false);
@@ -261,14 +250,13 @@ public class GameWindow extends JFrame {
 
   /** Handles the Bonus question button action. */
   private void handleBonusQuestionsAction() {
-    Registry registry = AppRegistry.getInstance();
-    registry.getQuestionDialog().startAskingBonusQuestions();
     this.bonusQuestionsButton.setEnabled(false);
+    this.gameTable.openBonusQuestionsDialog();
   }
 
   /** Handles the Restart game button action. */
   private void handleRestartGameAction() {
-    AppRegistry.getInstance().getMainService().startGame();
+    AppRegistry.getInstance().getGameService().restartGame();
   }
 
   /** Handles the End game button action. */

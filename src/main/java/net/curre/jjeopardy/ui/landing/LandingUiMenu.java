@@ -48,11 +48,15 @@ public class LandingUiMenu extends JMenuBar {
   /** Private class logger. */
   private static final Logger logger = LogManager.getLogger(App.class.getName());
 
+  /** Reference to the landing UI. */
+  private final LandingUi landingUi;
+
   /** Reference to the print answers menu item. */
   private final JMenuItem printMenuItem;
 
   /** Ctor. */
-  public LandingUiMenu() {
+  public LandingUiMenu(LandingUi landingUi) {
+    this.landingUi = landingUi;
     JMenu menu = new JMenu(LocaleService.getString("jj.landing.menu.title"));
     menu.add(createThemeMenu());
     menu.add(createSoundMenu());
@@ -218,7 +222,7 @@ public class LandingUiMenu extends JMenuBar {
   private JMenuItem createExitItem() {
     final JMenuItem exitItem = new JMenuItem(LocaleService.getString("jj.landing.menu.item.exit"));
     exitItem.setMnemonic(KeyEvent.VK_Q);
-    exitItem.addActionListener(evt -> AppRegistry.getInstance().getMainService().quitApp());
+    exitItem.addActionListener(evt -> this.landingUi.quitApp());
     return exitItem;
   }
 

@@ -18,8 +18,10 @@ package net.curre.jjeopardy.ui.game;
 
 import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.GameData;
+import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.event.GameTableListener;
 import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.ui.dialog.QuestionDialog;
 import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,6 +53,9 @@ public class GameTable extends JTable {
   /** Reference to the table data model. */
   private final GameTableModel model;
 
+  /** Reference to the game question dialog. */
+  private final QuestionDialog questionDialog;
+
   /** Constructs a new game table. */
   public GameTable() {
     logger.info("Creating game table");
@@ -64,6 +69,8 @@ public class GameTable extends JTable {
     this.renderer = new GameTableCellRenderer(this.model);
     setPreferredScrollableViewportSize(
         new Dimension(JjDefaults.GAME_WINDOW_MIN_WIDTH, JjDefaults.GAME_WINDOW_MIN_HEIGHT));
+
+    this.questionDialog = new QuestionDialog();
 
     refreshAndResizeTable();
 
@@ -89,14 +96,28 @@ public class GameTable extends JTable {
     ToolTipManager.sharedInstance().unregisterComponent(this.getTableHeader());
   }
 
-  /**
-   * Prepares the game for a new round.
-   */
+  /** Prepares the game for a new round. */
   public void prepareGame() {
     this.model.prepareGame();
   }
 
-    /** {@inheritDoc} */
+  /**
+   * Shows question UI for the given question and starts the timer.
+   * @param question question to ask
+   */
+  public void openQuestionDialogForQuestion(Question question) {
+    this.questionDialog.askQuestion(question, false);
+  }
+
+  /**
+   * Starts the Bonus questions round by opening the questions dialog in the
+   * bonus question mode. Assumes there is at least one bonus question.
+   */
+  public void openBonusQuestionsDialog() {
+    this.questionDialog.startAskingBonusQuestions();
+  }
+
+  /** {@inheritDoc} */
   @Override
   public TableCellRenderer getCellRenderer(int row, int column) {
     return this.renderer;
