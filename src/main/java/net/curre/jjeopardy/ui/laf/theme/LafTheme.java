@@ -201,7 +201,12 @@ public abstract class LafTheme implements LafThemeInterface {
   protected void initializeInternals(UIDefaults defaults) {
     // Convert DerivedColor to simple Color to avoid side effects.
     this.defaultBackgroundColor = new Color(((Color) defaults.get("Panel.background")).getRGB());
-    this.gameTableBorderColor = new Color(((Color) defaults.get("Table.gridColor")).getRGB());
+    Color gridColor = (Color) defaults.get("Table.gridColor");
+    if (gridColor == null) {
+      this.gameTableBorderColor = this.defaultBackgroundColor;
+    } else {
+      this.gameTableBorderColor = new Color(gridColor.getRGB());
+    }
 
     Font currLabelFont = (Font) defaults.get("Label.font");
     this.dialogHeaderFont = currLabelFont.deriveFont(Font.BOLD, currLabelFont.getSize() + 1f);
