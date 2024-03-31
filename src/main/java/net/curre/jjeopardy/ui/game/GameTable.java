@@ -65,7 +65,7 @@ public class GameTable extends JTable {
     setPreferredScrollableViewportSize(
         new Dimension(JjDefaults.GAME_TABLE_MIN_WIDTH, JjDefaults.GAME_TABLE_MIN_HEIGHT));
 
-    resizeAndRefreshTable();
+    refreshAndResizeTable();
 
     this.setDragEnabled(false);
     this.setSurrendersFocusOnKeystroke(true);
@@ -107,7 +107,7 @@ public class GameTable extends JTable {
    * and set here according to the current table height,
    * and column widths are resized automatically.
    */
-  public void resizeAndRefreshTable() {
+  public void refreshAndResizeTable() {
     final double rowNum = this.model.getRowCount();
     final double height = this.getSize().getHeight() / rowNum;
     final double heightToSet = Math.max(height, JjDefaults.GAME_TABLE_MIN_ROW_HEIGHT);
