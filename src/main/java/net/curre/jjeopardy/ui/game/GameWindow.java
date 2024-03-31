@@ -263,12 +263,12 @@ public class GameWindow extends JFrame {
       registry.getSoundService().startMusic(SoundEnum.FINAL, 1);
       registry.getUiService().showEndGameDialog(winner.getName(), winner.getScore());
     }
-    GameWindow.this.setVisible(false);
-    registry.getLandingUi().setVisible(true);
+    GameWindow.this.handleWindowClosing();
   }
 
   /**
-   * Saves game window size in the settings when window closes.
+   * Saves game window size in the settings, closes game window,
+   * and switches to the landing UI.
    */
   private void handleWindowClosing() {
     // Saving dimensions of the main window.
