@@ -72,6 +72,9 @@ public class LandingUi extends JFrame {
   /** Private class logger. */
   private static final Logger logger = LogManager.getLogger(App.class.getName());
 
+  /** Reference to the menu bar. */
+  private LandingUiMenu menuBar;
+
   /** Reference to the PlayerDialog. */
   private final PlayerDialog playerDialog;
 
@@ -174,16 +177,18 @@ public class LandingUi extends JFrame {
 
     // Updating the game name label.
     GameDataService gameDataService = AppRegistry.getInstance().getGameDataService();
+    boolean printEnabled = false;
     String currGameName = null;
     if (gameDataService.hasCurrentGameData()) {
       GameData gameData = gameDataService.getCurrentGameData();
       if (gameData.isGameDataUsable()) {
         currGameName = gameData.getGameName();
+        printEnabled = true;
       }
     }
-    this.currGameLabel.setEnabled(currGameName != null);
-    currGameName = currGameName == null ?
-        LocaleService.getString("jj.playerdialog.game.default.name") : currGameName;
+    this.menuBar.updatePrintMenuItem(printEnabled);
+    this.currGameLabel.setEnabled(printEnabled);
+    currGameName = printEnabled ? currGameName : LocaleService.getString("jj.playerdialog.game.default.name");
     this.currGameLabel.setText(currGameName);
 
     // Check if the Start game button should be enabled.
@@ -236,7 +241,8 @@ public class LandingUi extends JFrame {
         0, 1, 0, 1, TableLayout.FULL, TableLayout.BOTTOM));
 
     // ********* Adding a menu bar
-    this.setJMenuBar(new LandingUiMenu());
+    this.menuBar = new LandingUiMenu();
+    this.setJMenuBar(menuBar);
   }
 
   /**

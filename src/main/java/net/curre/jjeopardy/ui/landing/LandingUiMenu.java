@@ -17,16 +17,19 @@
 package net.curre.jjeopardy.ui.landing;
 
 import net.curre.jjeopardy.App;
+import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LafService;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
+import net.curre.jjeopardy.ui.edit.EditGameWindow;
+import net.curre.jjeopardy.ui.edit.EditTableMode;
 import net.curre.jjeopardy.ui.laf.theme.LafThemeInterface;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Level;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
@@ -45,17 +48,30 @@ public class LandingUiMenu extends JMenuBar {
   /** Private class logger. */
   private static final Logger logger = LogManager.getLogger(App.class.getName());
 
+  /** Reference to the print answers menu item. */
+  private final JMenuItem printMenuItem;
+
   /** Ctor. */
   public LandingUiMenu() {
     JMenu menu = new JMenu(LocaleService.getString("jj.landing.menu.title"));
     menu.add(createThemeMenu());
     menu.add(createSoundMenu());
     menu.add(createLocaleMenu());
+    this.printMenuItem = createPrintItem();
+    menu.add(this.printMenuItem);
     menu.addSeparator();
     menu.add(createAboutItem());
     menu.addSeparator();
     menu.add(createExitItem());
     this.add(menu);
+  }
+
+  /**
+   * Updates the enabled/disabled status of the print answer menu item.
+   * @param enabled true if the menu item should be enabled; false if otherwise
+   */
+  public void updatePrintMenuItem(boolean enabled) {
+    this.printMenuItem.setEnabled(enabled);
   }
 
   /**
@@ -170,11 +186,22 @@ public class LandingUiMenu extends JMenuBar {
   }
 
   /**
+   * Creates the Print answers menu item.
+   * @return print answers menu item
+   */
+  private JMenuItem createPrintItem() {
+    final JMenuItem printItem = new JMenuItem(LocaleService.getString("jj.landing.menu.item.print"));
+    printItem.setMnemonic(KeyEvent.VK_P);
+    printItem.addActionListener(evt -> printAnswers());
+    printItem.setEnabled(AppRegistry.getInstance().getGameDataService().hasCurrentGameData());
+    return printItem;
+  }
+
+  /**
    * Creates the About menu item.
    * @return about menu item
    */
   private JMenuItem createAboutItem() {
-    // Creating the About menu item.
     final JMenuItem aboutItem = new JMenuItem(LocaleService.getString("jj.landing.menu.item.about"));
     aboutItem.setMnemonic(KeyEvent.VK_A);
     aboutItem.addActionListener(evt -> AppRegistry.getInstance().getUiService().showInfoDialog(
@@ -189,10 +216,18 @@ public class LandingUiMenu extends JMenuBar {
    * @return Exit menu item
    */
   private JMenuItem createExitItem() {
-    // Creating the Exit menu item.
     final JMenuItem exitItem = new JMenuItem(LocaleService.getString("jj.landing.menu.item.exit"));
     exitItem.setMnemonic(KeyEvent.VK_Q);
     exitItem.addActionListener(evt -> AppRegistry.getInstance().getMainService().quitApp());
     return exitItem;
+  }
+
+  /**
+   * Displays the edit dialog to print answers.
+   */
+  private void printAnswers() {
+    GameData gameData = AppRegistry.getInstance().getGameDataService().getCurrentGameData();
+    EditGameWindow frame = new EditGameWindow(gameData, EditTableMode.ANSWERS);
+    frame.setVisible(true);
   }
 }
