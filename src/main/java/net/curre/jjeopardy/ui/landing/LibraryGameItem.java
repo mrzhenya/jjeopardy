@@ -25,18 +25,17 @@ import net.curre.jjeopardy.service.LafService;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.UiService;
+import net.curre.jjeopardy.ui.edit.EditGameWindow;
+import net.curre.jjeopardy.ui.edit.EditTableMode;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.JjDefaults;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -63,14 +62,13 @@ public class LibraryGameItem extends JPanel {
     LafTheme lafTheme = this.lafService.getCurrentLafTheme();
     Font font = lafTheme.getDialogTextFont();
     this.setLayout(new TableLayout(new double[][] {
-        {10, 30, 10, 250, 5, 465, 10, TableLayout.FILL, 5, 40, 5, 24, 5, 40, 5, 35, 10}, // columns
+        {10, 30, 10, 250, 5, 435, 10, TableLayout.FILL, 5, 40, 5, 24, 5, 40, 5, 30, 5, 30, 10}, // columns
         {3, 30, 3}})); // rows
     this.setMaximumSize(new Dimension(JjDefaults.LANDING_UI_WIDTH, 36));
 
     // Game size icon.
-    ImageEnum sizeIcon = gameData.getGameSizeIconSmall();
-    JLabel sizeLabel = new JLabel(sizeIcon.toImageIcon());
-    sizeLabel.setToolTipText(gameData.getGameSizeText());
+    JLabel sizeLabel = new ItemIconLabel(
+        null, gameData.getGameSizeIconSmall(), null, gameData.getGameSizeText(), null);
     this.add(sizeLabel, new TableLayoutConstraints(
         1, 1, 1, 1, TableLayout.CENTER, TableLayout.CENTER));
 
@@ -89,19 +87,16 @@ public class LibraryGameItem extends JPanel {
     // Players number label.
     int playersCount = gameData.getPlayerNames().size();
     if (playersCount > 0) {
-      JLabel playersLabel = new JLabel(ImageEnum.USER_24.toImageIcon());
-      playersLabel.setFont(font);
-      playersLabel.setText(String.valueOf(playersCount));
-      playersLabel.setToolTipText(
-          LocaleService.getString("jj.landing.library.players.message", String.valueOf(playersCount)));
+      JLabel playersLabel = new ItemIconLabel(String.valueOf(playersCount), ImageEnum.USER_24, null,
+          LocaleService.getString("jj.library.players.message", String.valueOf(playersCount)), null);
       this.add(playersLabel, new TableLayoutConstraints(
           9, 1, 9, 1, TableLayout.CENTER, TableLayout.CENTER));
     }
 
     // Image download failure icon.
     if (gameData.isImageDownloadFailure()) {
-      JLabel failureLabel = new JLabel(ImageEnum.IMAGE_FAILURE_24.toImageIcon());
-      failureLabel.setToolTipText(LocaleService.getString("jj.landing.library.failed.image"));
+      JLabel failureLabel = new ItemIconLabel(null, ImageEnum.IMAGE_FAILURE_24, null,
+          LocaleService.getString("jj.library.failed.image"), null);
       this.add(failureLabel, new TableLayoutConstraints(
           11, 1, 11, 1, TableLayout.CENTER, TableLayout.CENTER));
     }
@@ -113,13 +108,20 @@ public class LibraryGameItem extends JPanel {
     this.add(dimensionLabel, new TableLayoutConstraints(
         13, 1, 13, 1, TableLayout.CENTER, TableLayout.CENTER));
 
-    // Remove game button.
-    JButton button  = new JButton();
-    button.setAction(new RemoveGameAction());
-    button.setText("-");
-    button.setToolTipText(LocaleService.getString("jj.file.info.remove.message"));
-    this.add(button, new TableLayoutConstraints(
+    // Questions info button (to display game questions and answers).
+    JLabel infoLabel = new ItemIconLabel(null, ImageEnum.EDIT_24, ImageEnum.EDIT_24_HOVER,
+        LocaleService.getString("jj.library.info.button"), () -> {
+      EditGameWindow frame = new EditGameWindow(gameData, EditTableMode.ALL);
+      frame.setVisible(true);
+    });
+    this.add(infoLabel, new TableLayoutConstraints(
         15, 1, 15, 1, TableLayout.CENTER, TableLayout.CENTER));
+
+    // Remove game button.
+    JLabel trashLabel = new ItemIconLabel(null, ImageEnum.TRASH_24, ImageEnum.TRASH_24_HOVER,
+        LocaleService.getString("jj.file.info.remove.message"), this::handleDeleteGameItem);
+    this.add(trashLabel, new TableLayoutConstraints(
+        17, 1, 17, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Adding mouse hover and click actions.
     this.addMouseListener(new GameItemMouseAdapter());
@@ -134,56 +136,44 @@ public class LibraryGameItem extends JPanel {
     registry.getLandingUi().updateLibrary();
   }
 
-  /**
-   * Action handler for the info game button.
-   */
-  private class InfoGameAction extends AbstractAction {
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      AppRegistry.getInstance().getUiService().showInfoDialog(
-          "Boo",
-          "Baaaaa",
-          null
-      );
-    }
-  }
-
-  /**
-   * Action handler for the remove game button.
-   */
-  private class RemoveGameAction extends AbstractAction {
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      AppRegistry.getInstance().getUiService().showConfirmationDialog(
-          LocaleService.getString("jj.dialog.delete.game.title"),
-          LocaleService.getString("jj.dialog.delete.game.msg"),
-          LibraryGameItem.this::deleteGame,
-          null);
-    }
+  /** Handles removing a game library item. */
+  public void handleDeleteGameItem() {
+    AppRegistry.getInstance().getUiService().showConfirmationDialog(
+        LocaleService.getString("jj.dialog.delete.game.title"),
+        LocaleService.getString("jj.dialog.delete.game.msg"),
+        LibraryGameItem.this::deleteGame,
+        null);
   }
 
   /**
    * Handler for the mouse actions.
    */
   private class GameItemMouseAdapter extends MouseAdapter {
+
+    /** @inheritDoc */
+    @Override
     public void mouseEntered(MouseEvent evt) {
       LafTheme lafTheme = LibraryGameItem.this.lafService.getCurrentLafTheme();
       Color highlight = LafService.createAdjustedColor(lafTheme.getDefaultBackgroundColor(), 25);
       LibraryGameItem.this.setBackground(highlight);
     }
 
+    /** @inheritDoc */
+    @Override
     public void mouseExited(MouseEvent evt) {
       LibraryGameItem.this.setBackground(UIManager.getColor("control"));
     }
 
+    /** @inheritDoc */
+    @Override
     public void mousePressed(MouseEvent evt) {
       LafTheme lafTheme = LibraryGameItem.this.lafService.getCurrentLafTheme();
       Color highlight = LafService.createAdjustedColor(lafTheme.getDefaultBackgroundColor(), 50);
       LibraryGameItem.this.setBackground(highlight);
     }
 
+    /** @inheritDoc */
+    @Override
     public void mouseReleased(MouseEvent e) {
       LafTheme lafTheme = LibraryGameItem.this.lafService.getCurrentLafTheme();
       Color highlight = LafService.createAdjustedColor(lafTheme.getDefaultBackgroundColor(), 25);

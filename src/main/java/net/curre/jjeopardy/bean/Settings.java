@@ -37,11 +37,17 @@ public class Settings implements Serializable {
   /** Serial version number. */
   private static final long serialVersionUID = 120364529132434560L;
 
-  /** The main window frame width. */
+  /** The main game window frame width. */
   private int gameWindowWidth;
 
-  /** The main window frame height. */
+  /** The main game window frame height. */
   private int gameWindowHeight;
+
+  /** The edit game dialog width. */
+  private int editDialogWidth;
+
+  /** The edit game dialog height. */
+  private int editDialogHeight;
 
   /** Look and Feel theme/skin ID. */
   private LafThemeId lafThemeId;
@@ -64,6 +70,8 @@ public class Settings implements Serializable {
   public Settings() {
     this.gameWindowWidth = JjDefaults.GAME_TABLE_MIN_WIDTH;
     this.gameWindowHeight = JjDefaults.GAME_TABLE_MIN_HEIGHT;
+    this.editDialogWidth = JjDefaults.EDIT_GAME_DIALOG_MIN_WIDTH;
+    this.editDialogHeight = JjDefaults.EDIT_GAME_DIALOG_MIN_HEIGHT;
     this.lafThemeId = DEFAULT_LAF_THEME_ID;
     this.soundFxOnly = false;
     this.soundOff = false;
@@ -101,6 +109,38 @@ public class Settings implements Serializable {
    */
   public void setGameWindowHeight(int gameWindowHeight) {
     this.gameWindowHeight = gameWindowHeight;
+  }
+
+  /**
+   * Getter for the edit game dialog width.
+   * @return The edit game dialog width
+   */
+  public int getEditDialogWidth() {
+    return this.editDialogWidth;
+  }
+
+  /**
+   * Setter for the edit game dialog width.
+   * @param editDialogWidth edit game dialog width
+   */
+  public void setEditDialogWidth(int editDialogWidth) {
+    this.editDialogWidth = editDialogWidth;
+  }
+
+  /**
+   * Getter for the edit game dialog height.
+   * @return The edit game dialog height
+   */
+  public int getEditDialogHeight() {
+    return this.editDialogHeight;
+  }
+
+  /**
+   * Setter for the edit game dialog height.
+   * @param editDialogHeight edit game dialog height
+   */
+  public void setEditDialogHeight(int editDialogHeight) {
+    this.editDialogHeight = editDialogHeight;
   }
 
   /**

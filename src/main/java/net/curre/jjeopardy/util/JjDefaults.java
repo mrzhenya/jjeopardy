@@ -67,6 +67,12 @@ public class JjDefaults {
   /** Landing UI library preferred height. */
   public static final int LANDING_UI_LIBRARY_HEIGHT;
 
+  /** Min width for the edit game dialog. */
+  public static final int EDIT_GAME_DIALOG_MIN_WIDTH;
+
+  /** Min height for the edit game dialog. */
+  public static final int EDIT_GAME_DIALOG_MIN_HEIGHT;
+
   /** Min width for the game table. */
   public static final int GAME_TABLE_MIN_WIDTH;
 
@@ -107,6 +113,8 @@ public class JjDefaults {
     BONUS_QUESTION_POINTS = getDefaultIntProperty("jj.defaults.bonus.question.points");
     LANDING_UI_WIDTH = getDefaultIntProperty("jj.defaults.landing.ui.width");
     LANDING_UI_LIBRARY_HEIGHT = getDefaultIntProperty("jj.defaults.landing.ui.library.height");
+    EDIT_GAME_DIALOG_MIN_WIDTH = getDefaultIntProperty("jj.defaults.edit.game.dialog.min.width");
+    EDIT_GAME_DIALOG_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.edit.game.dialog.min.height");
     GAME_TABLE_MIN_WIDTH = getDefaultIntProperty("jj.defaults.game.table.min.width");
     GAME_TABLE_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.game.table.min.height");
     GAME_TABLE_MIN_ROW_HEIGHT = getDefaultIntProperty("jj.defaults.min.row.height");

@@ -65,6 +65,9 @@ public abstract class LafTheme implements LafThemeInterface {
   /** Font to use for the Game table header labels. */
   private Font gameTableHeaderFont;
 
+  /** Game table border color. */
+  private Color gameTableBorderColor;
+
   /** Font to use for the Game table text (cell labels). */
   private Font gameTableTextFont;
 
@@ -73,6 +76,12 @@ public abstract class LafTheme implements LafThemeInterface {
 
   /** Font to use for the Game table score player text labels. */
   private Font gameTableScorePlayerFont;
+
+  /** View font to use for editing game dialog table header. */
+  private Font editTableHeaderFont;
+
+  /** View font to use for editing game dialog table cell. */
+  private Font editTableCellFont;
 
   /** {@inheritDoc} */
   @Override
@@ -145,6 +154,12 @@ public abstract class LafTheme implements LafThemeInterface {
 
   /** {@inheritDoc} */
   @Override
+  public Color getGameTableBorderColor() {
+    return this.gameTableBorderColor;
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public Font getGameTableHeaderFont() {
     return this.gameTableHeaderFont;
   }
@@ -167,6 +182,18 @@ public abstract class LafTheme implements LafThemeInterface {
     return this.gameTableScorePlayerFont;
   }
 
+  /** {@inheritDoc} */
+  @Override
+  public Font getEditTableHeaderFont() {
+    return this.editTableHeaderFont;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public Font getEditTableCellFont() {
+    return this.editTableCellFont;
+  }
+
   /**
    * Initializes internal style values.
    * @param defaults UI defaults
@@ -174,6 +201,7 @@ public abstract class LafTheme implements LafThemeInterface {
   protected void initializeInternals(UIDefaults defaults) {
     // Convert DerivedColor to simple Color to avoid side effects.
     this.defaultBackgroundColor = new Color(((Color) defaults.get("Panel.background")).getRGB());
+    this.gameTableBorderColor = new Color(((Color) defaults.get("Table.gridColor")).getRGB());
 
     Font currLabelFont = (Font) defaults.get("Label.font");
     this.dialogHeaderFont = currLabelFont.deriveFont(Font.BOLD, currLabelFont.getSize() + 1f);
@@ -199,5 +227,8 @@ public abstract class LafTheme implements LafThemeInterface {
     this.gameTableScoreFont = currLabelFont.deriveFont(labelStyle, currLabelFont.getSize() + 18f);
 
     this.gameTableScorePlayerFont = currLabelFont.deriveFont(labelStyle, currLabelFont.getSize() + 4f);
+
+    this.editTableCellFont = currLabelFont.deriveFont(Font.PLAIN, 16f);
+    this.editTableHeaderFont = currLabelFont.deriveFont(Font.BOLD, 20f);
   }
 }

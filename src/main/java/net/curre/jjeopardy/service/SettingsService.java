@@ -120,6 +120,21 @@ public class SettingsService {
   }
 
   /**
+   * Saves the edit game dialog size in the settings if it's not
+   * smaller than the default edit game dialog size.
+   * @param width the width
+   * @param height the height
+   */
+  public void updateEditDialogSize(int width, int height) {
+    if (width >= JjDefaults.EDIT_GAME_DIALOG_MIN_WIDTH) {
+      this.settings.setEditDialogWidth(width);
+    }
+    if (height >= JjDefaults.EDIT_GAME_DIALOG_MIN_HEIGHT) {
+      this.settings.setEditDialogHeight(height);
+    }
+  }
+
+  /**
    * Returns a platform specific absolute path to the game settings directory.
    * All custom directories in the path that don't exist, will be created.
    * @return absolute path to the game settings directory
@@ -177,7 +192,9 @@ public class SettingsService {
   private static void createDirIfDoesntExist(StringBuilder path) {
     File dir = new File(path.toString());
     if (!dir.exists()) {
-      dir.mkdir();
+      if (!dir.mkdir()) {
+        logger.log(Level.WARN, "Unable to create a directory: " + path);
+      }
     }
   }
 
@@ -198,6 +215,19 @@ public class SettingsService {
     }
     if (settings.getLastCurrentDirectory() == null) {
       settings.setLastCurrentDirectory(System.getProperty("user.home"));
+    }
+
+    if (settings.getGameWindowWidth() < JjDefaults.GAME_TABLE_MIN_WIDTH) {
+      settings.setGameWindowWidth(JjDefaults.GAME_TABLE_MIN_WIDTH);
+    }
+    if (settings.getGameWindowHeight() < JjDefaults.GAME_TABLE_MIN_HEIGHT) {
+      settings.setGameWindowHeight(JjDefaults.GAME_TABLE_MIN_HEIGHT);
+    }
+    if (settings.getEditDialogWidth() < JjDefaults.EDIT_GAME_DIALOG_MIN_WIDTH) {
+      settings.setEditDialogWidth(JjDefaults.EDIT_GAME_DIALOG_MIN_WIDTH);
+    }
+    if (settings.getEditDialogHeight() < JjDefaults.EDIT_GAME_DIALOG_MIN_HEIGHT) {
+      settings.setEditDialogHeight(JjDefaults.EDIT_GAME_DIALOG_MIN_HEIGHT);
     }
   }
 }

@@ -52,9 +52,6 @@ public class DefaultTheme extends LafTheme {
   /** Empty game table cell background image. */
   private static final Image GAME_TABLE_CELL_BACKGROUND_EMPTY = ImageEnum.CELL_DEFAULT_EMPTY.toImage();
 
-  /** Game table border color. */
-  private static final Color GAME_TABLE_BORDER_COLOR = new Color(0, 2, 31);
-
   /** Game table header foreground color. */
   private static final Color GAME_TABLE_HEADER_COLOR = new Color(239, 204, 124);
 
@@ -112,12 +109,6 @@ public class DefaultTheme extends LafTheme {
   @Override
   public Image getGameTableCellBackgroundEmpty() {
     return GAME_TABLE_CELL_BACKGROUND_EMPTY;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public Color getGameTableBorderColor() {
-    return GAME_TABLE_BORDER_COLOR;
   }
 
   /** {@inheritDoc} */

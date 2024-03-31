@@ -186,4 +186,15 @@ public interface LafThemeInterface {
    * @return game table score player background color
    */
   Color getGameTableScorePlayerBackground();
+
+  /**
+   * Gets the view font to use for editing game dialog table header.
+   * @return the edit table header font
+   */
+  Font getEditTableHeaderFont();
+
+  /** Gets the view font to use for editing game dialog table cell.
+   * @return the edit table cell font
+   */
+  Font getEditTableCellFont();
 }
