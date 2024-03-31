@@ -67,7 +67,7 @@ public class EditGameWindow extends JDialog {
     });
 
     Settings settings = AppRegistry.getInstance().getSettingsService().getSettings();
-    this.setSize(settings.getEditDialogWidth(), settings.getEditDialogHeight());
+    this.setSize(settings.getEditGameWindowWidth(), settings.getEditGameWindowHeight());
     this.setLocationRelativeTo(null);
 
     // Setting the main content pane layout.
@@ -104,7 +104,7 @@ public class EditGameWindow extends JDialog {
   /** Saves dimensions of the edit window when window closes. */
   private void handleWindowClosing() {
     SettingsService settingsService = AppRegistry.getInstance().getSettingsService();
-    settingsService.updateEditDialogSize(this.getWidth(), this.getHeight());
+    settingsService.updateEditGameWindowSize(this.getWidth(), this.getHeight());
     this.table.refreshAndResize();
     settingsService.persistSettings();
   }

@@ -111,26 +111,26 @@ public class SettingsService {
    * @param height the table height
    */
   public void updateGameWindowSize(int width, int height) {
-    if (width >= JjDefaults.GAME_TABLE_MIN_WIDTH) {
+    if (width >= JjDefaults.GAME_WINDOW_MIN_WIDTH) {
       this.settings.setGameWindowWidth(width);
     }
-    if (height >= JjDefaults.GAME_TABLE_MIN_HEIGHT) {
+    if (height >= JjDefaults.GAME_WINDOW_MIN_HEIGHT) {
       this.settings.setGameWindowHeight(height);
     }
   }
 
   /**
-   * Saves the edit game dialog size in the settings if it's not
-   * smaller than the default edit game dialog size.
+   * Saves the edit game window size in the settings if it's not
+   * smaller than the default edit game window size.
    * @param width the width
    * @param height the height
    */
-  public void updateEditDialogSize(int width, int height) {
-    if (width >= JjDefaults.EDIT_GAME_DIALOG_MIN_WIDTH) {
-      this.settings.setEditDialogWidth(width);
+  public void updateEditGameWindowSize(int width, int height) {
+    if (width >= JjDefaults.EDIT_GAME_WINDOW_MIN_WIDTH) {
+      this.settings.setEditGameWindowWidth(width);
     }
-    if (height >= JjDefaults.EDIT_GAME_DIALOG_MIN_HEIGHT) {
-      this.settings.setEditDialogHeight(height);
+    if (height >= JjDefaults.EDIT_GAME_WINDOW_MIN_HEIGHT) {
+      this.settings.setEditGameWindowHeight(height);
     }
   }
 
@@ -217,17 +217,17 @@ public class SettingsService {
       settings.setLastCurrentDirectory(System.getProperty("user.home"));
     }
 
-    if (settings.getGameWindowWidth() < JjDefaults.GAME_TABLE_MIN_WIDTH) {
-      settings.setGameWindowWidth(JjDefaults.GAME_TABLE_MIN_WIDTH);
+    if (settings.getGameWindowWidth() < JjDefaults.GAME_WINDOW_MIN_WIDTH) {
+      settings.setGameWindowWidth(JjDefaults.GAME_WINDOW_MIN_WIDTH);
     }
-    if (settings.getGameWindowHeight() < JjDefaults.GAME_TABLE_MIN_HEIGHT) {
-      settings.setGameWindowHeight(JjDefaults.GAME_TABLE_MIN_HEIGHT);
+    if (settings.getGameWindowHeight() < JjDefaults.GAME_WINDOW_MIN_HEIGHT) {
+      settings.setGameWindowHeight(JjDefaults.GAME_WINDOW_MIN_HEIGHT);
     }
-    if (settings.getEditDialogWidth() < JjDefaults.EDIT_GAME_DIALOG_MIN_WIDTH) {
-      settings.setEditDialogWidth(JjDefaults.EDIT_GAME_DIALOG_MIN_WIDTH);
+    if (settings.getEditGameWindowWidth() < JjDefaults.EDIT_GAME_WINDOW_MIN_WIDTH) {
+      settings.setEditGameWindowWidth(JjDefaults.EDIT_GAME_WINDOW_MIN_WIDTH);
     }
-    if (settings.getEditDialogHeight() < JjDefaults.EDIT_GAME_DIALOG_MIN_HEIGHT) {
-      settings.setEditDialogHeight(JjDefaults.EDIT_GAME_DIALOG_MIN_HEIGHT);
+    if (settings.getEditGameWindowHeight() < JjDefaults.EDIT_GAME_WINDOW_MIN_HEIGHT) {
+      settings.setEditGameWindowHeight(JjDefaults.EDIT_GAME_WINDOW_MIN_HEIGHT);
     }
   }
 }

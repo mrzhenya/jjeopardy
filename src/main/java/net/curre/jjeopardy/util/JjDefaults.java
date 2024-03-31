@@ -67,17 +67,17 @@ public class JjDefaults {
   /** Landing UI library preferred height. */
   public static final int LANDING_UI_LIBRARY_HEIGHT;
 
-  /** Min width for the edit game dialog. */
-  public static final int EDIT_GAME_DIALOG_MIN_WIDTH;
+  /** Min width for the edit game window. */
+  public static final int EDIT_GAME_WINDOW_MIN_WIDTH;
 
-  /** Min height for the edit game dialog. */
-  public static final int EDIT_GAME_DIALOG_MIN_HEIGHT;
+  /** Min height for the edit game window. */
+  public static final int EDIT_GAME_WINDOW_MIN_HEIGHT;
 
-  /** Min width for the game table. */
-  public static final int GAME_TABLE_MIN_WIDTH;
+  /** Min width for the game window. */
+  public static final int GAME_WINDOW_MIN_WIDTH;
 
-  /** Min height for the game table. */
-  public static final int GAME_TABLE_MIN_HEIGHT;
+  /** Min height for the game window. */
+  public static final int GAME_WINDOW_MIN_HEIGHT;
 
   /** Minimum height for a game table row. */
   public static final int GAME_TABLE_MIN_ROW_HEIGHT;
@@ -113,10 +113,10 @@ public class JjDefaults {
     BONUS_QUESTION_POINTS = getDefaultIntProperty("jj.defaults.bonus.question.points");
     LANDING_UI_WIDTH = getDefaultIntProperty("jj.defaults.landing.ui.width");
     LANDING_UI_LIBRARY_HEIGHT = getDefaultIntProperty("jj.defaults.landing.ui.library.height");
-    EDIT_GAME_DIALOG_MIN_WIDTH = getDefaultIntProperty("jj.defaults.edit.game.dialog.min.width");
-    EDIT_GAME_DIALOG_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.edit.game.dialog.min.height");
-    GAME_TABLE_MIN_WIDTH = getDefaultIntProperty("jj.defaults.game.table.min.width");
-    GAME_TABLE_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.game.table.min.height");
+    EDIT_GAME_WINDOW_MIN_WIDTH = getDefaultIntProperty("jj.defaults.edit.game.window.min.width");
+    EDIT_GAME_WINDOW_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.edit.game.window.min.height");
+    GAME_WINDOW_MIN_WIDTH = getDefaultIntProperty("jj.defaults.game.window.min.width");
+    GAME_WINDOW_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.game.window.min.height");
     GAME_TABLE_MIN_ROW_HEIGHT = getDefaultIntProperty("jj.defaults.min.row.height");
     GAME_TABLE_HEADER_HEIGHT = getDefaultIntProperty("jj.defaults.preferred.header.height");
     PLAYER_DIALOG_WIDTH = getDefaultIntProperty("jj.defaults.player.dialog.width");

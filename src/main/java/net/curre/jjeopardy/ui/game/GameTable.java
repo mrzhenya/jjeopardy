@@ -63,7 +63,7 @@ public class GameTable extends JTable {
     // Creating renderer and setting up the UI.
     this.renderer = new GameTableCellRenderer(this.model);
     setPreferredScrollableViewportSize(
-        new Dimension(JjDefaults.GAME_TABLE_MIN_WIDTH, JjDefaults.GAME_TABLE_MIN_HEIGHT));
+        new Dimension(JjDefaults.GAME_WINDOW_MIN_WIDTH, JjDefaults.GAME_WINDOW_MIN_HEIGHT));
 
     refreshAndResizeTable();
 

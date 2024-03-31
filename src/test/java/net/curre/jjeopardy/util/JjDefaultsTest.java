@@ -43,8 +43,8 @@ public class JjDefaultsTest {
     assertTrue(JjDefaults.BONUS_QUESTION_POINTS > 0);
     assertTrue(JjDefaults.LANDING_UI_WIDTH > 0);
     assertTrue(JjDefaults.LANDING_UI_LIBRARY_HEIGHT > 0);
-    assertTrue(JjDefaults.GAME_TABLE_MIN_WIDTH > 0);
-    assertTrue(JjDefaults.GAME_TABLE_MIN_HEIGHT > 0);
+    assertTrue(JjDefaults.GAME_WINDOW_MIN_WIDTH > 0);
+    assertTrue(JjDefaults.GAME_WINDOW_MIN_HEIGHT > 0);
     assertTrue(JjDefaults.GAME_TABLE_MIN_ROW_HEIGHT > 0);
     assertTrue(JjDefaults.GAME_TABLE_HEADER_HEIGHT > 0);
     assertTrue(JjDefaults.PLAYER_DIALOG_WIDTH > 0);

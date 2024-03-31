@@ -35,7 +35,7 @@ import static net.curre.jjeopardy.service.LafService.DEFAULT_LAF_THEME_ID;
 public class Settings implements Serializable {
 
   /** Serial version number. */
-  private static final long serialVersionUID = 120364529132434560L;
+  private static final long serialVersionUID = 120364529132434561L;
 
   /** The main game window frame width. */
   private int gameWindowWidth;
@@ -44,10 +44,10 @@ public class Settings implements Serializable {
   private int gameWindowHeight;
 
   /** The edit game dialog width. */
-  private int editDialogWidth;
+  private int editGameWindowWidth;
 
   /** The edit game dialog height. */
-  private int editDialogHeight;
+  private int editGameWindowHeight;
 
   /** Look and Feel theme/skin ID. */
   private LafThemeId lafThemeId;
@@ -68,10 +68,10 @@ public class Settings implements Serializable {
    * Ctor.
    */
   public Settings() {
-    this.gameWindowWidth = JjDefaults.GAME_TABLE_MIN_WIDTH;
-    this.gameWindowHeight = JjDefaults.GAME_TABLE_MIN_HEIGHT;
-    this.editDialogWidth = JjDefaults.EDIT_GAME_DIALOG_MIN_WIDTH;
-    this.editDialogHeight = JjDefaults.EDIT_GAME_DIALOG_MIN_HEIGHT;
+    this.gameWindowWidth = JjDefaults.GAME_WINDOW_MIN_WIDTH;
+    this.gameWindowHeight = JjDefaults.GAME_WINDOW_MIN_HEIGHT;
+    this.editGameWindowWidth = JjDefaults.EDIT_GAME_WINDOW_MIN_WIDTH;
+    this.editGameWindowHeight = JjDefaults.EDIT_GAME_WINDOW_MIN_HEIGHT;
     this.lafThemeId = DEFAULT_LAF_THEME_ID;
     this.soundFxOnly = false;
     this.soundOff = false;
@@ -112,35 +112,35 @@ public class Settings implements Serializable {
   }
 
   /**
-   * Getter for the edit game dialog width.
-   * @return The edit game dialog width
+   * Getter for the edit game window width.
+   * @return The edit game window width
    */
-  public int getEditDialogWidth() {
-    return this.editDialogWidth;
+  public int getEditGameWindowWidth() {
+    return this.editGameWindowWidth;
   }
 
   /**
-   * Setter for the edit game dialog width.
-   * @param editDialogWidth edit game dialog width
+   * Setter for the edit game window width.
+   * @param editGameWindowWidth edit game window width
    */
-  public void setEditDialogWidth(int editDialogWidth) {
-    this.editDialogWidth = editDialogWidth;
+  public void setEditGameWindowWidth(int editGameWindowWidth) {
+    this.editGameWindowWidth = editGameWindowWidth;
   }
 
   /**
-   * Getter for the edit game dialog height.
-   * @return The edit game dialog height
+   * Getter for the edit game window height.
+   * @return The edit game window height
    */
-  public int getEditDialogHeight() {
-    return this.editDialogHeight;
+  public int getEditGameWindowHeight() {
+    return this.editGameWindowHeight;
   }
 
   /**
-   * Setter for the edit game dialog height.
-   * @param editDialogHeight edit game dialog height
+   * Setter for the edit game window height.
+   * @param editGameWindowHeight edit game window height
    */
-  public void setEditDialogHeight(int editDialogHeight) {
-    this.editDialogHeight = editDialogHeight;
+  public void setEditGameWindowHeight(int editGameWindowHeight) {
+    this.editGameWindowHeight = editGameWindowHeight;
   }
 
   /**

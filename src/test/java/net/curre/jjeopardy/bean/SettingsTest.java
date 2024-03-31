@@ -24,6 +24,7 @@ import static org.junit.Assert.*;
 
 /**
  * Tests the Settings object methods.
+ *
  * @author Yevgeny Nyden
  */
 public class SettingsTest {
@@ -34,6 +35,8 @@ public class SettingsTest {
     Settings settings = new Settings();
     assertTrue("Game window width should be > 0", settings.getGameWindowWidth() > 0);
     assertTrue("Game window height should be > 0", settings.getGameWindowHeight() > 0);
+    assertTrue("Edit game window width should be > 0", settings.getEditGameWindowWidth() > 0);
+    assertTrue("Edit game window height should be > 0", settings.getEditGameWindowHeight() > 0);
     assertNotNull("Laf theme should not be null", settings.getLafThemeId());
     assertFalse("Sound FX only setting is wrong", settings.isSoundEffectsOnly());
     assertFalse("All sound Off setting is wrong", settings.isAllSoundOff());
@@ -69,6 +72,12 @@ public class SettingsTest {
 
     settings.setGameWindowHeight(444);
     assertEquals("Game window height", 444, settings.getGameWindowHeight());
+
+    settings.setEditGameWindowWidth(321);
+    assertEquals("Edit game window width", 321, settings.getEditGameWindowWidth());
+
+    settings.setEditGameWindowHeight(432);
+    assertEquals("Edit game window height", 432, settings.getEditGameWindowHeight());
 
     settings.setLafThemeId(LafThemeId.NIMBUS);
     assertEquals("LAF theme id", LafThemeId.NIMBUS, settings.getLafThemeId());
