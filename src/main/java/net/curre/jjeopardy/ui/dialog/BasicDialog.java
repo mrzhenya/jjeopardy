@@ -22,6 +22,7 @@ import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.Utilities;
 
@@ -34,8 +35,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Represents a baseclass for a basic modal dialog.
@@ -184,10 +183,7 @@ public abstract class BasicDialog extends JDialog {
     textArea.setText(message);
 
     // Determine the approximate minimum height of the text pane.
-    int stringWidth = this.getFontMetrics(font).stringWidth(message);
-    int newLineChars = countNewLineChars(message);
-    int lineCount = (stringWidth / TEXT_COLUMN_WIDTH) + newLineChars + (/* add a few more */ 3);
-    int textAreaHeight = lineCount * this.getFontMetrics(font).getHeight();
+    int textAreaHeight = UiService.getHeightOfTextArea(this, font, message, TEXT_COLUMN_WIDTH, 3);
     if (textAreaHeight > MAX_TEXT_AREA_HEIGHT) {
       textAreaHeight = MAX_TEXT_AREA_HEIGHT;
     }
@@ -227,19 +223,5 @@ public abstract class BasicDialog extends JDialog {
   private void handleButtonAction() {
     this.setVisible(false);
     this.dispose();
-  }
-
-  /**
-   * Counts new line characters in a given string.
-   * @param text string to review
-   * @return the number of new line characters
-   */
-  private static int countNewLineChars(String text) {
-    Matcher m = Pattern.compile("\r\n|\r|\n").matcher(text);
-    int count = 0;
-    while (m.find()) {
-      count++;
-    }
-    return count;
   }
 }

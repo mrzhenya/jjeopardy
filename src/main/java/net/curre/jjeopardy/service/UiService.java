@@ -23,7 +23,14 @@ import net.curre.jjeopardy.ui.dialog.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.JTextPane;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.Component;
+import java.awt.Font;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Service responsible for common UI tasks like opening dialogs.
@@ -76,6 +83,19 @@ public class UiService {
   }
 
   /**
+   * Displays a simple error dialog.
+   * @param title the title text
+   * @param message text content for the dialog
+   * @param parentComponent reference to the relative parent for component position
+   */
+  public void showErrorDialog(String title, String message, Component parentComponent) {
+    logger.info("Showing warning dialog: " + title);
+    InfoDialog dialog = new InfoDialog(title, message, InfoDialog.Type.ERROR);
+    dialog.showDialog(parentComponent);
+    dialog.toFront();
+  }
+
+  /**
    * Displays the final, end game dialog.
    * @param winnerName the winner name
    * @param winnerScore winner's final score
@@ -119,5 +139,57 @@ public class UiService {
       LocaleService.getString("jj.dialog.restart.message"),
       null
     );
+  }
+
+  /**
+   * Creates an instance of <code>JTextPane</code> initialized to default, non-editable
+   * state and center aligned text.
+   * @return an instance of <code>JTextPane</code> initialized to defaults
+   */
+  public static JTextPane createDefaultTextPane() {
+    // TODO - use this method elsewhere where similar code exist
+    JTextPane textPane = new JTextPane();
+    textPane.setEditable(false);
+    textPane.setFocusable(false);
+    textPane.setDragEnabled(false);
+    textPane.setOpaque(true);
+
+    // Styling the text pane so that the text is center-aligned.
+    StyledDocument doc = textPane.getStyledDocument();
+    SimpleAttributeSet center = new SimpleAttributeSet();
+    StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+    doc.setParagraphAttributes(0, doc.getLength(), center, false);
+
+    return textPane;
+  }
+
+  /**
+   * Determines the height of the text area given a string and a width bound.
+   * @param parent component to obtain font metrics from
+   * @param font font that's being used
+   * @param value the string to measure
+   * @param widthBound width bound (in px)
+   * @param addNewLine add number of new lines
+   * @return recommended height for the text area the string is going to be rendered in
+   */
+  public static int getHeightOfTextArea(Component parent,  Font font, String value, int widthBound, int addNewLine) {
+    int stringWidth = parent.getFontMetrics(font).stringWidth(value);
+    int newLineChars = countNewLineChars(value);
+    int lineCount = ((stringWidth / widthBound) + newLineChars + addNewLine) | 1;
+    return lineCount * parent.getFontMetrics(font).getHeight();
+  }
+
+  /**
+   * Counts new line characters in a given string.
+   * @param text string to review
+   * @return the number of new line characters
+   */
+  public static int countNewLineChars(String text) {
+    Matcher m = Pattern.compile("\r\n|\r|\n").matcher(text);
+    int count = 0;
+    while (m.find()) {
+      count++;
+    }
+    return count;
   }
 }
