@@ -19,7 +19,7 @@ package net.curre.jjeopardy.service;
 import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.ui.landing.LandingUi;
 import net.curre.jjeopardy.ui.dialog.QuestionDialog;
-import net.curre.jjeopardy.ui.game.MainWindow;
+import net.curre.jjeopardy.ui.game.GameWindow;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -61,7 +61,7 @@ public class AppRegistry implements Registry {
   private LandingUi landingUi;
 
   /** Reference to the main window. */
-  private MainWindow mainWindow;
+  private GameWindow gameWindow;
 
   /** Reference to the question dialog. */
   private QuestionDialog questionDialog;
@@ -158,14 +158,14 @@ public class AppRegistry implements Registry {
 
   /** {@inheritDoc} */
   @Override
-  public MainWindow getMainWindow() {
+  public GameWindow getGameWindow() {
     synchronized (this) {
       // Lazy initialize the main game window UI when requested.
-      if (this.mainWindow == null) {
-        this.mainWindow = new MainWindow();
+      if (this.gameWindow == null) {
+        this.gameWindow = new GameWindow();
       }
     }
-    return this.mainWindow;
+    return this.gameWindow;
   }
 
   /** {@inheritDoc} */

@@ -18,7 +18,7 @@ package net.curre.jjeopardy.service;
 
 import net.curre.jjeopardy.ui.landing.LandingUi;
 import net.curre.jjeopardy.ui.dialog.QuestionDialog;
-import net.curre.jjeopardy.ui.game.MainWindow;
+import net.curre.jjeopardy.ui.game.GameWindow;
 
 /**
  * Represents a registry interface to set and retrieve application
@@ -85,10 +85,10 @@ public interface Registry {
   void setLandingUi(LandingUi landingUi);
 
   /**
-   * Getter for the main window reference.
-   * @return The reference to the main window object
+   * Getter for the main game window reference.
+   * @return The reference to the game window object
    */
-  MainWindow getMainWindow();
+  GameWindow getGameWindow();
 
   /**
    * Gets a reference to the question dialog.

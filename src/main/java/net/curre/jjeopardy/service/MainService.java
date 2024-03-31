@@ -42,7 +42,7 @@ public class MainService {
 
     Registry registry = AppRegistry.getInstance();
     registry.getGameDataService().resetPlayerScores();
-    registry.getMainWindow().prepareAndStartGame();
+    registry.getGameWindow().prepareAndStartGame();
   }
 
   /** Disposes all frames and quits the application. */

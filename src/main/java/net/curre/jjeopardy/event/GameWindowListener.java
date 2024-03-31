@@ -19,7 +19,7 @@ package net.curre.jjeopardy.event;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
-import net.curre.jjeopardy.ui.game.MainWindow;
+import net.curre.jjeopardy.ui.game.GameWindow;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -29,6 +29,7 @@ import java.awt.event.WindowListener;
  * in the game settings.
  */
 public class GameWindowListener implements WindowListener {
+  // TODO: Refactor to a generic class and use is for EditGameWindow as well.
 
   @Override
   public void windowOpened(WindowEvent e) {
@@ -37,15 +38,15 @@ public class GameWindowListener implements WindowListener {
   @Override
   public void windowClosing(WindowEvent e) {
     Registry registry = AppRegistry.getInstance();
-    MainWindow mainWindow = registry.getMainWindow();
+    GameWindow gameWindow = registry.getGameWindow();
 
     // Saving dimensions of the main window.
     SettingsService settingsService = registry.getSettingsService();
-    settingsService.updateMainWindowSize(mainWindow.getWidth(), mainWindow.getHeight());
+    settingsService.updateMainWindowSize(gameWindow.getWidth(), gameWindow.getHeight());
     settingsService.persistSettings();
 
     // Hide the main game window and show the landing UI.
-    mainWindow.setVisible(false);
+    gameWindow.setVisible(false);
     registry.getLandingUi().setVisible(true);
   }
 

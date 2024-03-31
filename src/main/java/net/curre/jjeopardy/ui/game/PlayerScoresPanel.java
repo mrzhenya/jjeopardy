@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Represents a row of player names/scores displayed below the game table.
  *
- * @see MainWindow
+ * @see GameWindow
  * @author Yevgeny Nyden
  */
 public class PlayerScoresPanel extends JPanel {

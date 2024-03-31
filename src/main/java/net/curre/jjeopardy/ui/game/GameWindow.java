@@ -54,7 +54,7 @@ import java.awt.Font;
  *
  * @author Yevgeny Nyden
  */
-public class MainWindow extends JFrame {
+public class GameWindow extends JFrame {
 
   /** Private class logger. */
   private static final Logger logger = LogManager.getLogger(App.class.getName());
@@ -80,7 +80,7 @@ public class MainWindow extends JFrame {
   /**
    * Ctor.
    */
-  public MainWindow() {
+  public GameWindow() {
     logger.info("Creating the main Game UI.");
     this.gameTable = new GameTable();
     this.actionsEnabled = true;
@@ -278,7 +278,7 @@ public class MainWindow extends JFrame {
       registry.getSoundService().startMusic(SoundEnum.FINAL, 1);
       registry.getUiService().showEndGameDialog(winner.getName(), winner.getScore());
     }
-    MainWindow.this.setVisible(false);
+    GameWindow.this.setVisible(false);
     registry.getLandingUi().setVisible(true);
   }
 }

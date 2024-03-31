@@ -27,7 +27,7 @@ import javax.swing.table.AbstractTableModel;
  * After creating this object, it must be initialized by calling #prepareGame.
  * This method should also be used to reset the game data for a new game.
  *
- * @see MainWindow
+ * @see GameWindow
  * @see GameTable
  * @author Yevgeny Nyden
  */
