@@ -147,7 +147,6 @@ public class UiService {
    * @return an instance of <code>JTextPane</code> initialized to defaults
    */
   public static JTextPane createDefaultTextPane() {
-    // TODO - use this method elsewhere where similar code exist
     JTextPane textPane = new JTextPane();
     textPane.setEditable(false);
     textPane.setFocusable(false);

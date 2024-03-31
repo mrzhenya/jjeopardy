@@ -24,12 +24,7 @@ import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.event.ClosingWindowListener;
-import net.curre.jjeopardy.service.AppRegistry;
-import net.curre.jjeopardy.service.GameDataService;
-import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.service.Registry;
-import net.curre.jjeopardy.service.SettingsService;
-import net.curre.jjeopardy.service.SoundService;
+import net.curre.jjeopardy.service.*;
 import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.ui.player.PlayerDialog;
@@ -41,9 +36,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -346,33 +338,13 @@ public class LandingUi extends JFrame {
       {5, TableLayout.PREFERRED, 5}})); // rows
 
     // Players list rendered as un-editable text pane.
+    JTextPane textPane = UiService.createDefaultTextPane();
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
-    Component labelOrText;
-    if (arePlayersSet) {
-      JTextPane textPane = new JTextPane();
-      textPane.setFont(lafTheme.getLandingLabelFont());
-      textPane.setEditable(false);
-      textPane.setFocusable(false);
-      textPane.setDragEnabled(false);
-      textPane.setBackground(lafTheme.getDefaultBackgroundColor());
-      textPane.setText(playersText);
-
-      StyledDocument doc = textPane.getStyledDocument();
-      SimpleAttributeSet center = new SimpleAttributeSet();
-      StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-      doc.setParagraphAttributes(0, doc.getLength(), center, false);
-      labelOrText = textPane;
-    } else {
-      // JLabel avoid undesirable background color when label is disabled on light themes.
-      JLabel textLabel = new JLabel();
-      textLabel.setFont(lafTheme.getLandingLabelFont());
-      textLabel.setEnabled(false);
-      textLabel.setText(playersText);
-      labelOrText = textLabel;
-    }
-
-    panel.add(labelOrText, new TableLayoutConstraints(
-      1, 1, 1, 1, TableLayout.CENTER, TableLayout.CENTER));
+    textPane.setFont(lafTheme.getLandingLabelFont());
+    textPane.setBackground(lafTheme.getDefaultBackgroundColor());
+    textPane.setText(playersText);
+    panel.add(textPane, new TableLayoutConstraints(
+        1, 1, 1, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Add or Update players button.
     final JButton updateButton = new JButton();

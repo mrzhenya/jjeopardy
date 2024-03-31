@@ -25,9 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -50,10 +47,7 @@ public class GameTableHeaderRenderer extends JPanel implements TableCellRenderer
 
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.setBackground(lafTheme.getGameTableHeaderBackgroundColor());
-    this.textPane = new JTextPane();
-    this.textPane.setEditable(false);
-    this.textPane.setOpaque(false);
-    this.textPane.setFocusable(false);
+    this.textPane = UiService.createDefaultTextPane();
     this.textPane.setFont(lafTheme.getGameTableHeaderFont());
     this.textPane.setForeground(lafTheme.getGameTableHeaderColor());
     this.textPane.setBackground(lafTheme.getGameTableHeaderBackgroundColor());
@@ -61,11 +55,6 @@ public class GameTableHeaderRenderer extends JPanel implements TableCellRenderer
     this.setBorder(BorderFactory.createCompoundBorder(
       BorderFactory.createLineBorder(lafTheme.getGameTableBorderColor(), 4),
       BorderFactory.createEmptyBorder(0, 5, 0, 5)));
-
-    StyledDocument doc = this.textPane.getStyledDocument();
-    SimpleAttributeSet center = new SimpleAttributeSet();
-    StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-    doc.setParagraphAttributes(0, doc.getLength(), center, false);
 
     this.add(this.textPane, new GridBagConstraints());
   }

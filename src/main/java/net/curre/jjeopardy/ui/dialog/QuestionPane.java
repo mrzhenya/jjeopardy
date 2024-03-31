@@ -26,12 +26,10 @@ import net.curre.jjeopardy.event.YesNoAnswerAction;
 import net.curre.jjeopardy.images.ImageUtilities;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.*;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.util.List;
@@ -352,16 +350,8 @@ public class QuestionPane extends JPanel {
       {5, 40, TableLayout.PREFERRED, 5, TableLayout.PREFERRED, 5, TableLayout.PREFERRED, 5}})); // rows
 
     // Player name label.
-    JTextPane textPane = new JTextPane();
-    textPane.setEditable(false);
-    textPane.setFocusable(false);
-    textPane.setDragEnabled(false);
-    textPane.setOpaque(true);
+    JTextPane textPane = UiService.createDefaultTextPane();
     textPane.setBackground(lafTheme.getDefaultBackgroundColor());
-    StyledDocument doc = textPane.getStyledDocument();
-    SimpleAttributeSet center = new SimpleAttributeSet();
-    StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
-    doc.setParagraphAttributes(0, doc.getLength(), center, false);
     textPane.setText(player.getName());
     panel.add(textPane, new TableLayoutConstraints(
       0, 1, 2, 1, TableLayout.CENTER, TableLayout.CENTER));
