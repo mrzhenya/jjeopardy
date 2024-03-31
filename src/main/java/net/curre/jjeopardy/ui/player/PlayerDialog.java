@@ -21,6 +21,7 @@ import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
+import net.curre.jjeopardy.event.ClosingWindowListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
@@ -36,8 +37,6 @@ import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.List;
 
 /**
@@ -65,7 +64,7 @@ public class PlayerDialog extends JDialog {
     this.setTitle(LocaleService.getString("jj.playerdialog.addplayers.title"));
     this.setResizable(false);
     this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    this.addWindowListener(new PlayerDialogWindowEventsHandler());
+    this.addWindowListener(new ClosingWindowListener(this::handleWindowClosing));
 
     this.initComponents();
   }
@@ -137,33 +136,9 @@ public class PlayerDialog extends JDialog {
     PlayerDialog.this.setVisible(false);
   }
 
-  /**
-   * Simple handler for the dialog's window events.
-   */
-  private class PlayerDialogWindowEventsHandler implements WindowListener {
-
-    @Override
-    public void windowOpened(WindowEvent e) {}
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-      PlayerDialog.this.setVisible(false);
-      PlayerDialog.this.playersPane.cleanEmptyPlayers();
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {}
-
-    @Override
-    public void windowIconified(WindowEvent e) {}
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {}
-
-    @Override
-    public void windowActivated(WindowEvent e) {}
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {}
+  /** Clears the players pane when window closes. */
+  private void handleWindowClosing() {
+    this.setVisible(false);
+    this.playersPane.cleanEmptyPlayers();
   }
 }

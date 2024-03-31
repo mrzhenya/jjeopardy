@@ -20,6 +20,7 @@ import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Settings;
+import net.curre.jjeopardy.event.ClosingWindowListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.SettingsService;
 
@@ -30,8 +31,6 @@ import javax.swing.SwingUtilities;
 import java.awt.Container;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 /**
  * Edit game frame that displays the game detailed information such as
@@ -60,7 +59,7 @@ public class EditGameWindow extends JDialog {
 
     this.setTitle(gameData.getGameName());
     this.setModal(true);
-    this.addWindowListener(new EditDialogWindowListener());
+    this.addWindowListener(new ClosingWindowListener(this::handleWindowClosing));
     this.addComponentListener(new ComponentAdapter() {
       public void componentResized(ComponentEvent e) {
         EditGameWindow.this.table.refreshAndResize();
@@ -102,40 +101,11 @@ public class EditGameWindow extends JDialog {
     this.scrollPane.getVerticalScrollBar().setValue(0);
   }
 
-  /** Window listener to save dimensions on dialog close. */
-  private class EditDialogWindowListener implements WindowListener {
-
-    /** @inheritDoc */
-    @Override
-    public void windowOpened(WindowEvent e) {}
-
-    /** Saves dimensions of the edit game dialog. */
-    @Override
-    public void windowClosing(WindowEvent e) {
-      SettingsService settingsService = AppRegistry.getInstance().getSettingsService();
-      settingsService.updateEditDialogSize(EditGameWindow.this.getWidth(), EditGameWindow.this.getHeight());
-      EditGameWindow.this.table.refreshAndResize();
-      settingsService.persistSettings();
-    }
-
-    /** @inheritDoc */
-    @Override
-    public void windowClosed(WindowEvent e) {}
-
-    /** @inheritDoc */
-    @Override
-    public void windowIconified(WindowEvent e) {}
-
-    /** @inheritDoc */
-    @Override
-    public void windowDeiconified(WindowEvent e) {}
-
-    /** @inheritDoc */
-    @Override
-    public void windowActivated(WindowEvent e) {}
-
-    /** @inheritDoc */
-    @Override
-    public void windowDeactivated(WindowEvent e) {}
+  /** Saves dimensions of the edit window when window closes. */
+  private void handleWindowClosing() {
+    SettingsService settingsService = AppRegistry.getInstance().getSettingsService();
+    settingsService.updateEditDialogSize(this.getWidth(), this.getHeight());
+    this.table.refreshAndResize();
+    settingsService.persistSettings();
   }
 }

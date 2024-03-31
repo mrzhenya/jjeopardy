@@ -23,7 +23,7 @@ import net.curre.jjeopardy.bean.FileParsingResult;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
-import net.curre.jjeopardy.event.QuitAppAction;
+import net.curre.jjeopardy.event.ClosingWindowListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
@@ -100,7 +100,7 @@ public class LandingUi extends JFrame {
     this.setTitle(LocaleService.getString("jj.app.name"));
     this.setResizable(false);
     this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    this.addWindowListener(new QuitAppAction());
+    this.addWindowListener(new ClosingWindowListener(() -> AppRegistry.getInstance().getMainService().quitApp()));
     this.initComponents();
 
     SwingUtilities.invokeLater(() -> {

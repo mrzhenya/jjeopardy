@@ -16,20 +16,26 @@
 
 package net.curre.jjeopardy.event;
 
-import net.curre.jjeopardy.service.AppRegistry;
-import net.curre.jjeopardy.service.Registry;
-import net.curre.jjeopardy.service.SettingsService;
-import net.curre.jjeopardy.ui.game.GameWindow;
-
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 /**
- * Main Game window listener. Mostly to store the game board dimensions
- * in the game settings.
+ * Basic window listener to handle run a specified task when window is closing.
+ *
+ * @author Yevgeny Nyden
  */
-public class GameWindowListener implements WindowListener {
-  // TODO: Refactor to a generic class and use is for EditGameWindow as well.
+public class ClosingWindowListener implements WindowListener {
+
+  /** Task to run on window closing. */
+  private final Runnable task;
+
+  /**
+   * Ctor.
+   * @param task task to run on window closing
+   */
+  public ClosingWindowListener(Runnable task) {
+    this.task = task;
+  }
 
   @Override
   public void windowOpened(WindowEvent e) {
@@ -37,17 +43,7 @@ public class GameWindowListener implements WindowListener {
 
   @Override
   public void windowClosing(WindowEvent e) {
-    Registry registry = AppRegistry.getInstance();
-    GameWindow gameWindow = registry.getGameWindow();
-
-    // Saving dimensions of the main window.
-    SettingsService settingsService = registry.getSettingsService();
-    settingsService.updateMainWindowSize(gameWindow.getWidth(), gameWindow.getHeight());
-    settingsService.persistSettings();
-
-    // Hide the main game window and show the landing UI.
-    gameWindow.setVisible(false);
-    registry.getLandingUi().setVisible(true);
+    this.task.run();
   }
 
   @Override

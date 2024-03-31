@@ -110,7 +110,7 @@ public class SettingsService {
    * @param width the table width
    * @param height the table height
    */
-  public void updateMainWindowSize(int width, int height) {
+  public void updateGameWindowSize(int width, int height) {
     if (width >= JjDefaults.GAME_TABLE_MIN_WIDTH) {
       this.settings.setGameWindowWidth(width);
     }

@@ -24,11 +24,12 @@ import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.event.GameTableMouseListener;
-import net.curre.jjeopardy.event.GameWindowListener;
+import net.curre.jjeopardy.event.ClosingWindowListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.Registry;
+import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.dialog.QuestionDialog;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
@@ -88,7 +89,7 @@ public class GameWindow extends JFrame {
     final Settings settings = AppRegistry.getInstance().getSettingsService().getSettings();
     this.setPreferredSize(new Dimension(settings.getGameWindowWidth(), settings.getGameWindowHeight()));
     this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-    this.addWindowListener(new GameWindowListener());
+    this.addWindowListener(new ClosingWindowListener(this::handleWindowClosing));
 
     initComponents();
 
@@ -279,6 +280,21 @@ public class GameWindow extends JFrame {
       registry.getUiService().showEndGameDialog(winner.getName(), winner.getScore());
     }
     GameWindow.this.setVisible(false);
+    registry.getLandingUi().setVisible(true);
+  }
+
+  /**
+   * Saves game window size in the settings when window closes.
+   */
+  private void handleWindowClosing() {
+    // Saving dimensions of the main window.
+    Registry registry = AppRegistry.getInstance();
+    SettingsService settingsService = registry.getSettingsService();
+    settingsService.updateGameWindowSize(this.getWidth(), this.getHeight());
+    settingsService.persistSettings();
+
+    // Hide the main game window and show the landing UI.
+    this.setVisible(false);
     registry.getLandingUi().setVisible(true);
   }
 }
