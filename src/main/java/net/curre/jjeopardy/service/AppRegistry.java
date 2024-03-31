@@ -16,7 +16,6 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.ui.landing.LandingUi;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 public class AppRegistry implements Registry {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(AppRegistry.class.getName());
 
   /** Reference to the singleton instance of this class. */
   private static Registry instance;

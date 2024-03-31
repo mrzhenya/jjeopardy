@@ -18,7 +18,6 @@ package net.curre.jjeopardy.ui.player;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +37,7 @@ import java.util.List;
 public class PlayersPane extends JPanel {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(PlayersPane.class.getName());
 
   /** Container (ONLY!) for the player item components. */
   private final JPanel containerPane;

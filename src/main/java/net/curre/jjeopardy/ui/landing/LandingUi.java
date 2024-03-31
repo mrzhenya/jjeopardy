@@ -62,7 +62,7 @@ public class LandingUi extends JFrame {
   private static final String CARD_BACKGROUND_ID = "BackgroundCardId";
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(LandingUi.class.getName());
 
   /** Reference to the menu bar. */
   private LandingUiMenu menuBar;

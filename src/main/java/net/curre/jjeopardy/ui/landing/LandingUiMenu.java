@@ -16,7 +16,6 @@
 
 package net.curre.jjeopardy.ui.landing;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.service.AppRegistry;
@@ -46,7 +45,7 @@ import java.util.Locale;
 public class LandingUiMenu extends JMenuBar {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(LandingUiMenu.class.getName());
 
   /** Reference to the landing UI. */
   private final LandingUi landingUi;

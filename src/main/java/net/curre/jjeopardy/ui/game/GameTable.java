@@ -16,7 +16,6 @@
 
 package net.curre.jjeopardy.ui.game;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.event.GameTableMouseListener;
@@ -47,7 +46,7 @@ import java.awt.event.ComponentEvent;
 public class GameTable extends JTable {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(GameTable.class.getName());
 
   /** Reference to the table cell renderer. */
   private final TableCellRenderer renderer;

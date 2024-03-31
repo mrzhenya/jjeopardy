@@ -16,10 +16,14 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.FileParsingResult;
 import net.curre.jjeopardy.bean.GameData;
-import net.curre.jjeopardy.ui.dialog.*;
+import net.curre.jjeopardy.ui.dialog.BasicDialog;
+import net.curre.jjeopardy.ui.dialog.ConfirmDialog;
+import net.curre.jjeopardy.ui.dialog.EndGameDialog;
+import net.curre.jjeopardy.ui.dialog.GameInfoDialog;
+import net.curre.jjeopardy.ui.dialog.InfoDialog;
+import net.curre.jjeopardy.ui.dialog.ParsingResultDialog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,7 +44,7 @@ import java.util.regex.Pattern;
 public class UiService {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(UiService.class.getName());
 
   /** Ctor. */
   protected UiService() {}

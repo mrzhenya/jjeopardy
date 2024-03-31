@@ -47,7 +47,7 @@ public class PrintUtilities {
   public static final Font PAGE_FOOTER_FONT = new Font("Lucida Sans", Font.PLAIN, 10);
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(PrintUtilities.class.getName());
 
   /** Vertical space to leave between the table and the header/footer text. */
   private static final int PRINT_Y_SPACING = 4;

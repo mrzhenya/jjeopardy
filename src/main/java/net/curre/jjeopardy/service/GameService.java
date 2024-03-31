@@ -38,7 +38,7 @@ import javax.swing.SwingUtilities;
 public class GameService {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(GameService.class.getName());
 
   /** Reference to the main window. */
   private GameWindow gameWindow;

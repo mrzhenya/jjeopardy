@@ -95,7 +95,7 @@ public class JjDefaults {
   public static final int QUESTION_TIME;
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(JjDefaults.class.getName());
 
   /** Name of the default properties bundle. */
   private static final String BUNDLE_NAME = "default";

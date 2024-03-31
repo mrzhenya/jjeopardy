@@ -38,7 +38,7 @@ import java.util.Map;
 public class SoundService {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(SoundService.class.getName());
 
   /** Map to hold all currently opened clips. */
   private final Map<SoundEnum, Clip> currentClips;

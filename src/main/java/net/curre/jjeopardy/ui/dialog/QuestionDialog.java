@@ -18,7 +18,6 @@ package net.curre.jjeopardy.ui.dialog;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.images.ImageEnum;
@@ -34,8 +33,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.sound.sampled.Clip;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
+import java.awt.Container;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -53,7 +57,7 @@ import java.util.Random;
 public class QuestionDialog extends JDialog {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(QuestionDialog.class.getName());
 
   /** Width of the Question pane (where question text is rendered). */
   private static final int QUESTION_COLUMN_WIDTH = 600;

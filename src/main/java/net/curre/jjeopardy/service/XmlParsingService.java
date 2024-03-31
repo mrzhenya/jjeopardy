@@ -46,7 +46,7 @@ import static net.curre.jjeopardy.util.XmlFileUtilities.*;
 public class XmlParsingService {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(XmlParsingService.class.getName());
 
   /**
    * Max value for the parse loops, it's not really used since every loop stops with/by an exception,

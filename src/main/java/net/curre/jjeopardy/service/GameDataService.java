@@ -16,7 +16,6 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Question;
@@ -60,7 +59,7 @@ public class GameDataService {
   private static final String BUNDLE_EXTENSION = ".jj";
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(GameDataService.class.getName());
 
   /** Name of the directory under settings where library games are stored. */
   private static final String GAME_DIRECTORY = "games";

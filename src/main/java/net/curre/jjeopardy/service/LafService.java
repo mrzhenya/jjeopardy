@@ -39,7 +39,7 @@ public class LafService {
   public static final LafThemeId DEFAULT_LAF_THEME_ID = LafThemeId.DEFAULT;
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(LafService.class.getName());
 
   /** List of available themes/skins. */
   private final ArrayList<LafTheme> supportedLafThemes;

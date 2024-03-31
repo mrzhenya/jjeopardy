@@ -38,7 +38,7 @@ import javax.swing.JTextField;
 class PlayerItem extends JPanel {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(PlayerItem.class.getName());
 
   /** Reference to the PlayersPane component. */
   private final PlayersPane playersPane;

@@ -16,7 +16,6 @@
 
 package net.curre.jjeopardy.images;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.ImageTask;
@@ -60,7 +59,7 @@ public class ImageUtilities {
   private static final int READ_TIMEOUT_MS = 10000;
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(ImageUtilities.class.getName());
 
   /** File that represents temp image directory. */
   private static final File TEMP_IMAGE_PATH = new File(getTempImageDirectory());

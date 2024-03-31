@@ -40,7 +40,7 @@ import java.awt.event.KeyListener;
 public class BonusQuestionAction extends AbstractAction implements KeyListener {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(BonusQuestionAction.class.getName());
 
   /** Reference to the parent Question dialog. */
   private final QuestionDialog questionDialog;

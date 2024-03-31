@@ -18,7 +18,6 @@ package net.curre.jjeopardy.ui.game;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Settings;
@@ -56,7 +55,7 @@ import java.awt.Font;
 public class GameWindow extends JFrame {
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(GameWindow.class.getName());
 
   /** Reference to the panel that contains player scores. */
   private PlayerScoresPanel playerScoresPanel;

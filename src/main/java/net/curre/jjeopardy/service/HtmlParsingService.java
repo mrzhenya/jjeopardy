@@ -16,7 +16,6 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Question;
@@ -48,7 +47,7 @@ public class HtmlParsingService {
   protected static final int MAX_DESCRIPTION_LENGTH = 250;
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(HtmlParsingService.class.getName());
 
   /** Base URL for the jeopardylabs.com site. */
   private static final String JLABS_BASE_URL = "https://jeopardylabs.com";

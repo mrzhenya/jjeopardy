@@ -56,7 +56,7 @@ public class SettingsService {
   private static final String SETTINGS_DIR_NAME = "JJeopardy";
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(SettingsService.class.getName());
 
   /** Reference to the settings object. */
   private final Settings settings;

@@ -39,7 +39,7 @@ public class LocaleService {
   public static final Locale DEFAULT_LOCALE = Locale.US;
 
   /** Private class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(LocaleService.class.getName());
 
   /** List of available locales in the application. */
   private final List<Locale> availableLocales;

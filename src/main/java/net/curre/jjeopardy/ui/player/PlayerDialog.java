@@ -18,7 +18,6 @@ package net.curre.jjeopardy.ui.player;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.event.ClosingWindowListener;
@@ -46,7 +45,7 @@ import java.util.List;
 public class PlayerDialog extends JDialog {
 
   /** Class logger. */
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(PlayerDialog.class.getName());
 
   /** Reference to the main Landing dialog. */
   private final LandingUi landingUi;
