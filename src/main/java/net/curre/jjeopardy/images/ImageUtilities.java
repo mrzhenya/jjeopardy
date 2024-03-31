@@ -32,7 +32,10 @@ import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import java.awt.Dimension;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -129,6 +132,59 @@ public class ImageUtilities {
       }
     }
     return new ImageIcon(imageFile.getAbsolutePath());
+  }
+
+  /**
+   * Updates the label's icon image. If no image is provided, image data is erased on the label.
+   * The image is scaled down appropriately to the passed max width/height while preserving the aspect ratio.
+   * @param label label on which the icon image is being updated or null
+   * @param imagePath image path (either relative path to a bundle image or a url); non null
+   * @param bundlePath absolute path to the game bundle or null
+   * @param maxWidth maximum image width
+   * @param maxHeight maximum image height
+   * @return true if the image was acquired successfully; false if otherwise
+   */
+  public static boolean updateLabelIconImage(
+      JLabel label, String imagePath, String bundlePath, int maxWidth, int maxHeight) {
+    ImageIcon imageIcon = null;
+    if (imagePath != null && imagePath.startsWith("http")) {
+      imageIcon = ImageUtilities.downloadTempImageResource(imagePath);
+    } else if (imagePath != null && bundlePath != null) {
+      imageIcon = new ImageIcon(bundlePath + File.separatorChar + imagePath);
+    }
+    if (imageIcon == null) {
+      label.setIcon(null);
+      return false;
+    } else {
+      int iconHeight = imageIcon.getIconHeight();
+      int iconWidth = imageIcon.getIconWidth();
+      // Resizing the image to the max width/height dimensions.
+      boolean portraitOrient = iconHeight > iconWidth;
+      if (portraitOrient) {
+        // Resize the height to the max height.
+        iconWidth = (int) (iconWidth / ((double) iconHeight / maxHeight));
+        iconHeight = maxHeight;
+        // If the resulted width is larger than the max width, resize again.
+        if (iconWidth > maxWidth) {
+          iconHeight = (int) (iconHeight / ((double) iconWidth / maxWidth));
+          iconWidth = maxWidth;
+        }
+      } else {
+        // Resize the width to the max width.
+        iconHeight = (int) (iconHeight / ((double) iconWidth / maxWidth));
+        iconWidth = maxWidth;
+        // If the resulted height is larger than the max height, resize again.
+        if (iconHeight > maxHeight) {
+          iconWidth = (int) (iconWidth / ((double) iconHeight / maxHeight));
+          iconHeight = maxHeight;
+        }
+      }
+      imageIcon.setImage(imageIcon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_FAST));
+      label.setIcon(imageIcon);
+      label.setPreferredSize(new Dimension(iconWidth, iconHeight));
+    }
+    label.repaint();
+    return true;
   }
 
   /**

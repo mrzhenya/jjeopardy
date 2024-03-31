@@ -18,7 +18,6 @@ package net.curre.jjeopardy.ui.dialog;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.event.BonusQuestionAction;
@@ -33,8 +32,8 @@ import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import java.awt.*;
-import java.io.File;
+import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.util.List;
 
 /**
@@ -128,15 +127,19 @@ public class QuestionPane extends JPanel {
    * @param isBonus true if this is a bonus question
    */
   public void showQuestion(Question question, boolean isBonus) {
+    String bundlePath = AppRegistry.getInstance().getGameDataService().getCurrentGameData().getBundlePath();
     this.questionLabel.setText(question.getQuestion());
     this.isBonusQuestionsRound = isBonus;
-    updateLabelIconImage(question.getQuestionImage(), this.questionImageLabel);
+    ImageUtilities.updateLabelIconImage(
+        this.questionImageLabel, question.getQuestionImage(), bundlePath, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
     if (isBonus) {
-      updateLabelIconImage(question.getAnswerImage(), this.bonusAnswerImageLabel);
+      ImageUtilities.updateLabelIconImage(
+          this.bonusAnswerImageLabel, question.getAnswerImage(), bundlePath, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
       this.bonusAnswerLabel.setText(question.getAnswer());
       this.answerYesNoButtonsPanel.setVisible(false);
     } else {
-      updateLabelIconImage(question.getAnswerImage(), this.answerImageLabel);
+      ImageUtilities.updateLabelIconImage(
+          this.answerImageLabel, question.getAnswerImage(), bundlePath, MAX_IMAGE_WIDTH, MAX_IMAGE_HEIGHT);
       this.answerLabel.setText(question.getAnswer());
       this.answerYesNoButtonsPanel.setVisible(true);
     }
@@ -389,42 +392,6 @@ public class QuestionPane extends JPanel {
     containerPanel.add(panel);
 
     return containerPanel;
-  }
-
-  /**
-   * Updates labels icon image. If no image is provided, image data is erased on the label.
-   * @param imagePath image path
-   * @param label label on which the icon image is being updated
-   */
-  private void updateLabelIconImage(String imagePath, JLabel label) {
-    ImageIcon imageIcon = null;
-    GameData gameData = AppRegistry.getInstance().getGameDataService().getCurrentGameData();
-    if (imagePath != null && imagePath.startsWith("http")) {
-      imageIcon = ImageUtilities.downloadTempImageResource(imagePath);
-    } else if (imagePath != null && gameData.getBundlePath() != null) {
-      imageIcon = new ImageIcon(gameData.getBundlePath() + File.separatorChar + imagePath);
-    }
-    if (imageIcon == null) {
-      label.setIcon(null);
-      label.setPreferredSize(new Dimension(0, 0));
-      label.setSize(new Dimension(0, 0));
-    } else {
-      int iconHeight = imageIcon.getIconHeight();
-      int iconWidth = imageIcon.getIconWidth();
-      // Resizing the image to the max width/height dimensions.
-      boolean portraitOrient = iconHeight > iconWidth;
-      if (portraitOrient) {
-        iconWidth = (int) (iconWidth / ((double) iconHeight / MAX_IMAGE_HEIGHT));
-        iconHeight = MAX_IMAGE_HEIGHT;
-      } else {
-        iconHeight = (int) (iconHeight / ((double) iconWidth / MAX_IMAGE_WIDTH));
-        iconWidth = MAX_IMAGE_WIDTH;
-      }
-      imageIcon.setImage(imageIcon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_FAST));
-      label.setIcon(imageIcon);
-      label.setPreferredSize(new Dimension(iconWidth, iconHeight));
-    }
-    label.repaint();
   }
 
   /**
