@@ -19,7 +19,7 @@ package net.curre.jjeopardy.ui.game;
 import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Question;
-import net.curre.jjeopardy.event.GameTableListener;
+import net.curre.jjeopardy.event.GameTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.ui.dialog.QuestionDialog;
 import net.curre.jjeopardy.util.JjDefaults;
@@ -34,6 +34,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * Represents the Game table.
@@ -86,11 +88,18 @@ public class GameTable extends JTable {
     header.setPreferredSize(
         new Dimension(this.getColumnModel().getTotalColumnWidth(), JjDefaults.GAME_TABLE_HEADER_HEIGHT));
 
-    // Adding resize and mouse-click listener.
-    final GameTableListener gtListener = new GameTableListener(this);
-    this.addComponentListener(gtListener);
-    this.addMouseListener(gtListener);
-    
+    // Adding the table mouse listener to handle mouse clicks and mouse motion.
+    final GameTableMouseListener mouseListener = new GameTableMouseListener(this);
+    this.addMouseMotionListener(mouseListener);
+    this.addMouseListener(mouseListener);
+
+    // Adding table component listener to handle component resize actions.
+    this.addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        GameTable.this.refreshAndResizeTable();
+      }
+    });
+
     // Ignore the tooltips.
     ToolTipManager.sharedInstance().unregisterComponent(this);
     ToolTipManager.sharedInstance().unregisterComponent(this.getTableHeader());

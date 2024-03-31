@@ -24,7 +24,6 @@ import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.event.ClosingWindowListener;
-import net.curre.jjeopardy.event.GameTableMouseMotionListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
@@ -177,9 +176,6 @@ public class GameWindow extends JFrame {
     tablePanel.setLayout(new BorderLayout());
 
     // Game table with most of the game data.
-    GameTableMouseMotionListener mouseListener = new GameTableMouseMotionListener(this.gameTable);
-    this.gameTable.addMouseMotionListener(mouseListener);
-    this.gameTable.addMouseListener(mouseListener);
     this.gameTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     this.gameTable.setColumnSelectionAllowed(false);
     this.gameTable.setRowSelectionAllowed(false);
