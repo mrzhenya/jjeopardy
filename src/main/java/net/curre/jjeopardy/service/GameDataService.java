@@ -469,7 +469,11 @@ public class GameDataService {
     File gameFile = new File(fileName);
     if (gameFile.isDirectory()) {
       // Try to parse a game-native bundle directory.
-      for (File bundleFile : Objects.requireNonNull(gameFile.listFiles())) {
+      File[] files = Objects.requireNonNull(gameFile.listFiles());
+      if (files.length == 0) {
+        logger.warn("No files are found in bundle directory: " + fileName);
+      }
+      for (File bundleFile : files) {
         if (StringUtils.endsWithIgnoreCase(bundleFile.getName(), ".xml")) {
           // It's assumed there is only one xml file in a game bundle.
           return this.xmlParser.parseXmlGameData(bundleFile.getAbsolutePath(), gameFile.getAbsolutePath());
