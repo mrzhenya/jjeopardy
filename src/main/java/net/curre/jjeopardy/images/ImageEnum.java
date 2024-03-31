@@ -60,6 +60,18 @@ public enum ImageEnum {
   /** Large error icon. */
   ERROR_64("error-64.png"),
 
+  /** Trash edit icon. */
+  TRASH_24("trash-24.png"),
+
+  /** Trash edit hover icon. */
+  TRASH_24_HOVER("trash-24-hover.png"),
+
+  /** Small edit icon. */
+  EDIT_24("edit-24.png"),
+
+  /** Small edit hover icon. */
+  EDIT_24_HOVER("edit-24-hover.png"),
+
   /** Large blue question icon. */
   QUESTION_BLUE_64("question-blue-64.png"),
 
@@ -127,7 +139,10 @@ public enum ImageEnum {
   IMAGE_FAILURE_64("image-failure-64.png"),
 
   /** Image download failure small icon. */
-  IMAGE_FAILURE_24("image-failure-24.png");
+  IMAGE_FAILURE_24("image-failure-24.png"),
+
+  /** Vertical line spacer image icon. */
+  VERTICAL_SPACER_24("vertical_spacer-24.png");
 
   /** Icon's filename. */
   private final String fileName;
