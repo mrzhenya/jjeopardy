@@ -25,7 +25,6 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Locale;
 
-import static net.curre.jjeopardy.service.LocaleService.DEFAULT_LOCALE;
 import static org.junit.Assert.*;
 
 /**
@@ -45,7 +44,6 @@ public class FileParsingResultTest {
   @Before
   public void init() {
     this.testResult = new FileParsingResult(TEST_FILE_NAME);
-    Locale.setDefault(DEFAULT_LOCALE);
   }
 
   /** Tests initialization of the default object state. */
@@ -78,7 +76,7 @@ public class FileParsingResultTest {
     List<Locale> locales = localeService.getAvailableLocales();
     assertNotNull("List of locales is null", locales);
     for (Locale locale : locales) {
-      Locale.setDefault(locale);
+      LocaleService.setCurrentLocale(locale);
       assertResultMessagesSet();
     }
   }
@@ -120,7 +118,7 @@ public class FileParsingResultTest {
    * Asserts all Message enums are valid (have corresponding properties for the current locale).
    */
   private static void assertResultMessagesSet() {
-    Locale locale = Locale.getDefault();
+    Locale locale = LocaleService.getCurrentLocale();
     for (FileParsingResult.Message message : FileParsingResult.Message.values()) {
       String propName = message.getPropertyName();
       assertFalse("Property name for " + message + " should not be blank", StringUtils.isBlank(propName));

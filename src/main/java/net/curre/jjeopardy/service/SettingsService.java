@@ -16,7 +16,6 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.Utilities;
@@ -24,8 +23,11 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
-import java.util.Locale;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import static net.curre.jjeopardy.service.LafService.DEFAULT_LAF_THEME_ID;
 
@@ -209,9 +211,7 @@ public class SettingsService {
       settings.setLafThemeId(DEFAULT_LAF_THEME_ID);
     }
     if (settings.getLocaleId() == null) {
-      LocaleService localeService = AppRegistry.getInstance().getLocaleService();
-      Locale locale = localeService.findLocaleById(Locale.getDefault().toString());
-      settings.setLocaleId(locale.toString());
+      settings.setLocaleId(LocaleService.getCurrentLocale().toString());
     }
     if (settings.getLastCurrentDirectory() == null) {
       settings.setLastCurrentDirectory(System.getProperty("user.home"));
