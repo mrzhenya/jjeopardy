@@ -16,17 +16,19 @@
 
 package net.curre.jjeopardy.ui.edit;
 
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
+import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.Dimension;
 
 /**
  * Represents a table header cell where game category name
@@ -39,6 +41,9 @@ public class EditHeaderCell extends JPanel {
   /** Background color to use for print. */
   private static final Color PRINT_BACKGROUND_COLOR = new Color(210, 233, 248);
 
+  /** An invisible text pane to help determining the text areas sizes (not thread safe!). */
+  private static final JTextPane HELPER_TEXT_PANE = UiService.createDefaultTextPane();
+
   /** Text area where category name is rendered. */
   private final JTextPane textPane;
 
@@ -47,16 +52,21 @@ public class EditHeaderCell extends JPanel {
    * @param name header cell text (category name)
    */
   public EditHeaderCell(String name) {
-    this.setLayout(new GridBagLayout());
+    // Layout helps to vertically center the text content.
+    this.setLayout(new TableLayout(new double[][] {
+        {TableLayout.FILL}, // columns
+        {TableLayout.FILL}})); // rows
 
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.textPane = UiService.createDefaultTextPane();
     this.textPane.setFont(lafTheme.getEditTableHeaderFont());
+    HELPER_TEXT_PANE.setFont(lafTheme.getEditTableHeaderFont());
     if (!StringUtils.isBlank(name)) {
       this.textPane.setText(name.toUpperCase());
     }
 
-    this.add(this.textPane, new GridBagConstraints());
+    this.add(this.textPane, new TableLayoutConstraints(
+        0, 0, 0, 0, TableLayout.CENTER, TableLayout.CENTER));
     this.activateViewStyle();
   }
 
@@ -68,8 +78,9 @@ public class EditHeaderCell extends JPanel {
    * @return preferred height of this cell
    */
   protected int getPreferredCellHeight(int columnWidth) {
-    return UiService.getHeightOfTextArea(
-        this, this.textPane.getFont(), this.textPane.getText(), columnWidth, 2);
+    HELPER_TEXT_PANE.setSize(new Dimension(columnWidth, 500));
+    HELPER_TEXT_PANE.setText(this.textPane.getText());
+    return Math.max(HELPER_TEXT_PANE.getPreferredSize().height, JjDefaults.GAME_TABLE_HEADER_HEIGHT);
   }
 
   /** Activates the cell's view style/presentation. */

@@ -65,7 +65,7 @@ public class EditCell extends JPanel {
       BorderFactory.createLineBorder(Color.BLACK, BORDER_WIDTH));
 
   /** An invisible text pane to help determining the text areas sizes (not thread safe!). */
-  private static final JTextPane TEST_TEXT_PANE = UiService.createDefaultTextPane();
+  private static final JTextPane HELPER_TEXT_PANE = UiService.createDefaultTextPane();
 
   /** The question to use for this cell. */
   private final Question question;
@@ -371,9 +371,9 @@ public class EditCell extends JPanel {
    * @return preferred height of the text pane for the given text
    */
   private static int getPreferredHeightForText(String text, Font font, int width) {
-    TEST_TEXT_PANE.setSize(width, 500);
-    TEST_TEXT_PANE.setText(text);
-    TEST_TEXT_PANE.setFont(font);
-    return TEST_TEXT_PANE.getPreferredSize().height  + CONTENT_SPACING;
+    HELPER_TEXT_PANE.setSize(width, 500);
+    HELPER_TEXT_PANE.setText(text);
+    HELPER_TEXT_PANE.setFont(font);
+    return HELPER_TEXT_PANE.getPreferredSize().height  + CONTENT_SPACING;
   }
 }

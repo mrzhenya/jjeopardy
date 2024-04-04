@@ -32,9 +32,6 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.Component;
-import java.awt.Font;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Service responsible for common UI tasks like opening dialogs.
@@ -164,35 +161,5 @@ public class UiService {
     doc.setParagraphAttributes(0, doc.getLength(), center, false);
 
     return textPane;
-  }
-
-  /**
-   * Determines the height of the text area given a string and a width bound.
-   * @param parent component to obtain font metrics from
-   * @param font font that's being used
-   * @param value the string to measure
-   * @param widthBound width bound (in px)
-   * @param addNewLine add number of new lines
-   * @return recommended height for the text area the string is going to be rendered in
-   */
-  public static int getHeightOfTextArea(Component parent,  Font font, String value, int widthBound, int addNewLine) {
-    int stringWidth = parent.getFontMetrics(font).stringWidth(value);
-    int newLineChars = countNewLineChars(value);
-    int lineCount = ((stringWidth / widthBound) + newLineChars + addNewLine) | 1;
-    return lineCount * parent.getFontMetrics(font).getHeight();
-  }
-
-  /**
-   * Counts new line characters in a given string.
-   * @param text string to review
-   * @return the number of new line characters
-   */
-  public static int countNewLineChars(String text) {
-    Matcher m = Pattern.compile("\r\n|\r|\n").matcher(text);
-    int count = 0;
-    while (m.find()) {
-      count++;
-    }
-    return count;
   }
 }

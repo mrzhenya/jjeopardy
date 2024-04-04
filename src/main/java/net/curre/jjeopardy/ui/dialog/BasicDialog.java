@@ -30,6 +30,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.WindowConstants;
 import java.awt.Color;
 import java.awt.Component;
@@ -59,6 +60,12 @@ public abstract class BasicDialog extends JDialog {
 
   /** Max height for the main content text area. */
   private static final int MAX_TEXT_AREA_HEIGHT = 540;
+
+  /** An invisible text pane to help determining the text areas sizes (not thread safe!). */
+  private static final JTextPane HELPER_TEXT_PANE = UiService.createDefaultTextPane();
+
+  /** Bottom padding for the main text area. */
+  private static final int TEXT_BOTTOM_PADDING = 30;
 
   /** Ctor. */
   public BasicDialog() {
@@ -182,8 +189,13 @@ public abstract class BasicDialog extends JDialog {
     JTextArea textArea = createDefaultTextArea(font);
     textArea.setText(message);
 
+    HELPER_TEXT_PANE.setFont(font);
+    HELPER_TEXT_PANE.setSize(new Dimension(TEXT_COLUMN_WIDTH, 1000));
+    HELPER_TEXT_PANE.setText(message);
+    int textAreaHeight = HELPER_TEXT_PANE.getPreferredSize().height + TEXT_BOTTOM_PADDING;
+
     // Determine the approximate minimum height of the text pane.
-    int textAreaHeight = UiService.getHeightOfTextArea(this, font, message, TEXT_COLUMN_WIDTH, 3);
+//    int textAreaHeight = UiService.getHeightOfTextArea(this, font, message, TEXT_COLUMN_WIDTH, 3);
     if (textAreaHeight > MAX_TEXT_AREA_HEIGHT) {
       textAreaHeight = MAX_TEXT_AREA_HEIGHT;
     }
