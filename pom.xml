@@ -171,7 +171,11 @@
                   <icon>src/main/bundle/JJeopardy.ico</icon>
                   <jre>
                     <minVersion>1.8.0</minVersion>
-                    <jdkPreference>preferJre</jdkPreference>
+                    <requiresJdk>false</requiresJdk>
+                    <opts>
+                      <opt>-Dfile.encoding="UTF-8"</opt>
+                      <opt>-Dsun.jnu.encoding="UTF-8"</opt>
+                    </opts>
                   </jre>
                   <singleInstance>
                     <mutexName>${project.artifactId}</mutexName>
