@@ -16,7 +16,6 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.Utilities;
@@ -24,8 +23,11 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.*;
-import java.util.Locale;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import static net.curre.jjeopardy.service.LafService.DEFAULT_LAF_THEME_ID;
 
@@ -41,7 +43,7 @@ import static net.curre.jjeopardy.service.LafService.DEFAULT_LAF_THEME_ID;
  * Settings file is stored in a platform specific directory,
  * <ul>
  *   <li>on Mac, it's - 'UserHome' / Library / Application Support / JJeopardy /</li>
- *   <li>on Windows, it's - 'UserHome' / AppData / Local / Temp / JJeopardy /</li>
+ *   <li>on Windows, it's - 'UserHome' / AppData / Local / JJeopardy /</li>
  *   <li>on others, it's - 'UserHome' / temp / JJeopardy /</li>
  * </ul>
  *
@@ -148,8 +150,7 @@ public class SettingsService {
         break;
       case WINDOWS:
         path.append(File.separatorChar).append("AppData").
-            append(File.separatorChar).append("Local").
-            append(File.separatorChar).append("Temp");
+            append(File.separatorChar).append("Local");
         break;
       default:
         path.append(File.separatorChar).append("temp");
@@ -209,9 +210,7 @@ public class SettingsService {
       settings.setLafThemeId(DEFAULT_LAF_THEME_ID);
     }
     if (settings.getLocaleId() == null) {
-      LocaleService localeService = AppRegistry.getInstance().getLocaleService();
-      Locale locale = localeService.findLocaleById(Locale.getDefault().toString());
-      settings.setLocaleId(locale.toString());
+      settings.setLocaleId(LocaleService.getCurrentLocale().toString());
     }
     if (settings.getLastCurrentDirectory() == null) {
       settings.setLastCurrentDirectory(System.getProperty("user.home"));

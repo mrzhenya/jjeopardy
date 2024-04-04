@@ -16,7 +16,6 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.App;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -41,6 +40,9 @@ public class LocaleService {
   /** Private class logger. */
   private static final Logger logger = LogManager.getLogger(LocaleService.class.getName());
 
+  /** Currently selected locale for the JJeopardy app. */
+  private static Locale currentLocale = DEFAULT_LOCALE;
+
   /** List of available locales in the application. */
   private final List<Locale> availableLocales;
 
@@ -55,7 +57,6 @@ public class LocaleService {
         this.availableLocales.add(new Locale(localeParts[0], localeParts[1]));
       }
     }
-    Locale.setDefault(DEFAULT_LOCALE);
   }
 
   /**
@@ -64,6 +65,14 @@ public class LocaleService {
    */
   public List<Locale> getAvailableLocales() {
     return this.availableLocales;
+  }
+
+  /**
+   * Gets the currently selected locale for the JJeopardy app.
+   * @return locale to use in the app
+   */
+  public static Locale getCurrentLocale() {
+    return currentLocale;
   }
 
   /**
@@ -77,10 +86,9 @@ public class LocaleService {
    * @return string resource for the given key
    */
   public static String getString(String key, String... keyArgs) {
-    Locale locale = Locale.getDefault();
     String bundleName = "messages";
-    if (!locale.equals(DEFAULT_LOCALE)) {
-      bundleName += "_" + locale;
+    if (!currentLocale.equals(DEFAULT_LOCALE)) {
+      bundleName += "_" + currentLocale;
     }
     String message = ResourceBundle.getBundle(bundleName).getString(key);
     if (keyArgs != null) {
@@ -99,15 +107,14 @@ public class LocaleService {
   }
 
   /**
-   * Setter for the current locale.
-   * @param localeId Identifier for the locale (Locale.toString())
-   * @param showDialog true if show restart info dialog on change
+   * Setter for the current locale used by the application.
+   * @param localeId identifier for the locale (Locale.toString())
+   * @param showDialog true if locale changed; false if otherwise
    */
   public synchronized void setCurrentLocale(String localeId, boolean showDialog) {
     try {
-      Locale prevLocale = Locale.getDefault();
-      Locale locale = findLocaleById(localeId);
-      Locale.setDefault(locale);
+      Locale prevLocale = LocaleService.getCurrentLocale();
+      currentLocale =  findLocaleById(localeId);
 
       if (!localeId.equals(prevLocale.toString()) && showDialog) {
         AppRegistry.getInstance().getUiService().showRestartGameDialog();
@@ -133,5 +140,13 @@ public class LocaleService {
     }
     logger.warn("Locale  \"" + localeId + "\" is not found!");
     return DEFAULT_LOCALE;
+  }
+
+  /**
+   * Sets the current locale used by the application.
+   * @param locale locale to set as the current locale
+   */
+  protected static void setCurrentLocale(Locale locale) {
+    currentLocale = locale;
   }
 }

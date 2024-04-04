@@ -206,23 +206,18 @@ public class GameDataService {
   public static void copyDefaultGamesToLibraryIfNeeded() {
     Path gamesDir = Paths.get(getGameLibraryDirectoryPath());
     if (Files.exists(gamesDir)) {
+      logger.info("It appears that the library games were copied already to: " + gamesDir);
       // If the games directory exists, assume the files have been copied there already.
       return;
     }
+    logger.info("Copying the library games to: " + gamesDir);
     try {
       gamesDir.toFile().mkdir();
-      List<File> gameBundles = DefaultGames.getDefaultGameBundles();
-      for (File originalBundle : gameBundles) {
-        File destDir = new File(gamesDir.toString() + File.separatorChar + originalBundle.getName());
-        destDir.mkdir();
-        for (File file : Objects.requireNonNull(originalBundle.listFiles())) {
-          File destFile = new File(destDir.toString() + File.separatorChar + file.getName());
-          FileUtils.copyFile(file, destFile);
-        }
-      }
+      DefaultGames.copyDefaultLibraryGames(gamesDir);
     } catch (Exception e) {
-      logger.log(Level.WARN, "Unable to copy default game files", e);
+      logger.log(Level.ERROR, "Unable to copy default game files", e);
     }
+    logger.info("Finished copying the library games");
   }
 
   /**

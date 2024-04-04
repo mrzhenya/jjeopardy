@@ -23,13 +23,18 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Just a handy runner to execute bits of test code "by hand".
@@ -41,19 +46,74 @@ public class TestRunner {
 
   public static void main(final String[] args) {
 
-    testRegExStuff();
+    try {
+      testUnzipping();
+
+//    testRegExStuff();
 
 //    testProgressDialog();
 
 /*
-    try {
       testCreatingPropertiesFile();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
 */
 
 //    printAvailableFonts();
+
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static void testUnzipping() throws Exception {
+    String fileToBeExtracted1 = "net/curre/jjeopardy/games/halloween-fun.jj/halloween-fun.xml";
+    String out1 = "q_halloween-fun.xml";
+    String fileToBeExtracted2 = "net/curre/jjeopardy/games/the-big-great-wolrd.jj/the-big-great-wolrd.xml";
+    String out2 = "q_the-big-great-wolrd.xml";
+    String zipPackage = "target/jjeopardy-0.3.0.jar";
+    FileInputStream fileInputStream = new FileInputStream(zipPackage);
+    BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream );
+    ZipInputStream zipInputStream = new ZipInputStream(bufferedInputStream);
+    ZipEntry ze = null;
+    while ((ze = zipInputStream.getNextEntry()) != null) {
+      if (ze.getName().equals(fileToBeExtracted1)) {
+        extractOneFile(zipInputStream, out1);
+      } else if (ze.getName().equals(fileToBeExtracted2)) {
+        extractOneFile(zipInputStream, out2);
+      }
+    }
+    zipInputStream.close();
+  }
+
+  private static void extractOneFile(ZipInputStream zin, String outName) throws IOException {
+    OutputStream out = new FileOutputStream(outName);
+    byte[] buffer = new byte[9000];
+    int len;
+    while ((len = zin.read(buffer)) != -1) {
+      out.write(buffer, 0, len);
+    }
+    out.close();
+  }
+
+  public static void testUnzipping2() throws Exception {
+    String fileToBeExtracted = "net/curre/jjeopardy/games/halloween-fun.jj/halloween-fun.xml";
+    String zipPackage = "target/jjeopardy-0.3.0.jar";
+    OutputStream out = new FileOutputStream("fileToBeExtracted.xml");
+    FileInputStream fileInputStream = new FileInputStream(zipPackage);
+    BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream );
+    ZipInputStream zin = new ZipInputStream(bufferedInputStream);
+    ZipEntry ze = null;
+    while ((ze = zin.getNextEntry()) != null) {
+      if (ze.getName().equals(fileToBeExtracted)) {
+        byte[] buffer = new byte[9000];
+        int len;
+        while ((len = zin.read(buffer)) != -1) {
+          out.write(buffer, 0, len);
+        }
+        out.close();
+        break;
+      }
+    }
+    zin.close();
   }
 
   public static void testRegExStuff() {

@@ -38,20 +38,6 @@ public class LocaleServiceTest {
   public void init() {
   }
 
-  /** Tests initialization of default locale service state. */
-  @Test
-  public void testDefaultLocaleService() {
-    LocaleService localeService = new LocaleService();
-    List<Locale> locales = localeService.getAvailableLocales();
-    assertNotNull("List of locales is null", locales);
-    assertEquals("Wrong number of supported locales", 2, locales.size());
-    assertEquals("Wrong first locale", LocaleService.DEFAULT_LOCALE, locales.get(0));
-
-    assertEquals("Wrong default locale", "en_US", LocaleService.DEFAULT_LOCALE.toString());
-    Locale locale = Locale.getDefault();
-    assertEquals("Wrong default locale", LocaleService.DEFAULT_LOCALE, locale);
-  }
-
   /** Tests setCurrentLocale. */
   @Test
   public void testSetCurrentLocale() {
@@ -62,8 +48,7 @@ public class LocaleServiceTest {
     assertEquals("Wrong first locale", LocaleService.DEFAULT_LOCALE, locales.get(0));
 
     localeService.setCurrentLocale(locales.get(1).toString(), false);
-    Locale locale = Locale.getDefault();
-    assertEquals("Wrong locale", locales.get(1), locale);
+    assertEquals("Wrong locale", locales.get(1), LocaleService.getCurrentLocale());
   }
 
   /** Tests findLocaleById. */
