@@ -325,6 +325,7 @@ public class GameDataService {
       File destFile = new File(libGamesDir.toString() + File.separatorChar + originalFile.getName());
       if (!destFile.exists()) {
         FileUtils.copyFile(originalFile, destFile);
+        gameFilePath = destFile.getAbsolutePath();
         isGameAdded = true;
       }
     } else {
