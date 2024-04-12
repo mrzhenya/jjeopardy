@@ -33,6 +33,7 @@ import net.curre.jjeopardy.util.JjDefaults;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.validation.constraints.NotNull;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -56,7 +57,7 @@ public class LibraryGameItem extends JPanel {
    * Creates a new game library item. Assumes the game data is valid.
    * @param gameData valid game data
    */
-  public LibraryGameItem(GameData gameData) {
+  public LibraryGameItem(@NotNull GameData gameData) {
     this.gameData = gameData;
     this.lafService = AppRegistry.getInstance().getLafService();
     LafTheme lafTheme = this.lafService.getCurrentLafTheme();

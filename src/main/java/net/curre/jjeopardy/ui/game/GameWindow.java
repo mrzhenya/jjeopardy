@@ -40,6 +40,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.SoftBevelBorder;
+import javax.validation.constraints.NotNull;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -204,7 +205,7 @@ public class GameWindow extends JFrame {
    * Initializes the panel with the game buttons (bonus questions, quit, etc.).
    * @return player buttons panel
    */
-  private JPanel initPlayerButtonsPanel() {
+  private @NotNull JPanel initPlayerButtonsPanel() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
 
     JPanel buttonsPanel = new JPanel();

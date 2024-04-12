@@ -16,7 +16,6 @@
 
 package net.curre.jjeopardy.event;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.Registry;
@@ -27,7 +26,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.validation.constraints.NotNull;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -67,7 +67,7 @@ public class BonusQuestionAction extends AbstractAction implements KeyListener {
   public void keyTyped(KeyEvent e) {}
 
   @Override
-  public void keyPressed(KeyEvent e) {
+  public void keyPressed(@NotNull KeyEvent e) {
     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
       this.performAction();
     }

@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.table.TableCellRenderer;
+import javax.validation.constraints.NotNull;
 import java.awt.Component;
 import java.awt.Dimension;
 
@@ -74,7 +75,7 @@ public class GameTableHeaderRenderer extends JPanel implements TableCellRenderer
   /** {@inheritDoc} */
   @Override
   public Component getTableCellRendererComponent(
-    JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+      @NotNull JTable table, @NotNull Object value, boolean isSelected, boolean hasFocus, int row, int column) {
     String text = value.toString().toUpperCase();
 
     int textWidth = table.getColumnModel().getColumn(column).getWidth() - 2 * CELL_PADDING;

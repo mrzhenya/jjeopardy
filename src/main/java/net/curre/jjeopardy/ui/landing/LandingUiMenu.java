@@ -35,6 +35,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
+import javax.validation.constraints.NotNull;
 import java.awt.event.KeyEvent;
 import java.util.Locale;
 
@@ -81,7 +82,7 @@ public class LandingUiMenu extends JMenuBar {
    * Creates the LAF Themes settings menu group.
    * @return themes menu
    */
-  private JMenu createThemeMenu() {
+  private @NotNull JMenu createThemeMenu() {
     JMenu themeMenu = new JMenu(LocaleService.getString("jj.landing.menu.item.themes"));
     ButtonGroup themesGroup = new ButtonGroup();
     LafService lafService = AppRegistry.getInstance().getLafService();
@@ -114,7 +115,7 @@ public class LandingUiMenu extends JMenuBar {
    * Creates the Sound settings menu group.
    * @return sounds menu
    */
-  private JMenu createSoundMenu() {
+  private @NotNull JMenu createSoundMenu() {
     SettingsService settingsService = AppRegistry.getInstance().getSettingsService();
     Settings settings = settingsService.getSettings();
     JMenu soundMenu = new JMenu(LocaleService.getString("jj.landing.menu.item.sound"));
@@ -167,7 +168,7 @@ public class LandingUiMenu extends JMenuBar {
    * Creates the Locale settings menu group.
    * @return locale menu
    */
-  private JMenu createLocaleMenu() {
+  private @NotNull JMenu createLocaleMenu() {
     JMenu localeMenu = new JMenu(LocaleService.getString("jj.landing.menu.item.locales"));
     ButtonGroup localesGroup = new ButtonGroup();
     LocaleService localeService = AppRegistry.getInstance().getLocaleService();
@@ -192,7 +193,7 @@ public class LandingUiMenu extends JMenuBar {
    * Creates the Print answers menu item.
    * @return print answers menu item
    */
-  private JMenuItem createPrintItem() {
+  private @NotNull JMenuItem createPrintItem() {
     final JMenuItem printItem = new JMenuItem(LocaleService.getString("jj.landing.menu.item.print"));
     printItem.setMnemonic(KeyEvent.VK_P);
     printItem.addActionListener(evt -> printAnswers());
@@ -204,7 +205,7 @@ public class LandingUiMenu extends JMenuBar {
    * Creates the About menu item.
    * @return about menu item
    */
-  private JMenuItem createAboutItem() {
+  private @NotNull JMenuItem createAboutItem() {
     final JMenuItem aboutItem = new JMenuItem(LocaleService.getString("jj.landing.menu.item.about"));
     aboutItem.setMnemonic(KeyEvent.VK_A);
     aboutItem.addActionListener(evt -> AppRegistry.getInstance().getUiService().showInfoDialog(
@@ -218,7 +219,7 @@ public class LandingUiMenu extends JMenuBar {
    * Creates the Exit menu item.
    * @return Exit menu item
    */
-  private JMenuItem createExitItem() {
+  private @NotNull JMenuItem createExitItem() {
     final JMenuItem exitItem = new JMenuItem(LocaleService.getString("jj.landing.menu.item.exit"));
     exitItem.setMnemonic(KeyEvent.VK_Q);
     exitItem.addActionListener(evt -> this.landingUi.quitApp());

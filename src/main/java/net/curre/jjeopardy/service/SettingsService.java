@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -141,7 +142,7 @@ public class SettingsService {
    * All custom directories in the path that don't exist, will be created.
    * @return absolute path to the game settings directory
    */
-  public static String getVerifiedSettingsDirectoryPath() {
+  public static @NotNull String getVerifiedSettingsDirectoryPath() {
     StringBuilder path = new StringBuilder(System.getProperties().getProperty("user.home"));
     switch (Utilities.getPlatformType()) {
       case MAC_OS:
@@ -190,7 +191,7 @@ public class SettingsService {
    * Creates a directory if it doesn't exist (only the last one in the provided path).
    * @param path Path to the directory
    */
-  private static void createDirIfDoesntExist(StringBuilder path) {
+  private static void createDirIfDoesntExist(@NotNull StringBuilder path) {
     File dir = new File(path.toString());
     if (!dir.exists()) {
       if (!dir.mkdir()) {
@@ -205,7 +206,7 @@ public class SettingsService {
    * serialized settings object.
    * @param settings settings object to verify
    */
-  private static void verifySettings(Settings settings) {
+  private static void verifySettings(@NotNull Settings settings) {
     if (settings.getLafThemeId() == null) {
       settings.setLafThemeId(DEFAULT_LAF_THEME_ID);
     }

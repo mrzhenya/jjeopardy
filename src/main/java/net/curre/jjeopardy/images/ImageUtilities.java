@@ -29,11 +29,13 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.validation.constraints.NotNull;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.io.File;
@@ -76,7 +78,7 @@ public class ImageUtilities {
    * Gets the path to the temp image directory.
    * @return temp image directory path
    */
-  public static String getTempImageDirectory() {
+  public static @NotNull String getTempImageDirectory() {
     return SettingsService.getVerifiedSettingsDirectoryPath() + File.separatorChar + "images";
   }
 
@@ -88,7 +90,8 @@ public class ImageUtilities {
    * @param progressDialog progress dialog
    * @return list of failed image downloads (image urls)
    */
-  public static List<String> downloadImagesAndUpdatePaths(GameData gameData, ProgressDialog progressDialog) {
+  public static @NotNull List<String> downloadImagesAndUpdatePaths(
+      @NotNull GameData gameData, ProgressDialog progressDialog) {
     List<ImageTask> imageTasks = new ArrayList<>();
 
     // Get the image URLs from the regular questions.
@@ -123,7 +126,7 @@ public class ImageUtilities {
    * @param imageUrl image URL
    * @return image icon initialized with the downloaded image or null if unable to download the file
    */
-  public static ImageIcon downloadTempImageResource(String imageUrl) {
+  public static @Nullable ImageIcon downloadTempImageResource(String imageUrl) {
     File imageFile = getImageTempFilePathFromUrl(imageUrl);
     if (!imageFile.exists()) {
       if (!downloadImage(imageUrl, imageFile)) {
@@ -139,7 +142,7 @@ public class ImageUtilities {
    * for which the files have been copied.
    * @param gameData game data to use
    */
-  public static void copyImageFilesToGameBundle(GameData gameData) {
+  public static void copyImageFilesToGameBundle(@NotNull GameData gameData) {
     String bundlePath = gameData.getBundlePath();
     if (bundlePath == null) {
       return;
@@ -237,7 +240,7 @@ public class ImageUtilities {
    * @param filename filename to convert
    * @return a MD5 hash string or the same string if encoding error is encountered
    */
-  protected static String createHashFilename(String filename) {
+  protected static String createHashFilename(@NotNull String filename) {
     String hashString;
     try {
       MessageDigest md = MessageDigest.getInstance("MD5");
@@ -262,7 +265,7 @@ public class ImageUtilities {
    * @param imageUrl image URL
    * @return temp image file path
    */
-  protected static File getImageTempFilePathFromUrl(String imageUrl) {
+  protected static @NotNull File getImageTempFilePathFromUrl(String imageUrl) {
     String imageFilename = FilenameUtils.getName(imageUrl);
     String hashFilename = createHashFilename(imageFilename);
     return new File(TEMP_IMAGE_PATH.getAbsolutePath() + File.separatorChar + hashFilename);
@@ -273,7 +276,7 @@ public class ImageUtilities {
    * @param file image file to determine extension of
    * @return image file extension ('jpg', 'png', etc.)
    */
-  protected static String getImageExtension(File file) {
+  protected static @Nullable String getImageExtension(File file) {
     try {
       // First, try reading it from the file name.
       String imageExt = FilenameUtils.getExtension(file.getName());
@@ -309,8 +312,8 @@ public class ImageUtilities {
    * @param progressDialog reference to the progress dialog
    * @return list failed downloads (image urls)
    */
-  private static List<String> downloadImagesAndUpdateGameQuestions(
-      GameData gameData, List<ImageTask> imageTasks, ProgressDialog progressDialog) {
+  private static @NotNull List<String> downloadImagesAndUpdateGameQuestions(
+      GameData gameData, @NotNull List<ImageTask> imageTasks, ProgressDialog progressDialog) {
     List<String> failedUrls = new ArrayList<>();
     int progressIncrement = imageTasks.isEmpty() ? 100 : ProgressDialog.FULL_PROGRESS / imageTasks.size();
     // Now, download images to the image bundle folder.

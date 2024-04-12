@@ -34,6 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.border.Border;
+import javax.validation.constraints.NotNull;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -380,7 +381,7 @@ public class EditCell extends JPanel {
    * @param width preferred width for the pane
    * @return height of the text pane or 0 if the panel is not visible
    */
-  private int updateTextPaneHelper(JTextPane textPane, String textOrNull, int width) {
+  private int updateTextPaneHelper(@NotNull JTextPane textPane, String textOrNull, int width) {
     boolean isVisible = textOrNull != null;
     textPane.setVisible(isVisible);
     if (isVisible) {

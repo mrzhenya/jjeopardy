@@ -16,13 +16,13 @@
 
 package net.curre.jjeopardy.util;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.edit.EditTable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.validation.constraints.NotNull;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -181,7 +181,7 @@ public class PrintUtilities {
    * @param font the font to draw the text in, non null
    * @param imgWidth the width of the area to draw into
    */
-  private static void printText(Graphics2D g2d, String text, Rectangle2D rect, Font font, int imgWidth) {
+  private static void printText(Graphics2D g2d, String text, @NotNull Rectangle2D rect, Font font, int imgWidth) {
     // If the text is small enough to fit, center it.
     int tx = 0;
     if (rect.getWidth() < imgWidth) {

@@ -17,6 +17,7 @@
 package net.curre.jjeopardy.images;
 
 import javax.swing.ImageIcon;
+import javax.validation.constraints.NotNull;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.util.Objects;
@@ -176,7 +177,7 @@ public enum ImageEnum {
    * Loads an image for this icon and creates an ImageIcon object.
    * @return image icon initialized with an appropriate image asset
    */
-  public ImageIcon toImageIcon() {
+  public @NotNull ImageIcon toImageIcon() {
     return new ImageIcon(Objects.requireNonNull(ImageEnum.class.getResource(this.getFileName())));
   }
 

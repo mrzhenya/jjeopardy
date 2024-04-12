@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+import javax.validation.constraints.NotNull;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -247,7 +248,7 @@ public class LandingUi extends JFrame {
    * Creates the main content panel with action text and buttons.
    * @return initialized main content panel
    */
-  private JPanel createMainContentPanel() {
+  private @NotNull JPanel createMainContentPanel() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int padding = lafTheme.getPanelPadding();
     final int buttonSpacing = lafTheme.getButtonSpacing();
@@ -279,7 +280,7 @@ public class LandingUi extends JFrame {
    * buttons to load or update the current game.
    * @return initialized JPanel component
    */
-  private JPanel createGamePanel() {
+  private @NotNull JPanel createGamePanel() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int buttonSpacing = lafTheme.getButtonSpacing();
     final Font buttonFont = lafTheme.getButtonFont();
@@ -329,7 +330,7 @@ public class LandingUi extends JFrame {
    * @param arePlayersSet true if there are players, false if we are showing default UI
    * @return panel with created UI
    */
-  private JPanel createPlayersInfoPanel(String playersText, String buttonText, boolean arePlayersSet) {
+  private @NotNull JPanel createPlayersInfoPanel(String playersText, String buttonText, boolean arePlayersSet) {
     JPanel panel = new JPanel(new TableLayout(new double[][] {
       {TableLayout.FILL,
         // Text area width.
@@ -360,7 +361,7 @@ public class LandingUi extends JFrame {
    * Creates the library UI component.
    * @return library UI component
    */
-  private Component createLibraryPanel() {
+  private @NotNull Component createLibraryPanel() {
     this.libraryPanel = new JPanel();
     JScrollPane scrollPane = new JScrollPane(this.libraryPanel);
     scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -386,7 +387,7 @@ public class LandingUi extends JFrame {
    * for the landing UI background.
    * @return label with an ImageIcon representing the background
    */
-  private static JLabel createImageBackground() {
+  private static @NotNull JLabel createImageBackground() {
     ImageIcon backgroundIcon = new ImageIcon(Objects.requireNonNull(
         App.class.getResource("images/" + BACKGROUND_IMAGE_FILE)));
     JLabel backgroundLabel = new JLabel(backgroundIcon);
@@ -451,14 +452,14 @@ public class LandingUi extends JFrame {
      * @return true to accept the file
      */
     @Override
-    public boolean accept(File f) {
+    public boolean accept(@NotNull File f) {
       return f.isDirectory() || (f.isFile() &&
           (StringUtils.endsWithIgnoreCase(f.getName(), ".xml") ||
               StringUtils.endsWithIgnoreCase(f.getName(), ".html")));
     }
 
     @Override
-    public String getDescription() {
+    public @NotNull String getDescription() {
       return "JJeopardy game files or file bundles";
     }
   }

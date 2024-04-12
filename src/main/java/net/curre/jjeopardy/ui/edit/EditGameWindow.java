@@ -33,6 +33,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.validation.constraints.NotNull;
 import java.awt.Container;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -69,7 +70,7 @@ public class EditGameWindow extends JDialog {
    * @param editEnabled true if the editing is enabled.
    * @param editTableMode view mode (questions, answers, all)
    */
-  public EditGameWindow(GameData gameData, boolean editEnabled, EditTableMode editTableMode) {
+  public EditGameWindow(@NotNull GameData gameData, boolean editEnabled, EditTableMode editTableMode) {
     this.gameData = gameData;
     this.dataChanged = false;
 

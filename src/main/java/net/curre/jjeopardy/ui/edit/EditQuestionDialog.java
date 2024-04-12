@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.validation.constraints.NotNull;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -83,7 +84,7 @@ public class EditQuestionDialog extends JDialog {
    * @param cell cell/question to edit
    * @param editTable reference to the edit table
    */
-  public EditQuestionDialog(EditCell cell, EditTable editTable) {
+  public EditQuestionDialog(@NotNull EditCell cell, EditTable editTable) {
     logger.info("Creating EditQuestionDialog for cell col=" + cell.getColumnIndex() + "; row=" + cell.getRowIndex());
     this.cell = cell;
     this.editTable = editTable;
@@ -154,7 +155,7 @@ public class EditQuestionDialog extends JDialog {
    * and an input field for the question image.
    * @return the question panel to add to the edit question dialog
    */
-  private JPanel createQuestionPanel() {
+  private @NotNull JPanel createQuestionPanel() {
     Question question = this.cell.getQuestion();
     this.questionPane = new JTextPane();
     this.questionPane.setText(question.getQuestion());
@@ -168,7 +169,7 @@ public class EditQuestionDialog extends JDialog {
    * and an input field for the answer image.
    * @return the answer panel to add to the edit question dialog
    */
-  private JPanel createAnswerPanel() {
+  private @NotNull JPanel createAnswerPanel() {
     Question question = this.cell.getQuestion();
     this.answerPane = new JTextPane();
     this.answerPane.setText(question.getAnswer());
@@ -184,7 +185,8 @@ public class EditQuestionDialog extends JDialog {
    * @param imagePicker reference to the question/answer image picker
    * @return created and initialized panel for question or answer information
    */
-  private static JPanel createQuestionAnswerPanelHelper(String titleProp, JTextPane textPane, ImagePickerPanel imagePicker) {
+  private static @NotNull JPanel createQuestionAnswerPanelHelper(
+      String titleProp, @NotNull JTextPane textPane, ImagePickerPanel imagePicker) {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
     TitledBorder border = BorderFactory.createTitledBorder(LocaleService.getString(titleProp));
@@ -209,7 +211,7 @@ public class EditQuestionDialog extends JDialog {
    * Creates and initializes the button panel that's displayed at the bottom of the dialog.
    * @return panel that contains the action buttons
    */
-  private JPanel createButtonPanel() {
+  private @NotNull JPanel createButtonPanel() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int spacing = lafTheme.getButtonSpacing();
     JPanel panel = new JPanel();

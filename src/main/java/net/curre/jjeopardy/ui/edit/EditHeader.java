@@ -20,6 +20,7 @@ import net.curre.jjeopardy.bean.Category;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.validation.constraints.NotNull;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class EditHeader extends JPanel {
    * Ctor.
    * @param categories an ordered list of categories to create a table header for
    */
-  public EditHeader(List<Category> categories) {
+  public EditHeader(@NotNull List<Category> categories) {
     this.headerCells = new ArrayList<>();
     this.rowHeight = 0;
 

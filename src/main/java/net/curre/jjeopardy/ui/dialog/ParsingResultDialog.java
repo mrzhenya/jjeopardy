@@ -31,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.validation.constraints.NotNull;
 import java.awt.Component;
 import java.awt.Font;
 
@@ -48,7 +49,7 @@ public class ParsingResultDialog extends BasicDialog {
    * Creates an instance of a dialog to show results of parsing a game file.
    * @param result file parsing result
    */
-  public ParsingResultDialog(FileParsingResult result) {
+  public ParsingResultDialog(@NotNull FileParsingResult result) {
     this.result = result;
     ImageEnum icon = result.getGameData().isGameDataUsable() ? ImageEnum.SUCCESS_64 : ImageEnum.FAILURE_64;
     this.initializeDialog(result.getResulTitleShort(), icon);
@@ -138,7 +139,7 @@ public class ParsingResultDialog extends BasicDialog {
    * @param icon icon to show next to the label
    * @return created label component
    */
-  private JLabel createLabelWithIcon(String text, Font font, ImageEnum icon) {
+  private @NotNull JLabel createLabelWithIcon(String text, Font font, @NotNull ImageEnum icon) {
     JLabel label = new JLabel(icon.toImageIcon());
     label.setFont(font);
     label.setText(text);

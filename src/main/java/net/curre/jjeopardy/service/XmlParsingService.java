@@ -26,6 +26,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -121,7 +122,7 @@ public class XmlParsingService {
    * @param props properties file to parse data from
    * @return parsed categories (or empty list if none is parsed)
    */
-  private List<Category> parseCategories(Properties props) {
+  private @NotNull List<Category> parseCategories(Properties props) {
     List<Category> categories = new ArrayList<>();
     try {
       // Notice that the (user facing) index starts at 1.
@@ -147,7 +148,7 @@ public class XmlParsingService {
    * @param categoryNumber category number to parse the questions for
    * @return list of parsed questions (or none if parsed)
    */
-  private List<Question> parseQuestions(Properties props, int categoryNumber) {
+  private @NotNull List<Question> parseQuestions(Properties props, int categoryNumber) {
     List<Question> questions = new ArrayList<>();
     try {
       for (int questionNumber = 1; questionNumber < MAX_LOOP; questionNumber++) {
@@ -182,7 +183,7 @@ public class XmlParsingService {
    * @param props  properties file
    * @return parsed valid player names list (or empty if none is parsed)
    */
-  private List<String> parsePlayersDataIfAny(Properties props) {
+  private @NotNull List<String> parsePlayersDataIfAny(Properties props) {
     List<String> playerNames = new ArrayList<>();
     try {
       // Notice that the (user facing) index starts at 1.
@@ -203,7 +204,7 @@ public class XmlParsingService {
    * @param props  properties file
    * @return parsed valid bonus questions (or empty list if no questions are parsed)
    */
-  private List<Question> parseBonusQuestionsIfAny(Properties props) {
+  private @NotNull List<Question> parseBonusQuestionsIfAny(Properties props) {
     int bonusPoints;
     try {
       bonusPoints = Utilities.getIntProperty(props, PROPERTY_BONUS_QUESTION_POINTS);

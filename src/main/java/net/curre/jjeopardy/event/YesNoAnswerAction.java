@@ -24,6 +24,7 @@ import net.curre.jjeopardy.sounds.SoundEnum;
 import net.curre.jjeopardy.ui.dialog.QuestionDialog;
 
 import javax.swing.AbstractAction;
+import javax.validation.constraints.NotNull;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -68,7 +69,7 @@ public class YesNoAnswerAction extends AbstractAction implements KeyListener {
    * @param e the event to be processed
    */
   @Override
-  public void keyPressed(KeyEvent e) {
+  public void keyPressed(@NotNull KeyEvent e) {
     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
       this.handleAction();
     }

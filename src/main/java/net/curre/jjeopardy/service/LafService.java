@@ -16,16 +16,24 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.ui.laf.LafThemeId;
-import net.curre.jjeopardy.ui.laf.theme.*;
+import net.curre.jjeopardy.ui.laf.theme.DefaultTheme;
+import net.curre.jjeopardy.ui.laf.theme.FlatDarkTheme;
+import net.curre.jjeopardy.ui.laf.theme.FlatLightTheme;
+import net.curre.jjeopardy.ui.laf.theme.FlatMacDarkTheme;
+import net.curre.jjeopardy.ui.laf.theme.LafTheme;
+import net.curre.jjeopardy.ui.laf.theme.NimbusTheme;
 import net.curre.jjeopardy.util.Utilities;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.validation.constraints.NotNull;
+import java.awt.Color;
+import java.awt.Window;
 import java.util.ArrayList;
 
 /**
@@ -154,7 +162,7 @@ public class LafService {
    * @param change value to be added to or subracted from the RGB channels of the model color
    * @return the new, lighter color
    */
-  public static Color createAdjustedColor(Color color, int change) {
+  public static @NotNull Color createAdjustedColor(@NotNull Color color, int change) {
     return new Color(getSafeColor(color.getRed() + change),
         getSafeColor(color.getGreen() + change),
         getSafeColor(color.getBlue() + change));
@@ -180,7 +188,7 @@ public class LafService {
    * @return The theme with the given ID
    * @throws ServiceException If theme with given ID was not found
    */
-  private LafTheme findLafThemeById(LafThemeId lafThemeId) throws ServiceException {
+  private @NotNull LafTheme findLafThemeById(LafThemeId lafThemeId) throws ServiceException {
     for (LafTheme theme : this.getSupportedThemes()) {
       if (theme.getId().equals(lafThemeId)) {
         return theme;

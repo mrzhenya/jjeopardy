@@ -24,6 +24,7 @@ import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,7 +102,7 @@ public class PlayerScoresPanel extends JPanel {
     private final JLabel scoreLabel;
 
     /** Ctor. */
-    public Item(Player player) {
+    public Item(@NotNull Player player) {
       LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
       this.setBackground(lafTheme.getGameTableScorePlayerBackground());
       this.setLayout(new TableLayout(new double[][] {

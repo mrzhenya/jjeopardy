@@ -18,6 +18,7 @@ package net.curre.jjeopardy.bean;
 
 import net.curre.jjeopardy.service.LocaleService;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,7 +199,7 @@ public class FileParsingResult {
    * @param error error message to add
    * @param args arguments to the property string
    */
-  public void addErrorMessage(Message error, String... args) {
+  public void addErrorMessage(@NotNull Message error, String... args) {
     this.errorMessages.add(LocaleService.getString(error.getPropertyName(), args));
   }
 
@@ -207,7 +208,7 @@ public class FileParsingResult {
    * @param warning error message to add
    * @param args arguments to the property string
    */
-  public void addWarningMessage(Message warning, String... args) {
+  public void addWarningMessage(@NotNull Message warning, String... args) {
     this.warningMessages.add(LocaleService.getString(warning.getPropertyName(), args));
   }
 
@@ -216,7 +217,7 @@ public class FileParsingResult {
    * @param info error message to add
    * @param args arguments to the property string
    */
-  public void addInfoMessage(Message info, String... args) {
+  public void addInfoMessage(@NotNull Message info, String... args) {
     this.infoMessages.add(LocaleService.getString(info.getPropertyName(), args));
   }
 

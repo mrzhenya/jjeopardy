@@ -35,6 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
+import javax.validation.constraints.NotNull;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -139,7 +140,7 @@ public class ImagePickerPanel extends JPanel {
    * @param imageFilepath image filepath (either absolute or relative to the game bundle when it's set)
    * @return image selection UI
    */
-  private JPanel createInputPanel(String imageFilepath) {
+  private @NotNull JPanel createInputPanel(String imageFilepath) {
     JPanel inputPanel = new JPanel();
     inputPanel.setLayout(new TableLayout(new double[][] {
         {5, TableLayout.PREFERRED, 5, TableLayout.FILL, 5, TableLayout.PREFERRED, 5, TableLayout.PREFERRED, 5},  // columns
@@ -253,7 +254,7 @@ public class ImagePickerPanel extends JPanel {
      * @return true to accept the file
      */
     @Override
-    public boolean accept(File f) {
+    public boolean accept(@NotNull File f) {
       if (f.isDirectory()) {
         return true;
       }
@@ -271,7 +272,7 @@ public class ImagePickerPanel extends JPanel {
 
     /** @inheritDoc */
     @Override
-    public String getDescription() {
+    public @NotNull String getDescription() {
       return "JJeopardy supported image files or directories";
     }
   }
@@ -301,7 +302,7 @@ public class ImagePickerPanel extends JPanel {
      * @param e the event to be processed
      */
     @Override
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(@NotNull KeyEvent e) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
         String filePath = StringUtils.trimToNull(this.imagePickerPanel.imageInputField.getText());
         this.imagePickerPanel.loadNewImageFile(filePath);

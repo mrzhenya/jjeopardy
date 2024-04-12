@@ -27,6 +27,7 @@ import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.Utilities;
 
 import javax.swing.*;
+import javax.validation.constraints.NotNull;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -207,7 +208,7 @@ public abstract class BasicDialog extends JDialog {
    * @param font for the text Font
    * @return created and initialized JTextArea component
    */
-  protected static JTextArea createDefaultTextArea(Font font) {
+  protected static @NotNull JTextArea createDefaultTextArea(Font font) {
     JTextArea textArea = new JTextArea();
 
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();

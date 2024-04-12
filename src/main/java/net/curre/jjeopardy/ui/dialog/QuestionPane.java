@@ -30,6 +30,7 @@ import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.*;
+import javax.validation.constraints.NotNull;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.util.List;
@@ -124,7 +125,7 @@ public class QuestionPane extends JPanel {
    * @param question question to ask
    * @param isBonus true if this is a bonus question
    */
-  public void showQuestion(Question question, boolean isBonus) {
+  public void showQuestion(@NotNull Question question, boolean isBonus) {
     String bundlePath = AppRegistry.getInstance().getGameDataService().getCurrentGameData().getBundlePath();
     this.questionLabel.setText(question.getQuestion());
     this.isBonusQuestionsRound = isBonus;
@@ -187,7 +188,7 @@ public class QuestionPane extends JPanel {
    * Creates the UI for the question UI.
    * @return created and initialized JPanel
    */
-  private JPanel createQuestionPanel() {
+  private @NotNull JPanel createQuestionPanel() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     JPanel questionPanel = new JPanel();
     questionPanel.setLayout(new TableLayout(new double[][] {
@@ -233,7 +234,7 @@ public class QuestionPane extends JPanel {
    * Creates the UI for the bonus intro UI.
    * @return created and initialized JPanel
    */
-  private JPanel createBonusIntroPanel() {
+  private @NotNull JPanel createBonusIntroPanel() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final JPanel panel = new JPanel();
     panel.setLayout(new TableLayout(new double[][] {
@@ -255,7 +256,7 @@ public class QuestionPane extends JPanel {
    * Creates the UI for the answer UI.
    * @return created and initialized JPanel
    */
-  private JPanel createAnswerPanel() {
+  private @NotNull JPanel createAnswerPanel() {
     JPanel answerPanel = new JPanel();
 
     // Creating panel layout.
@@ -286,7 +287,7 @@ public class QuestionPane extends JPanel {
    * Creates the bonus answer UI.
    * @return bonus answer JPanel
    */
-  private JPanel createBonusAnswerPanel() {
+  private @NotNull JPanel createBonusAnswerPanel() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final JPanel panel = new JPanel();
 
@@ -340,7 +341,7 @@ public class QuestionPane extends JPanel {
    * @param player player to create the UI for
    * @return created JPanel
    */
-  private JPanel createYesNoAnswerPanel(Player player) {
+  private @NotNull JPanel createYesNoAnswerPanel(@NotNull Player player) {
     final LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
 
     // Preparing the container and the layout.
@@ -422,7 +423,7 @@ public class QuestionPane extends JPanel {
    * @param imageLabel label that contains the image
    * @return created container
    */
-  private JPanel createTextImageContainer(JTextArea textLabel, JLabel imageLabel) {
+  private @NotNull JPanel createTextImageContainer(JTextArea textLabel, JLabel imageLabel) {
     JPanel answerContainer = new JPanel();
     answerContainer.setLayout(new TableLayout(new double[][] {
         {TableLayout.FILL}, // columns

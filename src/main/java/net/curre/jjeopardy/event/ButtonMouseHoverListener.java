@@ -18,6 +18,7 @@ package net.curre.jjeopardy.event;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.validation.constraints.NotNull;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -50,7 +51,7 @@ public class ButtonMouseHoverListener extends MouseAdapter implements MouseListe
    * @param e the event to be processed
    */
   @Override
-  public void mouseEntered(MouseEvent e) {
+  public void mouseEntered(@NotNull MouseEvent e) {
     JButton button = (JButton) e.getComponent();
     button.setIcon(this.hoverIcon);
   }
@@ -60,7 +61,7 @@ public class ButtonMouseHoverListener extends MouseAdapter implements MouseListe
    * @param e the event to be processed
    */
   @Override
-  public void mouseExited(MouseEvent e) {
+  public void mouseExited(@NotNull MouseEvent e) {
     JButton button = (JButton) e.getComponent();
     button.setIcon(this.icon);
   }

@@ -31,6 +31,7 @@ import javax.swing.JTextPane;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import javax.validation.constraints.NotNull;
 import java.awt.Component;
 
 /**
@@ -150,7 +151,7 @@ public class UiService {
    * state and center aligned text.
    * @return an instance of <code>JTextPane</code> initialized to defaults
    */
-  public static JTextPane createDefaultTextPane() {
+  public static @NotNull JTextPane createDefaultTextPane() {
     JTextPane textPane = new JTextPane();
     textPane.setEditable(false);
     textPane.setFocusable(false);
@@ -166,7 +167,7 @@ public class UiService {
    * Adds style alignment attributes so that the text is centered in the passed text pane.
    * @param textPane text pane to add style attributes to
    */
-  public static void addAlignCenterToTextPane(JTextPane textPane) {
+  public static void addAlignCenterToTextPane(@NotNull JTextPane textPane) {
     StyledDocument doc = textPane.getStyledDocument();
     SimpleAttributeSet center = new SimpleAttributeSet();
     StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);

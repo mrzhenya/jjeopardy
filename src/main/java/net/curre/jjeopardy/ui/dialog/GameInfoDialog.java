@@ -31,6 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.validation.constraints.NotNull;
 import java.awt.Component;
 import java.awt.Font;
 
@@ -51,7 +52,7 @@ public class GameInfoDialog extends BasicDialog {
    * Creates an instance of a dialog to show information about a game file.
    * @param gameData game data
    */
-  public GameInfoDialog(GameData gameData) {
+  public GameInfoDialog(@NotNull GameData gameData) {
     super();
     this.gameData = gameData;
     this.initializeDialog(gameData.getGameName(), gameData.getGameSizeIconLarge());

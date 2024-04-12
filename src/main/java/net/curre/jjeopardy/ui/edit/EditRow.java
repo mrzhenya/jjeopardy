@@ -21,6 +21,7 @@ import net.curre.jjeopardy.bean.GameData;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.validation.constraints.NotNull;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class EditRow extends JPanel {
    * @param rowIndex row's index
    * @param editTable reference to the edit table
    */
-  public EditRow(int rowIndex, EditTable editTable) {
+  public EditRow(int rowIndex, @NotNull EditTable editTable) {
     this.rowHeight = 0;
 
     this.setLayout(new GridLayout(1, 0));

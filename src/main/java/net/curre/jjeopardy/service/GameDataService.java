@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -117,7 +118,7 @@ public class GameDataService {
    * Sets the current game data.
     * @param gameData game data to set as the current game
    */
-  public void setCurrentGameData(GameData gameData) {
+  public void setCurrentGameData(@NotNull GameData gameData) {
     gameData.ensureMaxCategoriesAndQuestions();
     this.currentGameData = gameData;
 
@@ -262,7 +263,7 @@ public class GameDataService {
    * @param gameData game to check
    * @return true if the game already exists in the library folder
    */
-  public boolean gameExistsInLibrary(GameData gameData) {
+  public boolean gameExistsInLibrary(@NotNull GameData gameData) {
     Path libGamesDir = Paths.get(getGameLibraryDirectoryPath());
     if (gameData.isNativeData()) {
       // For the native data, check if the bundle or game file exist in the library.
@@ -291,7 +292,7 @@ public class GameDataService {
    *
    * @param gameData       game to add
    */
-  public void addGameToLibrary(GameData gameData) {
+  public void addGameToLibrary(@NotNull GameData gameData) {
     if (!gameData.isGameDataUsable()) {
       // Don't add unusable games.
       logger.warn("Trying to add unusable game to the library: " + gameData.getFilePath());
@@ -315,7 +316,7 @@ public class GameDataService {
    * @throws Exception on copy errors
    */
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  private void copyNativeFormatGame(GameData gameData) throws Exception {
+  private void copyNativeFormatGame(@NotNull GameData gameData) throws Exception {
     boolean isGameAdded = false;
     String gameFilePath = null;
     String gameBundlePath = null;
@@ -401,8 +402,8 @@ public class GameDataService {
    * @param progressDialog progress dialog
    * @return list of failed downloads (image urls)
    */
-  private List<String> downloadImagesAndFinishGameCopy(GameData gameData, String destFilePath,
-                                                       ProgressDialog progressDialog) throws IOException {
+  private @NotNull List<String> downloadImagesAndFinishGameCopy(
+      GameData gameData, String destFilePath, ProgressDialog progressDialog) throws IOException {
     // Download the image files if any and update the image filename on the game data.
     List<String> imageUrls = ImageUtilities.downloadImagesAndUpdatePaths(gameData, progressDialog);
 
@@ -423,7 +424,7 @@ public class GameDataService {
    * Deletes the given game from the library (memory and disk).
    * @param gameData game to delete
    */
-  public void deleteGameFromLibrary(GameData gameData) {
+  public void deleteGameFromLibrary(@NotNull GameData gameData) {
     try {
       if (gameData.getBundlePath() == null) {
         File gameFile = new File(gameData.getFilePath());
@@ -514,7 +515,7 @@ public class GameDataService {
    * Updates current game players using data from the settings UI.
    * @param playerNames player names from the player dialog
    */
-  public void updateCurrentPlayers(List<String> playerNames) {
+  public void updateCurrentPlayers(@NotNull List<String> playerNames) {
     this.currentPlayers.clear();
     for (int ind = 0; ind < playerNames.size() && ind < JjDefaults.MAX_NUMBER_OF_PLAYERS; ind++) {
       this.currentPlayers.add(new Player(playerNames.get(ind), ind));
@@ -526,7 +527,7 @@ public class GameDataService {
    * Note, that the path may not exist yet.
    * @return absolute path to the games folder
    */
-  private static String getGameLibraryDirectoryPath() {
+  private static @NotNull String getGameLibraryDirectoryPath() {
     return SettingsService.getVerifiedSettingsDirectoryPath() + File.separatorChar + GAME_DIRECTORY;
   }
 

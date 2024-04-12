@@ -18,7 +18,9 @@ package net.curre.jjeopardy.event;
 
 import net.curre.jjeopardy.ui.edit.EditCell;
 
+import javax.annotation.Nullable;
 import javax.swing.JTextPane;
+import javax.validation.constraints.NotNull;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -113,7 +115,7 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
    * @param event mouse event
    * @return Edit cell reference or null if unable to find
    */
-  private EditCell getEditCellFromEvent(MouseEvent event) {
+  private @Nullable EditCell getEditCellFromEvent(@NotNull MouseEvent event) {
     Component component = event.getComponent();
     if (component instanceof EditCell) {
       return ((EditCell) component);

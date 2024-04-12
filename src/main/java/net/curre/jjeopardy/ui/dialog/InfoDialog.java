@@ -3,8 +3,10 @@ package net.curre.jjeopardy.ui.dialog;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.validation.constraints.NotNull;
+import java.awt.Component;
+import java.awt.Font;
 
 /**
  * Represents a game informational dialog (with only one action to acknowledge).
@@ -28,7 +30,7 @@ public class InfoDialog extends BasicDialog {
    * @param message the text message
    * @param type type of the dialog
    */
-  public InfoDialog(String title, String message, Type type) {
+  public InfoDialog(String title, String message, @NotNull Type type) {
     this.title = title;
     this.message = message;
     ImageEnum icon;

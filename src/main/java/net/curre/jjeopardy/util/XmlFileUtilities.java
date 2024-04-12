@@ -21,6 +21,7 @@ import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Question;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -64,7 +65,7 @@ public class XmlFileUtilities {
    * @param categoryNumber category number (starts with 1)
    * @return property name for the category name
    */
-  public static String getPropertyCategoryName(int categoryNumber) {
+  public static @NotNull String getPropertyCategoryName(int categoryNumber) {
     return "category." + categoryNumber + ".name";
   }
 
@@ -73,7 +74,7 @@ public class XmlFileUtilities {
    * @param questionNumber question number (starts with 1)
    * @return property name for the question points value
    */
-  public static String getPropertyQuestionPoints(int questionNumber) {
+  public static @NotNull String getPropertyQuestionPoints(int questionNumber) {
     return "question." + questionNumber + ".points";
   }
 
@@ -83,7 +84,7 @@ public class XmlFileUtilities {
    * @param questionNumber question number (starts with 1)
    * @return property name for the question text value
    */
-  public static String getPropertyQuestionText(int categoryNumber, int questionNumber) {
+  public static @NotNull String getPropertyQuestionText(int categoryNumber, int questionNumber) {
     return "category." + categoryNumber + ".question." + questionNumber;
   }
 
@@ -93,7 +94,7 @@ public class XmlFileUtilities {
    * @param questionNumber question number (starts with 1)
    * @return property name for the question image file name
    */
-  public static String getPropertyQuestionImage(int categoryNumber, int questionNumber) {
+  public static @NotNull String getPropertyQuestionImage(int categoryNumber, int questionNumber) {
     return "category." + categoryNumber + ".question." + questionNumber + ".img";
   }
 
@@ -103,7 +104,7 @@ public class XmlFileUtilities {
    * @param questionNumber question number (starts with 1)
    * @return property name for the answer text value
    */
-  public static String getPropertyAnswerText(int categoryNumber, int questionNumber) {
+  public static @NotNull String getPropertyAnswerText(int categoryNumber, int questionNumber) {
     return "category." + categoryNumber + ".answer." + questionNumber;
   }
 
@@ -113,7 +114,7 @@ public class XmlFileUtilities {
    * @param questionNumber question number (starts with 1)
    * @return property name for the answer image file name
    */
-  public static String getPropertyAnswerImage(int categoryNumber, int questionNumber) {
+  public static @NotNull String getPropertyAnswerImage(int categoryNumber, int questionNumber) {
     return "category." + categoryNumber + ".answer." + questionNumber + ".img";
   }
 
@@ -122,7 +123,7 @@ public class XmlFileUtilities {
    * @param playerNumber player number (starts with 1)
    * @return property name for the player's name value
    */
-  public static String getPropertyPlayerName(int playerNumber) {
+  public static @NotNull String getPropertyPlayerName(int playerNumber) {
     return "player." + playerNumber + ".name";
   }
 
@@ -131,7 +132,7 @@ public class XmlFileUtilities {
    * @param questionNumber question number (starts with 1)
    * @return property name for the bonus question text value
    */
-  public static String getPropertyBonusQuestionText(int questionNumber) {
+  public static @NotNull String getPropertyBonusQuestionText(int questionNumber) {
     return "bonus." + questionNumber + ".question";
   }
 
@@ -140,7 +141,7 @@ public class XmlFileUtilities {
    * @param questionNumber question number (starts with 1)
    * @return property name for the bonus question image file name
    */
-  public static String getPropertyBonusQuestionImage(int questionNumber) {
+  public static @NotNull String getPropertyBonusQuestionImage(int questionNumber) {
     return "bonus." + questionNumber + ".question.img";
   }
 
@@ -149,7 +150,7 @@ public class XmlFileUtilities {
    * @param questionNumber question number (starts with 1)
    * @return property name for the bonus question's answer text value
    */
-  public static String getPropertyBonusAnswerText(int questionNumber) {
+  public static @NotNull String getPropertyBonusAnswerText(int questionNumber) {
     return "bonus." + questionNumber + ".answer";
   }
 
@@ -158,7 +159,7 @@ public class XmlFileUtilities {
    * @param questionNumber question number (starts with 1)
    * @return property name for the bonus answer image file name
    */
-  public static String getPropertyBonusAnswerImage(int questionNumber) {
+  public static @NotNull String getPropertyBonusAnswerImage(int questionNumber) {
     return "bonus." + questionNumber + ".answer.img";
   }
 
@@ -167,7 +168,7 @@ public class XmlFileUtilities {
    * @param gameData game data to use
    * @param filePath absolute filepath to the destination file
    */
-  public static void createGameFile(GameData gameData, String filePath) throws IOException {
+  public static void createGameFile(@NotNull GameData gameData, String filePath) throws IOException {
     Properties properties = new GameProperties();
     FileOutputStream fileOutputStream = new FileOutputStream(filePath);
 
@@ -227,7 +228,8 @@ public class XmlFileUtilities {
    * @param category category with questions to add
    * @param categoryNumber category number (starts at 1)
    */
-  private static void addCategoryToProperties(Properties properties, Category category, int categoryNumber) {
+  private static void addCategoryToProperties(
+      @NotNull Properties properties, @NotNull Category category, int categoryNumber) {
     properties.setProperty(getPropertyCategoryName(categoryNumber), category.getName());
     for (int ind = 0; ind < category.getQuestionsCount(); ind++) {
       int questionNumber = ind + 1;
@@ -255,7 +257,8 @@ public class XmlFileUtilities {
    * @param question bonus question to add
    * @param questionNumber question number (starts at 1)
    */
-  private static void addBonusQuestionToProperties(Properties properties, Question question, int questionNumber) {
+  private static void addBonusQuestionToProperties(
+      @NotNull Properties properties, @NotNull Question question, int questionNumber) {
     properties.setProperty(getPropertyBonusQuestionText(questionNumber), question.getQuestion());
     String questionImage = question.getQuestionImage();
     if (questionImage != null) {
@@ -350,7 +353,7 @@ public class XmlFileUtilities {
    * @param key key to use
    * @return sort key to use - (!!!) each key uniquely represents a line
    */
-  private static String createSortKey(String key) {
+  private static @NotNull String createSortKey(String key) {
     if (key == null) {
       return "";
     }

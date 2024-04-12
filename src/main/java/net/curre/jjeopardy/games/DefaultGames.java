@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.validation.constraints.NotNull;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -81,7 +82,8 @@ public class DefaultGames {
    * @throws IOException on input/output errors
    */
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  private static void copyFromJarFile(String jarPath, String gamesResourcePath, Path libGamesDir) throws IOException {
+  private static void copyFromJarFile(
+      String jarPath, @NotNull String gamesResourcePath, Path libGamesDir) throws IOException {
     logger.info("Opening the app jar: " + jarPath);
     FileInputStream fileInputStream = new FileInputStream(jarPath);
     BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
@@ -120,7 +122,7 @@ public class DefaultGames {
    * @param destFilePath absolute path to the filename where zip entry is copied to
    * @throws IOException on input/output errors
    */
-  private static void extractZipEntry(ZipInputStream zipInputStream, String destFilePath) throws IOException {
+  private static void extractZipEntry(@NotNull ZipInputStream zipInputStream, String destFilePath) throws IOException {
     OutputStream outStream = Files.newOutputStream(Paths.get(destFilePath));
     byte[] buffer = new byte[9000];
     int length;
@@ -137,7 +139,7 @@ public class DefaultGames {
    *                    where games are copied to
    */
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  private static void copyFromFileSystem(File sourceDir, Path libGamesDir) throws IOException {
+  private static void copyFromFileSystem(@NotNull File sourceDir, Path libGamesDir) throws IOException {
     // List the game bundles in the resources games directory.
     final List<File> gameBundles = new ArrayList<>();
     for (File gameBundle : Objects.requireNonNull(sourceDir.listFiles())) {

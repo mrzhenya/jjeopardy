@@ -18,6 +18,7 @@ package net.curre.jjeopardy.event;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.validation.constraints.NotNull;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -39,7 +40,7 @@ public class ClickAndKeyAction extends AbstractAction implements KeyListener {
    * @param button button to add the action to
    * @param actionHandler runnable to execute for this action
    */
-  public static void createAndAddAction(JButton button, Runnable actionHandler) {
+  public static void createAndAddAction(@NotNull JButton button, Runnable actionHandler) {
     ClickAndKeyAction action = new ClickAndKeyAction(actionHandler);
     button.setAction(action);
     button.addKeyListener(action);
@@ -72,7 +73,7 @@ public class ClickAndKeyAction extends AbstractAction implements KeyListener {
    * @param e the event to be processed
    */
   @Override
-  public void keyPressed(KeyEvent e) {
+  public void keyPressed(@NotNull KeyEvent e) {
     if (e.getKeyCode() == KeyEvent.VK_ENTER) {
       this.actionHandler.run();
     }

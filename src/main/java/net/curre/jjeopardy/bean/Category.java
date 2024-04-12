@@ -19,6 +19,7 @@ package net.curre.jjeopardy.bean;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.util.JjDefaults;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public class Category implements HasName {
    * @param name category name
    * @param questions list of questions for this category
    */
-  public Category(String name, List<Question> questions) {
+  public Category(String name, @NotNull List<Question> questions) {
     this.name = name;
     this.questions = questions;
 

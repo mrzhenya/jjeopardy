@@ -19,6 +19,8 @@ package net.curre.jjeopardy.util;
 import net.curre.jjeopardy.service.ServiceException;
 import org.apache.commons.lang3.RegExUtils;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
 import java.util.Properties;
 
 /**
@@ -67,7 +69,7 @@ public class Utilities {
    * @param propName property name
    * @return property string value or null if property with a given name is not found
    */
-  public static String getPropertyOrNull(Properties props, String propName) {
+  public static @Nullable String getPropertyOrNull(Properties props, String propName) {
     try {
       return removeEndsWhitespace(getProperty(props, propName));
     } catch (ServiceException e) {
@@ -82,7 +84,7 @@ public class Utilities {
    * @return non-null property string value with all end whitespace removed
    * @throws ServiceException if the property is not present
    */
-  public static String getProperty(Properties props, String propName) throws ServiceException {
+  public static String getProperty(@NotNull Properties props, String propName) throws ServiceException {
     final String propStr = props.getProperty(propName);
     if (propStr == null) {
       throw new ServiceException("String property \"" + propName + "\" is not found!");
@@ -98,7 +100,7 @@ public class Utilities {
    * @return property int value
    * @throws ServiceException if the property is not present or does not represent an integer
    */
-  public static int getIntProperty(Properties props, String propName) throws ServiceException {
+  public static int getIntProperty(@NotNull Properties props, String propName) throws ServiceException {
     final String propStr = props.getProperty(propName);
     if (propStr == null) {
       throw new ServiceException("Int property \"" + propName + "\" is not found!");

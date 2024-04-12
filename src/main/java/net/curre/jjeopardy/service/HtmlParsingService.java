@@ -30,6 +30,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,7 +119,7 @@ public class HtmlParsingService {
    * @param dataEl data element to parse
    * @throws ServiceException when a critical parsing assumption is not true
    */
-  private static void parseQuestionData(Map<String, List<Question>> questionsMap, Element dataEl)
+  private static void parseQuestionData(Map<String, List<Question>> questionsMap, @NotNull Element dataEl)
       throws ServiceException {
     // Find the first div element that contains category name (in the attribute) and the
     // points value in the text data.
@@ -151,7 +153,7 @@ public class HtmlParsingService {
    * @param elements the parent
    * @return trimmed string value or null if the parent is childless or if the string value is blank
    */
-  private static String parseStringFromFirstChild(Elements elements) {
+  private static @Nullable String parseStringFromFirstChild(@NotNull Elements elements) {
     if (elements.isEmpty()) {
       return null;
     }
@@ -167,7 +169,7 @@ public class HtmlParsingService {
    * @param elements the parent
    * @return image value or null if the parent is childless or if there is not img nested
    */
-  private static String parseImageFromFirstChild(Elements elements) {
+  private static @Nullable String parseImageFromFirstChild(@NotNull Elements elements) {
     if (elements.isEmpty()) {
       return null;
     }
@@ -191,7 +193,7 @@ public class HtmlParsingService {
    * @param doc HTML document
    * @return parsed game name
    */
-  private static String parseGameName(Document doc) {
+  private static @NotNull String parseGameName(@NotNull Document doc) {
     Element titleEl = doc.getElementsByTag("title").first();
     return titleEl.text();
   }
@@ -201,7 +203,7 @@ public class HtmlParsingService {
    * @param doc HTML document
    * @return parsed description or null
    */
-  private static String parseGameDescription(Document doc) {
+  private static @Nullable String parseGameDescription(@NotNull Document doc) {
     // Description is parsed from: <meta name="description" content="???">.
     Elements metaEls = doc.getElementsByTag("meta");
     for (Element metaEl : metaEls) {
@@ -222,7 +224,7 @@ public class HtmlParsingService {
    * @param value value to sanitize
    * @return sanitized string
    */
-  private static String sanitizeString(String value) {
+  private static @NotNull String sanitizeString(String value) {
     return RegExUtils.replaceAll(value, "( |\r|\n)+", " ").trim();
   }
 }

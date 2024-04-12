@@ -16,14 +16,18 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.sounds.SoundEnum;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.validation.constraints.NotNull;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.EnumMap;
@@ -115,7 +119,7 @@ public class SoundService {
    * @param soundEnum sound enum for the audio file
    * @return opened clip
    */
-  private Clip openAudioStreamHelper(SoundEnum soundEnum) {
+  private @NotNull Clip openAudioStreamHelper(SoundEnum soundEnum) {
     try {
       InputStream inStream = soundEnum.getSoundFileStream();
       InputStream bufferedIn = new BufferedInputStream(inStream);

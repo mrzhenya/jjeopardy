@@ -26,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,7 +122,7 @@ public class PlayersPane extends JPanel {
    * Updates the players pane.
    * @param players list of players
    */
-  protected void updatePlayersPane(List<Player> players) {
+  protected void updatePlayersPane(@NotNull List<Player> players) {
     if (players.size() < JjDefaults.MIN_NUMBER_OF_PLAYERS) {
       if (players.isEmpty()) {
         logger.warn("No players are found.");

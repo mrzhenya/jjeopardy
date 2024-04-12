@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
+import javax.validation.constraints.NotNull;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -84,7 +85,7 @@ public class EditTable extends JPanel implements Printable {
    * @param scrollToTopFn to run for scrolling to the top of the scrollable table area
    * @param enableSaveFn to run to enable the Save button
    */
-  public EditTable(GameData gameData, boolean editEnabled, EditTableMode editTableMode,
+  public EditTable(@NotNull GameData gameData, boolean editEnabled, EditTableMode editTableMode,
                    Runnable scrollToTopFn, Runnable enableSaveFn) {
     this.gameData = gameData;
     this.editTableMode = editTableMode;
@@ -189,7 +190,7 @@ public class EditTable extends JPanel implements Printable {
 
   /** Prints the table. */
   @Override
-  public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+  public int print(Graphics graphics, @NotNull PageFormat pageFormat, int pageIndex) throws PrinterException {
     Dimension panelSize = this.getSize();
     final int printHeight = (int) pageFormat.getImageableHeight();
     final int printWidth = (int) pageFormat.getImageableWidth();

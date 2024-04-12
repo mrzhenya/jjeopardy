@@ -25,6 +25,7 @@ import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.validation.constraints.NotNull;
 import java.awt.Font;
 
 /**
@@ -82,7 +83,7 @@ public class QuestionTitle extends JPanel {
    * Updates the title for the given question.
    * @param question question to use for this title
    */
-  protected void updateTitle(Question question) {
+  protected void updateTitle(@NotNull Question question) {
     this.categoryLabel.setText(question.getParentName());
     this.pointsLabel.setText(" " + question.getPoints() + " ");
   }

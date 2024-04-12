@@ -17,6 +17,7 @@
 package net.curre.jjeopardy.ui.laf.theme;
 
 import javax.swing.UIDefaults;
+import javax.validation.constraints.NotNull;
 import java.awt.Color;
 import java.awt.Font;
 
@@ -198,7 +199,7 @@ public abstract class LafTheme implements LafThemeInterface {
    * Initializes internal style values.
    * @param defaults UI defaults
    */
-  protected void initializeInternals(UIDefaults defaults) {
+  protected void initializeInternals(@NotNull UIDefaults defaults) {
     // Convert DerivedColor to simple Color to avoid side effects.
     this.defaultBackgroundColor = new Color(((Color) defaults.get("Panel.background")).getRGB());
     Color gridColor = (Color) defaults.get("Table.gridColor");
