@@ -17,6 +17,7 @@
 package net.curre.jjeopardy.ui.edit;
 
 import net.curre.jjeopardy.bean.GameData;
+import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.PrintUtilities;
@@ -67,27 +68,39 @@ public class EditTable extends JPanel implements Printable {
   private MessageFormat printFooter;
 
   /** Runnable to scroll to the top of the scrollable table area. */
-  private final Runnable scrollToTop;
+  private final Runnable scrollToTopFn;
+
+  /** Runnable to enable the Save button in the edit settings panel. */
+  private final Runnable enableSaveFn;
+
+  /** Reference to the edit table mouse listener. */
+  private final EditTableMouseListener tableMouseListener;
 
   /**
    * Ctor.
    * @param gameData game data for the table
+   * @param editEnabled true if the editing is enabled.
    * @param editTableMode current view mode
-   * @param scrollToTop to run for scrolling to the top of the scrollable table area
+   * @param scrollToTopFn to run for scrolling to the top of the scrollable table area
+   * @param enableSaveFn to run to enable the Save button
    */
-  public EditTable(GameData gameData, EditTableMode editTableMode, Runnable scrollToTop) {
+  public EditTable(GameData gameData, boolean editEnabled, EditTableMode editTableMode,
+                   Runnable scrollToTopFn, Runnable enableSaveFn) {
     this.gameData = gameData;
     this.editTableMode = editTableMode;
-    this.scrollToTop = scrollToTop;
+    this.scrollToTopFn = scrollToTopFn;
+    this.enableSaveFn = enableSaveFn;
 
     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
     this.header = new EditHeader(gameData.getCategories());
     this.add(this.header);
 
+    this.tableMouseListener = new EditTableMouseListener(editEnabled);
+
     this.rows = new ArrayList<>();
     for (int ind = 0; ind < gameData.getCategoryQuestionsCount(); ind++) {
-      EditRow row = new EditRow(ind, gameData, editTableMode);
+      EditRow row = new EditRow(ind, this);
       this.rows.add(row);
       this.add(row);
     }
@@ -109,12 +122,9 @@ public class EditTable extends JPanel implements Printable {
    */
   public void setViewMode(EditTableMode editTableMode) {
     this.editTableMode = editTableMode;
-    for (EditRow row : this.rows) {
-      row.setViewMode(editTableMode);
-    }
     this.refreshAndResize();
     this.repaint();
-    SwingUtilities.invokeLater(EditTable.this.scrollToTop);
+    SwingUtilities.invokeLater(EditTable.this.scrollToTopFn);
   }
 
   /**
@@ -138,25 +148,6 @@ public class EditTable extends JPanel implements Printable {
       this.printFooter = null;
     } else {
       this.printFooter = new MessageFormat(footerText);
-    }
-  }
-
-  /** Activates the table's view style/presentation. */
-  private void activateViewStyle() {
-    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
-    this.setBackground(lafTheme.getGameTableBorderColor());
-    this.header.activateViewStyle();
-    for (EditRow row : this.rows) {
-      row.activateViewStyle();
-    }
-  }
-
-  /** Activates the table's print style/presentation. */
-  private void activatePrintStyle() {
-    this.setBackground(Color.WHITE);
-    this.header.activatePrintStyle();
-    for (EditRow row : this.rows) {
-      row.activatePrintStyle();
     }
   }
 
@@ -265,6 +256,75 @@ public class EditTable extends JPanel implements Printable {
 
     // Tell the caller that this page is part of the printed document.
     return PAGE_EXISTS;
+  }
+
+  /**
+   * Sets the editing enabled mode on the edit table.
+   * @param editEnabled true if editing is enabled; false if disabled
+   */
+  public void setEditEnabled(boolean editEnabled) {
+    this.tableMouseListener.setEditEnabled(editEnabled);
+  }
+
+  /**
+   * Gets the current view mode (answers only, question and answers, etc.).
+   * @return the current view mode
+   */
+  protected EditTableMode getEditTableMode() {
+    return this.editTableMode;
+  }
+
+  /**
+   * Gets the game data we are editing.
+   * @return reference to the game data
+   */
+  protected GameData getGameData() {
+    return this.gameData;
+  }
+
+  /**
+   * Gets the game bundle path.
+   * @return path to the game bundle or null if the game is not in a bundle
+   */
+  protected String getGameBundlePath() {
+    return this.gameData.getBundlePath();
+  }
+
+  /**
+   * Gets the table mouse listener.
+   * @return mouse listener to attach to handle click and hover events
+   */
+  protected EditTableMouseListener getTableMouseListener() {
+    return this.tableMouseListener;
+  }
+
+  /**
+   * Updates the data changed bit (the new value is OR-ed to the existing value).
+   * @param isDataChanged true if the current table data has been updated
+   */
+  protected void updateDataChanged(boolean isDataChanged) {
+    if (isDataChanged) {
+      this.enableSaveFn.run();
+    }
+  }
+
+  /** Activates the table's view style/presentation. */
+  private void activateViewStyle() {
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
+    this.setBackground(lafTheme.getGameTableBorderColor());
+    this.header.activateViewStyle();
+    for (EditRow row : this.rows) {
+      row.activateViewStyle();
+    }
+  }
+
+  /** Activates the table's print style/presentation. */
+  private void activatePrintStyle() {
+    this.setBackground(Color.WHITE);
+    this.header.activatePrintStyle();
+    for (EditRow row : this.rows) {
+      row.activatePrintStyle();
+    }
   }
 
   /**

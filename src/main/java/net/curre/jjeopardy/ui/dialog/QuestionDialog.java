@@ -134,6 +134,7 @@ public class QuestionDialog extends JDialog {
    * Hides this dialog.
    */
   public void hideQuestionDialog() {
+    // TODO - why there are two ways to hide the dialog?
     this.questionPane.clearTextAndImageLabels();
     this.questionPane.showAnswer();
     this.titlePanel.reset();

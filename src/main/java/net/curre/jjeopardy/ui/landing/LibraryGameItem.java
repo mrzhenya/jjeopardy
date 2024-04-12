@@ -111,7 +111,7 @@ public class LibraryGameItem extends JPanel {
     // Questions info button (to display game questions and answers).
     JLabel infoLabel = new ItemIconLabel(null, ImageEnum.EDIT_24, ImageEnum.EDIT_24_HOVER,
         LocaleService.getString("jj.library.info.button"), () -> {
-      EditGameWindow frame = new EditGameWindow(gameData, EditTableMode.ALL);
+      EditGameWindow frame = new EditGameWindow(gameData, true, EditTableMode.ALL);
       frame.setVisible(true);
     });
     this.add(infoLabel, new TableLayoutConstraints(

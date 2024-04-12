@@ -55,6 +55,8 @@ public class ProgressDialog {
   /**
    * Ctor.
    * @param parent reference to the parent component
+   * @param titleMessage dialog title
+   * @param taskName task name
    */
   public ProgressDialog(Component parent, String titleMessage, String taskName) {
     this.parent = parent;

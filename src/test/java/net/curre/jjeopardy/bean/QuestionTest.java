@@ -37,6 +37,34 @@ public class QuestionTest {
     assertNull("Parent name should be null", question.getParentName());
   }
 
+  /** Tests setter methods. */
+  @Test
+  public void testSetters() {
+    Question question = new Question(
+        "AAA", "IMG1","XXX", "IMG2", 11);
+    assertQuestion(question, "AAA", "IMG1",
+        "XXX", "IMG2", 11, false);
+
+    assertFalse("Wrong isChanged question value", question.setQuestion("AAA"));
+    assertTrue("Wrong isChanged question value", question.setQuestion("BBB"));
+    assertEquals("Wrong new question value", "BBB", question.getQuestion());
+
+    assertFalse("Wrong isChanged question image value", question.setQuestionImage("IMG1"));
+    assertTrue("Wrong isChanged question image value", question.setQuestionImage("IMG100"));
+    assertEquals("Wrong new question image value", "IMG100", question.getQuestionImage());
+
+    assertFalse("Wrong isChanged answer value", question.setAnswer("XXX"));
+    assertTrue("Wrong isChanged answer value", question.setAnswer("YYY"));
+    assertEquals("Wrong new answer value", "YYY", question.getAnswer());
+
+    assertFalse("Wrong isChanged answer image value", question.setAnswerImage("IMG2"));
+    assertTrue("Wrong isChanged answer image value", question.setAnswerImage("IMG200"));
+    assertEquals("Wrong new answer image value", "IMG200", question.getAnswerImage());
+
+    question.setPoints(333);
+    assertEquals("Wrong new points value", 333, question.getPoints());
+  }
+
   /** Tests question/answer image related code. */
   @Test
   public void testImageMethods() {

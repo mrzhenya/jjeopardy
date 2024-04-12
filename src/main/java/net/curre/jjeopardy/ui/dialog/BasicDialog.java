@@ -26,12 +26,7 @@ import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.Utilities;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -69,6 +64,9 @@ public abstract class BasicDialog extends JDialog {
 
   /** Ctor. */
   public BasicDialog() {
+    // Providing a new frame for the dialog will enable handling
+    // multiple JDialogs at the same time.
+    super(new JFrame());
     this.setModal(true);
 
     if (Utilities.isMacOs()) {

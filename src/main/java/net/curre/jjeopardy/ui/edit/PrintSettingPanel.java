@@ -18,20 +18,27 @@ package net.curre.jjeopardy.ui.edit;
 
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.util.PrintUtilities;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Represents a print settings UI displayed on the game table.
+ * Represents a print settings UI displayed on the edit game table.
  *
  * @author Yevgeny Nyden
  */
 public class PrintSettingPanel extends JPanel {
 
+  /** Private class logger. */
+  private static final Logger logger = LogManager.getLogger(PrintSettingPanel.class.getName());
+
   /** Reference to the game table data. */
-  private final EditTable gameTable;
+  private final EditTable editTable;
 
   /** Print mode for the game data. */
   private EditTableMode printMode;
@@ -62,11 +69,11 @@ public class PrintSettingPanel extends JPanel {
 
   /**
    * Ctor.
-   * @param gameTable game table data that's being printed
+   * @param editTable game table data that's being printed
    * @param printMode print mode (answers only, all, etc.)
    */
-  public PrintSettingPanel(EditTable gameTable, EditTableMode printMode) {
-    this.gameTable = gameTable;
+  public PrintSettingPanel(EditTable editTable, EditTableMode printMode) {
+    this.editTable = editTable;
     this.printMode = printMode;
 
     // Initialize fields.
@@ -84,7 +91,7 @@ public class PrintSettingPanel extends JPanel {
     this.headerBox = new JCheckBox(LocaleService.getString("jj.print.header.option.title"), true);
     this.headerBox.addActionListener(ae -> this.headerField.setEnabled(this.headerBox.isSelected()));
     this.headerBox.setToolTipText(LocaleService.getString("jj.print.header.option.tooltip"));
-    this.headerField = new JTextField(this.gameTable.getGameName());
+    this.headerField = new JTextField(this.editTable.getGameName());
     this.headerField.setToolTipText(LocaleService.getString("jj.print.header.field.tooltip"));
   }
 
@@ -141,15 +148,19 @@ public class PrintSettingPanel extends JPanel {
     this.printButton.setToolTipText(LocaleService.getString("jj.print.button.tooltip"));
     this.printButton.addActionListener(ae -> {
       PrintSettingPanel thisRef = PrintSettingPanel.this;
-      thisRef.gameTable.setPrintHeader(thisRef.headerBox.isSelected() ? thisRef.headerField.getText().trim() : null);
-      thisRef.gameTable.setPrintFooter(thisRef.footerBox.isSelected() ? thisRef.footerField.getText().trim() : null);
-      PrintUtilities.printEditTable(thisRef.gameTable);
+      thisRef.editTable.setPrintHeader(thisRef.headerBox.isSelected() ? thisRef.headerField.getText().trim() : null);
+      thisRef.editTable.setPrintFooter(thisRef.footerBox.isSelected() ? thisRef.footerField.getText().trim() : null);
+      PrintUtilities.printEditTable(thisRef.editTable);
     });
   }
 
   /** Initializes the main layout and its components for this printing settings panel. */
   private void initialize() {
-    this.setBorder(BorderFactory.createTitledBorder(LocaleService.getString("jj.print.setting.message")));
+    TitledBorder titledBorder = BorderFactory.createTitledBorder(LocaleService.getString("jj.print.setting.message"));
+    Font titleFont = titledBorder.getTitleFont();
+    titledBorder.setTitleFont(titleFont.deriveFont(Font.BOLD, titleFont.getSize()));
+
+    this.setBorder(titledBorder);
     GroupLayout panelLayout = new GroupLayout(this);
     this.setLayout(panelLayout);
     panelLayout.setHorizontalGroup(
@@ -157,18 +168,18 @@ public class PrintSettingPanel extends JPanel {
             .addGroup(panelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(headerBox)
-                    .addComponent(footerBox))
+                    .addComponent(this.headerBox)
+                    .addComponent(this.footerBox))
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                    .addComponent(footerField)
-                    .addComponent(headerField, GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
+                    .addComponent(this.footerField)
+                    .addComponent(this.headerField, GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))
                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                     .addGroup(panelLayout.createSequentialGroup()
                         .addComponent(this.radioOptionAll)
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(printButton))
+                        .addComponent(this.printButton))
                     .addGroup(panelLayout.createSequentialGroup()
                         .addComponent(this.radioOptionAnswers)
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -180,17 +191,17 @@ public class PrintSettingPanel extends JPanel {
         panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(panelLayout.createSequentialGroup()
                 .addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(headerBox)
-                    .addComponent(headerField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(this.headerBox)
+                    .addComponent(this.headerField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(this.radioOptionQuestions)
                     .addComponent(this.radioOptionAnswers)
                 )
                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(footerBox)
-                    .addComponent(footerField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(this.footerBox)
+                    .addComponent(this.footerField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(this.radioOptionAll)
-                    .addComponent(printButton))
+                    .addComponent(this.printButton))
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
   }
@@ -213,8 +224,9 @@ public class PrintSettingPanel extends JPanel {
         newMode = EditTableMode.ALL;
       }
       if (newMode != PrintSettingPanel.this.printMode) {
+        logger.info("Changing edit mode to " + newMode.getMessage());
         PrintSettingPanel.this.printMode = newMode;
-        PrintSettingPanel.this.gameTable.setViewMode(newMode);
+        PrintSettingPanel.this.editTable.setViewMode(newMode);
       }
     }
   }

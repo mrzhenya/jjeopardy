@@ -70,8 +70,16 @@ public class Category implements HasName {
   }
 
   /**
+   * Gets the questions for this category.
+   * @return list of questions for this category
+   */
+  public List<Question> getQuestions() {
+    return this.questions;
+  }
+
+  /**
    * Gets the question given its index.
-    * @param index index of the question to get
+   * @param index index of the question to get
    * @return question with the provided index
    */
   public Question getQuestion(int index) {

@@ -60,6 +60,12 @@ public enum ImageEnum {
   /** Large error icon. */
   ERROR_64("error-64.png"),
 
+  /** Open file icon. */
+  OPEN_FILE_24("open_file-24.png"),
+
+  /** Open file hover icon. */
+  OPEN_FILE_24_HOVER("open_file-24-hover.png"),
+
   /** Trash edit icon. */
   TRASH_24("trash-24.png"),
 
@@ -134,6 +140,9 @@ public enum ImageEnum {
 
   /** User small icon. */
   USER_24("user-24.png"),
+
+  /** Image placeholder large icon. */
+  IMAGE_64("image-64.png"),
 
   /** Image download failure large icon. */
   IMAGE_FAILURE_64("image-failure-64.png"),

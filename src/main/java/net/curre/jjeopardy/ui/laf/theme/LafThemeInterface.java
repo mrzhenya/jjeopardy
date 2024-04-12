@@ -35,6 +35,12 @@ public interface LafThemeInterface {
   LafThemeId getId();
 
   /**
+   * Determines if this is a dark of light theme.
+   * @return true if this is a dark theme; false if it's a light theme
+   */
+  boolean isDarkTheme();
+
+  /**
    * Returns the skin resource key, which
    * also the skin's unique identifier.
    *

@@ -17,9 +17,11 @@
 package net.curre.jjeopardy.ui.edit;
 
 import net.curre.jjeopardy.bean.Question;
+import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.images.ImageUtilities;
 import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.LafService;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
@@ -67,14 +69,20 @@ public class EditCell extends JPanel {
   /** An invisible text pane to help determining the text areas sizes (not thread safe!). */
   private static final JTextPane HELPER_TEXT_PANE = UiService.createDefaultTextPane();
 
+  /** Reference to the currently hovered cell. Assume there is only one edit table open at the same time. */
+  private static EditCell hoveredCell;
+
   /** The question to use for this cell. */
   private final Question question;
 
-  /** Current view mode (answers only, questions and answers, etc.). */
-  private EditTableMode editTableMode;
+  /** Reference to the edit table. */
+  private final EditTable editTable;
 
-  /** Absolute path to the game bundle directory or null if none. */
-  private final String gameBundlePath;
+  /** Column index of this cell (do not assume it's always the same!). */
+  private int columnIndex;
+
+  /** Row index of this cell (do not assume it's always the same!). */
+  private int rowIndex;
 
   /** Reference to the question points label. */
   private final JLabel pointsLabel;
@@ -101,15 +109,16 @@ public class EditCell extends JPanel {
   private static Border viewBorder;
 
   /**
-   * Ctor.
-   * @param question the question for this cell; non null
-   * @param editTableMode current view mode; non null
-   * @param gameBundlePath absolute path to the game bundle or null
+   * Ctor. Note that cell's column and row index has to be initialized by calling the
+   * <code>setColumnAndRowIndexes</code> method after a row is created. These indexes could
+   * change while the game data is being edited.
+   * @param question the question for this cell; not nullable
+   * @param editTable reference to the edit table; not nullable
    */
-  public EditCell(Question question, EditTableMode editTableMode, String gameBundlePath) {
+  public EditCell(Question question, EditTable editTable) {
     this.question = question;
-    this.editTableMode = editTableMode;
-    this.gameBundlePath = gameBundlePath;
+    this.editTable = editTable;
+    hoveredCell = null;
 
     // Initialize the layout and the default, view border.
     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -131,9 +140,12 @@ public class EditCell extends JPanel {
     this.add(this.pointsLabel);
 
     // Initialize the question text pane, which may be hidden for some view modes or if there is no question text.
+    EditTableMouseListener mouseListener = this.editTable.getTableMouseListener();
     this.qTextPane = UiService.createDefaultTextPane();
     this.qTextPane.setFont(lafTheme.getEditTableCellFont());
     this.qTextPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+    this.qTextPane.addMouseListener(mouseListener);
+    this.qTextPane.addMouseMotionListener(mouseListener);
     this.add(this.qTextPane);
 
     // Initialize the question image label, which may be hidden for some view modes or if there is no question image.
@@ -141,7 +153,7 @@ public class EditCell extends JPanel {
     this.qImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
     this.add(this.qImageLabel);
 
-    // Horizontal separator.
+    // Horizontal line separator.
     this.mainSeparator = new JLabel(ImageEnum.VERTICAL_SPACER_24.toImageIcon());
     this.mainSeparator.setAlignmentX(Component.CENTER_ALIGNMENT);
     this.add(this.mainSeparator);
@@ -150,6 +162,8 @@ public class EditCell extends JPanel {
     this.aTextPane = UiService.createDefaultTextPane();
     this.aTextPane.setFont(lafTheme.getEditTableCellFont());
     this.aTextPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+    this.aTextPane.addMouseListener(mouseListener);
+    this.aTextPane.addMouseMotionListener(mouseListener);
     this.add(this.aTextPane);
 
     // Initialize the answer image label, which may be hidden for some view modes or if there is no answer image.
@@ -158,15 +172,73 @@ public class EditCell extends JPanel {
     this.add(this.aImageLabel);
     this.add(Box.createRigidArea(new Dimension(0, BOX_PADDING)));
 
+    this.addMouseMotionListener(mouseListener);
+    this.addMouseListener(mouseListener);
+
     this.activateViewStyle();
   }
 
   /**
-   * Sets the view/print mode (questions, answers, all).
-   * @param editTableMode view mode to set
+   * Shows edit question dialog for this cell/question.
    */
-  public void setViewMode(EditTableMode editTableMode) {
-    this.editTableMode = editTableMode;
+  public void showEditDialog() {
+    EditQuestionDialog editDialog = new EditQuestionDialog(this, this.editTable);
+    editDialog.setVisible(true);
+  }
+
+  /**
+   * Decorates the state of this cell as hovered or not hovered.
+   * @param isHovered true if the cell is hovered; false if not
+   */
+  public void decorateHoverState(boolean isHovered) {
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
+    Color background = lafTheme.getGameTableHeaderBackgroundColor();
+    if (isHovered) {
+      int colorChange = lafTheme.isDarkTheme() ? 30 : -30;
+      background = LafService.createAdjustedColor(background, colorChange);
+      if (hoveredCell != null && hoveredCell != this) {
+        hoveredCell.decorateHoverState(false);
+      }
+      hoveredCell = this;
+    }
+    this.qTextPane.setBackground(background);
+    this.aTextPane.setBackground(background);
+    this.setBackground(background);
+    this.repaint();
+  }
+
+  /**
+   * Gets the cell's question reference.
+   * @return the Question object for this cell
+   */
+  protected Question getQuestion() {
+    return this.question;
+  }
+
+  /**
+   * Gets the current column index of this cell.
+   * @return column index of this cell
+   */
+  protected int getColumnIndex() {
+    return this.columnIndex;
+  }
+
+  /**
+   * Gets the current row index of this cell.
+   * @return row index of this cell
+   */
+  protected int getRowIndex() {
+    return this.rowIndex;
+  }
+
+  /**
+   * Sets the table column and row indexes of this cell.
+   * @param columnIndex column index of this cell
+   * @param rowIndex row index of this cell
+   */
+  protected void setColumnAndRowIndexes(int columnIndex, int rowIndex) {
+    this.columnIndex = columnIndex;
+    this.rowIndex = rowIndex;
   }
 
   /**
@@ -179,10 +251,14 @@ public class EditCell extends JPanel {
   protected int refreshAndResize(int columnWidth) {
     int totalHeight = 2 * BOX_PADDING + this.pointsLabelHeight + CONTENT_SPACING;
     int availableWidth = columnWidth - 2 * BOX_PADDING - 2 * BORDER_WIDTH;
+    EditTableMode editTableMode = this.editTable.getEditTableMode();
+
+    // Refresh the points value that is always displayed.
+    this.pointsLabel.setText(String.valueOf(this.question.getPoints()));
 
     // Determine what needs to be displayed.
-    boolean modeIncludesQuestions = this.editTableMode == EditTableMode.QUESTIONS || this.editTableMode == EditTableMode.ALL;
-    boolean modeIncludesAnswers = this.editTableMode == EditTableMode.ANSWERS || this.editTableMode == EditTableMode.ALL;
+    boolean modeIncludesQuestions = editTableMode == EditTableMode.QUESTIONS || editTableMode == EditTableMode.ALL;
+    boolean modeIncludesAnswers = editTableMode == EditTableMode.ANSWERS || editTableMode == EditTableMode.ALL;
     boolean questionVisible = modeIncludesQuestions && !StringUtils.isBlank(this.question.getQuestion());
     boolean qImageVisible = modeIncludesQuestions && this.question.getQuestionImage() != null;
     boolean answerVisible = modeIncludesAnswers && !StringUtils.isBlank(this.question.getAnswer());
@@ -218,12 +294,13 @@ public class EditCell extends JPanel {
   /** Activates the cell's view style/presentation. */
   protected void activateViewStyle() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
+    Color background = lafTheme.getGameTableHeaderBackgroundColor();
     this.pointsLabel.setForeground(lafTheme.getGameTableCellTextColor());
     this.qTextPane.setForeground(lafTheme.getGameTableCellTextColor());
-    this.qTextPane.setBackground(lafTheme.getGameTableHeaderBackgroundColor());
+    this.qTextPane.setBackground(background);
     this.aTextPane.setForeground(lafTheme.getGameTableCellTextColor());
-    this.aTextPane.setBackground(lafTheme.getGameTableHeaderBackgroundColor());
-    this.setBackground(lafTheme.getGameTableHeaderBackgroundColor());
+    this.aTextPane.setBackground(background);
+    this.setBackground(background);
     this.setBorder(viewBorder);
   }
 
@@ -263,15 +340,16 @@ public class EditCell extends JPanel {
     }
     this.aTextPane.isVisible();
 
+    String bundlePath = this.editTable.getGameBundlePath();
     if (this.qImageLabel.isVisible()) {
       availableHeight = (this.aImageLabel.isVisible() ? availableHeight / 2 : availableHeight) - CONTENT_SPACING;
       ImageUtilities.updateLabelIconImage(
-          this.qImageLabel, question.getQuestionImage(), this.gameBundlePath, availableWidth, availableHeight);
+          this.qImageLabel, question.getQuestionImage(), bundlePath, availableWidth, availableHeight);
     }
 
     if (this.aImageLabel.isVisible()) {
       ImageUtilities.updateLabelIconImage(
-          this.aImageLabel, question.getAnswerImage(), this.gameBundlePath, availableWidth, availableHeight);
+          this.aImageLabel, question.getAnswerImage(), bundlePath, availableWidth, availableHeight);
     }
   }
 
@@ -325,7 +403,7 @@ public class EditCell extends JPanel {
     this.qImageLabel.setVisible(isVisible);
     if (isVisible) {
       boolean success = ImageUtilities.updateLabelIconImage(
-          this.qImageLabel, question.getQuestionImage(), this.gameBundlePath, width, MAX_IMAGE_HEIGHT);
+          this.qImageLabel, question.getQuestionImage(), this.editTable.getGameBundlePath(), width, MAX_IMAGE_HEIGHT);
       if (success) {
         return this.qImageLabel.getIcon().getIconHeight();
       } else {
@@ -349,7 +427,7 @@ public class EditCell extends JPanel {
     this.aImageLabel.setVisible(isVisible);
     if (isVisible) {
       boolean success = ImageUtilities.updateLabelIconImage(
-          this.aImageLabel, question.getAnswerImage(), this.gameBundlePath, width, MAX_IMAGE_HEIGHT);
+          this.aImageLabel, question.getAnswerImage(), this.editTable.getGameBundlePath(), width, MAX_IMAGE_HEIGHT);
       if (success) {
         return this.aImageLabel.getIcon().getIconHeight();
       } else {

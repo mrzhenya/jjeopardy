@@ -22,10 +22,15 @@ import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.event.ClosingWindowListener;
 import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import java.awt.Container;
@@ -40,8 +45,14 @@ import java.awt.event.ComponentEvent;
  */
 public class EditGameWindow extends JDialog {
 
+  /** Private class logger. */
+  private static final Logger logger = LogManager.getLogger(EditGameWindow.class.getName());
+
   /** Reference to the game data we are editing or printing. */
   private final GameData gameData;
+
+  /** Indicates that game data has been changed. */
+  private boolean dataChanged;
 
   /** The game table to render game data in. */
   private final EditTable table;
@@ -49,16 +60,20 @@ public class EditGameWindow extends JDialog {
   /** Reference to the scroll pane where the table is rendered. */
   private final JScrollPane scrollPane;
 
+  /** Reference to the edit settings panel. */
+  private final EditSettingPanel editSettingsPanel;
+
   /**
    * Ctor.
    * @param gameData game data to edit or print
+   * @param editEnabled true if the editing is enabled.
    * @param editTableMode view mode (questions, answers, all)
    */
-  public EditGameWindow(GameData gameData, EditTableMode editTableMode) {
+  public EditGameWindow(GameData gameData, boolean editEnabled, EditTableMode editTableMode) {
     this.gameData = gameData;
+    this.dataChanged = false;
 
     this.setTitle(gameData.getGameName());
-    this.setModal(true);
     this.addWindowListener(new ClosingWindowListener(this::handleWindowClosing));
     this.addComponentListener(new ComponentAdapter() {
       public void componentResized(ComponentEvent e) {
@@ -77,7 +92,7 @@ public class EditGameWindow extends JDialog {
         {TableLayout.FILL, 15, TableLayout.PREFERRED, 15}})); // rows
 
     // Game table wrapped in a scroll pane.
-    this.table = new EditTable(gameData, editTableMode, this::scrollToTop);
+    this.table = new EditTable(gameData, editEnabled, editTableMode, this::scrollToTop, this::enableSaveButton);
     // Note that the table assumes its direct parent is the scroll pane.
     this.scrollPane = new JScrollPane(this.table);
     this.scrollPane.getVerticalScrollBar().setUnitIncrement(10);
@@ -86,12 +101,33 @@ public class EditGameWindow extends JDialog {
     contentPane.add(this.scrollPane, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.FULL, TableLayout.FULL));
 
-    // Print settings panel centered horizontally.
-    PrintSettingPanel printPanel = new PrintSettingPanel(table, editTableMode);
-    contentPane.add(printPanel, new TableLayoutConstraints(
+    // Print and edit settings panels centered horizontally.
+    JPanel panelWrap = new JPanel();
+    PrintSettingPanel printPanel = new PrintSettingPanel(this.table, editTableMode);
+    panelWrap.add(printPanel);
+    this.editSettingsPanel = new EditSettingPanel(this, editEnabled);
+    panelWrap.add(this.editSettingsPanel);
+    contentPane.add(panelWrap, new TableLayoutConstraints(
         0, 2, 0, 2, TableLayout.CENTER, TableLayout.CENTER));
 
     SwingUtilities.invokeLater(this.table::refreshAndResize);
+  }
+
+  /**
+   * Sets the editing enabled mode on the edit table.
+   * @param editEnabled true if editing is enabled; false if disabled
+   */
+  public void setEditEnabled(boolean editEnabled) {
+    this.table.setEditEnabled(editEnabled);
+  }
+
+  /**
+   * Saves the game data
+   */
+  protected void saveGameData() {
+    logger.info("Saving game data");
+    this.dataChanged = false;
+    AppRegistry.getInstance().getGameDataService().saveGameData(this.gameData, this);
   }
 
   /**
@@ -101,11 +137,28 @@ public class EditGameWindow extends JDialog {
     this.scrollPane.getVerticalScrollBar().setValue(0);
   }
 
+  /**
+   * Enables the Save button in the edit settings panel.
+   */
+  private void enableSaveButton() {
+    this.dataChanged = true;
+    this.editSettingsPanel.enableSaveButton();
+  }
+
   /** Saves dimensions of the edit window when window closes. */
   private void handleWindowClosing() {
-    SettingsService settingsService = AppRegistry.getInstance().getSettingsService();
+    logger.info("Closing the edit game window");
+    Registry registry = AppRegistry.getInstance();
+    SettingsService settingsService = registry.getSettingsService();
     settingsService.updateEditGameWindowSize(this.getWidth(), this.getHeight());
     this.table.refreshAndResize();
     settingsService.persistSettings();
+
+    if (this.dataChanged) {
+      registry.getUiService().showConfirmationDialog(
+          LocaleService.getString("jj.editdialog.unsaved.title"),
+          LocaleService.getString("jj.editdialog.unsaved.message"),
+          this::saveGameData, this);
+    }
   }
 }

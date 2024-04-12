@@ -48,6 +48,9 @@ public class CategoryTest {
     assertEquals("Wrong number of questions", 1, category.getQuestionsCount());
     assertEquals("Wrong question", question, category.getQuestion(0));
 
+    assertNotNull("Questions should not be null", category.getQuestions());
+    assertEquals("Wrong number of questions", 1, category.getQuestions().size());
+
     assertNotNull("Parent name should not be blank", question.getParentName());
     assertTrue("Wrong parent question name", question.getParentName().contains("Bum"));
   }
@@ -71,6 +74,7 @@ public class CategoryTest {
     questions.add(new Question("a", null, "a", null, 1));
     Category category = new Category("Bum", questions);
     assertEquals("Wrong number of questions", 13, category.getQuestionsCount());
+    assertEquals("Wrong number of questions", 13, category.getQuestions().size());
 
     category.ensureMaxQuestionsCount();
     assertEquals("Wrong number of questions", JjDefaults.MAX_NUMBER_OF_QUESTIONS, category.getQuestionsCount());

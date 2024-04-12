@@ -5,7 +5,7 @@
   <groupId>net.curre.jjeopardy</groupId>
   <artifactId>jjeopardy</artifactId>
   <packaging>jar</packaging>
-  <version>0.3.1</version>
+  <version>0.4.0</version>
   <properties>
     <!-- User facing application name. -->
     <project.appName>JJeopardy</project.appName>

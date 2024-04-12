@@ -33,7 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 public class Question {
 
   /** The question text for this Question. */
-  private final String question;
+  private String question;
 
   /**
    * An image filename for the question if any - a filename of an image
@@ -42,7 +42,7 @@ public class Question {
   private String questionImage;
 
   /** The answer text of this Question. */
-  private final String answer;
+  private String answer;
 
   /**
    * An image filename for the answer if any - a filename of an image
@@ -51,7 +51,7 @@ public class Question {
   private String answerImage;
 
   /** Points value of this question. */
-  private final int points;
+  private int points;
 
   /** True if this question has been asked. */
   private boolean hasBeenAsked;
@@ -85,6 +85,18 @@ public class Question {
   }
 
   /**
+   * Sets the question text.
+   * @param question the question text
+   * @return true if the value has changed; false if otherwise
+   */
+  public boolean setQuestion(String question) {
+    String newValue = StringUtils.trimToNull(question);
+    boolean isChanged = !StringUtils.equals(this.question, newValue);
+    this.question = newValue;
+    return isChanged;
+  }
+
+  /**
    * Gets the question image filename - a filename of an image
    * in the game bundle directory or a URL.
    * @return the question image or null if none
@@ -97,9 +109,13 @@ public class Question {
    * Sets the question image filename -  a filename of an image
    * in the game bundle directory or a URL.
    * @param questionImage the question image or null if none
+   * @return true if the value has changed; false if otherwise
    */
-  public void setQuestionImage(String questionImage) {
-    this.questionImage = StringUtils.isBlank(questionImage) ? null : questionImage;
+  public boolean setQuestionImage(String questionImage) {
+    String newValue = StringUtils.trimToNull(questionImage);
+    boolean isChanged = !StringUtils.equals(this.questionImage, newValue);
+    this.questionImage = newValue;
+    return isChanged;
   }
 
   /**
@@ -108,6 +124,18 @@ public class Question {
    */
   public String getAnswer() {
     return this.answer == null ? "" : this.answer;
+  }
+
+  /**
+   * Sets the answer text.
+   * @param answer the answer text to set
+   * @return true if the value has changed; false if otherwise
+   */
+  public boolean setAnswer(String answer) {
+    String newValue = StringUtils.trimToNull(answer);
+    boolean isChanged = !StringUtils.equals(this.answer, newValue);
+    this.answer = answer;
+    return isChanged;
   }
 
   /**
@@ -121,9 +149,13 @@ public class Question {
   /**
    * Sets the answer image filename.
    * @param answerImage the answer image or null if none
+   * @return true if the value has changed; false if otherwise
    */
-  public void setAnswerImage(String answerImage) {
-    this.answerImage = StringUtils.isBlank(answerImage) ? null : answerImage;
+  public boolean setAnswerImage(String answerImage) {
+    String newValue = StringUtils.trimToNull(answerImage);
+    boolean isChanged = !StringUtils.equals(this.answerImage, newValue);
+    this.answerImage = newValue;
+    return isChanged;
   }
 
   /**
@@ -132,6 +164,14 @@ public class Question {
    */
   public int getPoints() {
     return this.points;
+  }
+
+  /**
+   * Sets the points value of this question.
+   * @param points the new points value to set
+   */
+  public void setPoints(int points) {
+    this.points = points;
   }
 
   /**

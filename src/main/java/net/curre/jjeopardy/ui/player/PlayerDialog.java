@@ -85,7 +85,7 @@ public class PlayerDialog extends JDialog {
       {TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED},  // columns
       {15, TableLayout.PREFERRED, 10, TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED, 20}}));  // rows
 
-    Font font = new Font("Garamond", Font.PLAIN , 14);
+    Font font = AppRegistry.getInstance().getLafService().getCurrentLafTheme().getButtonFont();
 
     // ******* Top panel label.
     final JLabel label = new JLabel();
@@ -103,7 +103,7 @@ public class PlayerDialog extends JDialog {
     final JButton saveButton = new JButton();
     ClickAndKeyAction.createAndAddAction(saveButton, this::handleSavePlayersAction);
     saveButton.setFont(font);
-    saveButton.setText("Save");
+    saveButton.setText(LocaleService.getString("jj.dialog.button.save"));
     this.add(saveButton, new TableLayoutConstraints(
       1, 5, 1, 5, TableLayout.CENTER, TableLayout.CENTER));
 

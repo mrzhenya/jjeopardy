@@ -44,30 +44,22 @@ public class EditRow extends JPanel {
   /**
    * Ctor.
    * @param rowIndex row's index
-   * @param gameData game data
-   * @param editTableMode current view mode
+   * @param editTable reference to the edit table
    */
-  public EditRow(int rowIndex, GameData gameData, EditTableMode editTableMode) {
+  public EditRow(int rowIndex, EditTable editTable) {
     this.rowHeight = 0;
 
     this.setLayout(new GridLayout(1, 0));
     this.setBorder(new EmptyBorder(BORDER_WIDTH, BORDER_WIDTH, 0, BORDER_WIDTH));
 
+    GameData gameData = editTable.getGameData();
     this.cells = new ArrayList<>();
-    for (Category category : gameData.getCategories()) {
-      EditCell cell = new EditCell(category.getQuestion(rowIndex), editTableMode, gameData.getBundlePath());
+    for (int columnIndex = 0; columnIndex < gameData.getCategoriesCount(); columnIndex++) {
+      Category category = gameData.getCategories().get(columnIndex);
+      EditCell cell = new EditCell(category.getQuestion(rowIndex), editTable);
+      cell.setColumnAndRowIndexes(columnIndex, rowIndex);
       this.cells.add(cell);
       this.add(cell);
-    }
-  }
-
-  /**
-   * Sets the view/print mode (questions, answers, all).
-   * @param editTableMode view mode to set
-   */
-  public void setViewMode(EditTableMode editTableMode) {
-    for (EditCell cell : this.cells) {
-      cell.setViewMode(editTableMode);
     }
   }
 

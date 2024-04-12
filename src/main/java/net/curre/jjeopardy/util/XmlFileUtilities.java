@@ -216,7 +216,7 @@ public class XmlFileUtilities {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
     properties.storeToXML(fileOutputStream,
-        "JJeopardy game file generated on " + dateFormat.format(new Date()));
+        "JJeopardy game file updated on " + dateFormat.format(new Date()));
 
     fileOutputStream.close();
   }

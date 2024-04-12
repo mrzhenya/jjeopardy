@@ -64,6 +64,12 @@ public class NimbusTheme extends LafTheme {
 
   /** {@inheritDoc} */
   @Override
+  public boolean isDarkTheme() {
+    return false;
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public String getNameResourceKey() {
     return "jj.laf.theme.nimbus.name";
   }

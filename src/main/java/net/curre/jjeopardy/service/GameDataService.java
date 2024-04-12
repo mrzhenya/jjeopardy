@@ -22,6 +22,7 @@ import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.games.DefaultGames;
 import net.curre.jjeopardy.images.ImageUtilities;
 import net.curre.jjeopardy.ui.dialog.ProgressDialog;
+import net.curre.jjeopardy.ui.edit.EditGameWindow;
 import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.XmlFileUtilities;
 import org.apache.commons.io.FileUtils;
@@ -389,18 +390,7 @@ public class GameDataService {
         logger.log(Level.WARN, "Unable to copy files", e);
         progressDialog.finish();
       }
-
-      if (failedUrls != null && !failedUrls.isEmpty()) {
-        StringBuilder failedMessage = new StringBuilder(LocaleService.getString("jj.dialog.copy.failed.message") + "\n\n");
-        for (String failedUrl : failedUrls) {
-          failedMessage.append(failedUrl).append("\n");
-        }
-        AppRegistry.getInstance().getUiService().showWarningDialog(
-            LocaleService.getString("jj.dialog.copy.failed.title"),
-            failedMessage.toString(),
-            AppRegistry.getInstance().getLandingUi()
-        );
-      }
+      maybeShowFailedDownloadDialog(failedUrls);
     });
   }
 
@@ -412,7 +402,7 @@ public class GameDataService {
    * @return list of failed downloads (image urls)
    */
   private List<String> downloadImagesAndFinishGameCopy(GameData gameData, String destFilePath,
-                                               ProgressDialog progressDialog) throws IOException {
+                                                       ProgressDialog progressDialog) throws IOException {
     // Download the image files if any and update the image filename on the game data.
     List<String> imageUrls = ImageUtilities.downloadImagesAndUpdatePaths(gameData, progressDialog);
 
@@ -493,6 +483,34 @@ public class GameDataService {
   }
 
   /**
+   * Saves the passed game.
+   * @param gameData game data to save
+   * @param editGameWindow reference to the parent game window
+   */
+  public void saveGameData(GameData gameData, EditGameWindow editGameWindow) {
+    ProgressDialog progressDialog = new ProgressDialog(editGameWindow,
+        LocaleService.getString("jj.dialog.save.title"),
+        LocaleService.getString("jj.dialog.save.header"));
+    progressDialog.start(() -> {
+      List<String> failedUrls = null;
+      // If game bundle is present, copy image files to the game bundle directory.
+      if (gameData.getBundlePath() != null) {
+        // Download the image files if any and update the image filename on the game data.
+        failedUrls = ImageUtilities.downloadImagesAndUpdatePaths(gameData, progressDialog);
+        ImageUtilities.copyImageFilesToGameBundle(gameData);
+      }
+      // Now, overwrite the game file with the updated game data.
+      try {
+        XmlFileUtilities.createGameFile(gameData, gameData.getFilePath());
+      } catch (IOException e) {
+        logger.error("Unable to create a game file " + gameData.getFilePath());
+      }
+      progressDialog.completeAndFinish();
+      maybeShowFailedDownloadDialog(failedUrls);
+    });
+  }
+
+  /**
    * Updates current game players using data from the settings UI.
    * @param playerNames player names from the player dialog
    */
@@ -519,5 +537,23 @@ public class GameDataService {
   private void updateLibraryGames(GameData gameData) {
     this.libraryGames.add(gameData);
     Collections.sort(this.libraryGames);
+  }
+
+  /**
+   * If there are failed images, shows failed image download dialog.
+   * @param failedUrls list of failed image downloads
+   */
+  private void maybeShowFailedDownloadDialog(List<String> failedUrls) {
+    if (failedUrls != null && !failedUrls.isEmpty()) {
+      StringBuilder failedMessage = new StringBuilder(LocaleService.getString("jj.dialog.copy.failed.message") + "\n\n");
+      for (String failedUrl : failedUrls) {
+        failedMessage.append(failedUrl).append("\n");
+      }
+      AppRegistry.getInstance().getUiService().showWarningDialog(
+          LocaleService.getString("jj.dialog.copy.failed.title"),
+          failedMessage.toString(),
+          AppRegistry.getInstance().getLandingUi()
+      );
+    }
   }
 }

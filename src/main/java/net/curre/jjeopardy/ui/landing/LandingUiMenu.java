@@ -230,7 +230,7 @@ public class LandingUiMenu extends JMenuBar {
    */
   private void printAnswers() {
     GameData gameData = AppRegistry.getInstance().getGameDataService().getCurrentGameData();
-    EditGameWindow frame = new EditGameWindow(gameData, EditTableMode.ANSWERS);
+    EditGameWindow frame = new EditGameWindow(gameData, false, EditTableMode.ANSWERS);
     frame.setVisible(true);
   }
 }

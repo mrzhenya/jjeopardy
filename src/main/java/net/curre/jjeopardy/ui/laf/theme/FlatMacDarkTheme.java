@@ -61,6 +61,12 @@ public class FlatMacDarkTheme extends LafTheme {
 
   /** {@inheritDoc} */
   @Override
+  public boolean isDarkTheme() {
+    return true;
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public String getNameResourceKey() {
     return "jj.laf.theme.flatmacdark.name";
   }

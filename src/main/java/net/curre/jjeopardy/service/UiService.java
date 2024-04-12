@@ -93,7 +93,10 @@ public class UiService {
     logger.info("Showing warning dialog: " + title);
     InfoDialog dialog = new InfoDialog(title, message, InfoDialog.Type.ERROR);
     dialog.showDialog(parentComponent);
-    dialog.toFront();
+    java.awt.EventQueue.invokeLater(() -> {
+      dialog.toFront();
+      dialog.repaint();
+    });
   }
 
   /**
@@ -154,12 +157,19 @@ public class UiService {
     textPane.setDragEnabled(false);
     textPane.setOpaque(true);
 
-    // Styling the text pane so that the text is center-aligned.
+    addAlignCenterToTextPane(textPane);
+
+    return textPane;
+  }
+
+  /**
+   * Adds style alignment attributes so that the text is centered in the passed text pane.
+   * @param textPane text pane to add style attributes to
+   */
+  public static void addAlignCenterToTextPane(JTextPane textPane) {
     StyledDocument doc = textPane.getStyledDocument();
     SimpleAttributeSet center = new SimpleAttributeSet();
     StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
     doc.setParagraphAttributes(0, doc.getLength(), center, false);
-
-    return textPane;
   }
 }

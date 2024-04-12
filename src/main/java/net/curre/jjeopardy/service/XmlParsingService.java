@@ -16,16 +16,15 @@
 
 package net.curre.jjeopardy.service;
 
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Level;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -37,9 +36,7 @@ import java.util.Properties;
 import static net.curre.jjeopardy.util.XmlFileUtilities.*;
 
 /**
- * Service to assist with player handling, keeping game scores,
- * handling questions.<br><br>
- * An instance of this service object should be obtained from the AppRegistry.
+ * Service to assist with parsing XML game data files.
  *
  * @author Yevgeny Nyden
  */

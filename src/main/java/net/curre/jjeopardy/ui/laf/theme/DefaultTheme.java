@@ -69,6 +69,12 @@ public class DefaultTheme extends LafTheme {
 
   /** {@inheritDoc} */
   @Override
+  public boolean isDarkTheme() {
+    return true;
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public String getNameResourceKey() {
     return "jj.laf.theme.default.name";
   }

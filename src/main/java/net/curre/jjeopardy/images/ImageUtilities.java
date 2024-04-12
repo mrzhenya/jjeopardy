@@ -24,6 +24,7 @@ import net.curre.jjeopardy.service.SettingsService;
 import net.curre.jjeopardy.ui.dialog.ProgressDialog;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -93,23 +94,22 @@ public class ImageUtilities {
     // Get the image URLs from the regular questions.
     List<Category> categories = gameData.getCategories();
     for (Category category : categories) {
-      for (int ind = 0; ind < category.getQuestionsCount(); ind++) {
-        Question question = category.getQuestion(ind);
-        if (question.getQuestionImage() != null) {
+      for (Question question : category.getQuestions()) {
+        if (StringUtils.startsWith(question.getQuestionImage(), "http")) {
           imageTasks.add(new ImageTask(question.getQuestionImage(), question, true));
         }
-        if (question.getAnswerImage() != null) {
+        if (StringUtils.startsWith(question.getAnswerImage(), "http")) {
           imageTasks.add(new ImageTask(question.getAnswerImage(), question, false));
         }
       }
     }
 
-    // Get the image URLs from the bonus questions.
+    // Get the image URLs from the bonus questions; ignore non-URL paths.
     for (Question question : gameData.getBonusQuestions()) {
-      if (question.getQuestionImage() != null) {
+      if (StringUtils.startsWith(question.getQuestionImage(), "http")) {
         imageTasks.add(new ImageTask(question.getQuestionImage(), question, true));
       }
-      if (question.getAnswerImage() != null) {
+      if (StringUtils.startsWith(question.getAnswerImage(), "http")) {
         imageTasks.add(new ImageTask(question.getAnswerImage(), question, false));
       }
     }
@@ -134,6 +134,40 @@ public class ImageUtilities {
   }
 
   /**
+   * Copies question image files to the game bundle directory if they are
+   * not there already. Note, that game paths will be updated on the question
+   * for which the files have been copied.
+   * @param gameData game data to use
+   */
+  public static void copyImageFilesToGameBundle(GameData gameData) {
+    String bundlePath = gameData.getBundlePath();
+    if (bundlePath == null) {
+      return;
+    }
+    // Copying the question images.
+    List<Category> categories = gameData.getCategories();
+    for (Category category : categories) {
+      for (Question question : category.getQuestions()) {
+        if (copyImageFileHelper(question.getQuestionImage(), bundlePath)) {
+          question.setQuestionImage(FilenameUtils.getName(question.getQuestionImage()));
+        }
+        if (copyImageFileHelper(question.getAnswerImage(), bundlePath)) {
+          question.setAnswerImage(FilenameUtils.getName(question.getAnswerImage()));
+        }
+      }
+    }
+    // Copying the bonus question images.
+    for (Question question : gameData.getBonusQuestions()) {
+      if (copyImageFileHelper(question.getQuestionImage(), bundlePath)) {
+        question.setQuestionImage(FilenameUtils.getName(question.getQuestionImage()));
+      }
+      if (copyImageFileHelper(question.getAnswerImage(), bundlePath)) {
+        question.setAnswerImage(FilenameUtils.getName(question.getAnswerImage()));
+      }
+    }
+  }
+
+  /**
    * Updates the label's icon image. If no image is provided, image data is erased on the label.
    * The image is scaled down appropriately to the passed max width/height while preserving the aspect ratio.
    * @param label label on which the icon image is being updated or null
@@ -146,10 +180,22 @@ public class ImageUtilities {
   public static boolean updateLabelIconImage(
       JLabel label, String imagePath, String bundlePath, int maxWidth, int maxHeight) {
     ImageIcon imageIcon = null;
-    if (imagePath != null && imagePath.startsWith("http")) {
-      imageIcon = ImageUtilities.downloadTempImageResource(imagePath);
-    } else if (imagePath != null && bundlePath != null) {
-      imageIcon = new ImageIcon(bundlePath + File.separatorChar + imagePath);
+    if (imagePath != null) {
+      if (imagePath.startsWith("http")) {
+        imageIcon = ImageUtilities.downloadTempImageResource(imagePath);
+      } else {
+        if (bundlePath == null) {
+          imageIcon = new ImageIcon(imagePath);
+        } else {
+          // Check if the image path stands on its own.
+          String filePath = (new File(imagePath).exists() ? "" : bundlePath + File.separatorChar) + imagePath;
+          imageIcon = new ImageIcon(filePath);
+        }
+        if (imageIcon.getIconHeight() <= 0) {
+          // The image failed to load (invalid path?).
+          return false;
+        }
+      }
     }
     if (imageIcon == null) {
       label.setIcon(null);
@@ -324,6 +370,33 @@ public class ImageUtilities {
       return true;
     } catch (Exception e) {
       logger.log(Level.WARN, "Unable to download image: " + imageUrl, e);
+    }
+    return false;
+  }
+
+  /**
+   * Copies given image to the game bundle directory provided the image is set and
+   * the file is not already in the bundle directory.
+   * @param imagePath image path or null if the image path is not set
+   * @param bundlePath game bundle directory path
+   * @return true if the image was copied; false if otherwise
+   */
+  private static boolean copyImageFileHelper(String imagePath, String bundlePath) {
+    // Check the images with non-blank paths that are not URLs.
+    if (!StringUtils.isBlank(imagePath) && !StringUtils.startsWith(imagePath, "http")) {
+      // If the image file exists, check if it's not in the bundle directory.
+      File imageFile = new File(imagePath);
+      if (imageFile.exists() &&
+          (imageFile.getParentFile() == null || !imageFile.getParentFile().equals(new File(bundlePath)))) {
+        // Copy file into the bundle directory.
+        try {
+          logger.info("Copying image " + imageFile + " to " + bundlePath);
+          FileUtils.copyFile(imageFile, new File(bundlePath + File.separatorChar + imageFile.getName()));
+          return true;
+        } catch (IOException e) {
+          logger.error("Unable to copy file " + imageFile + " to " + bundlePath, e);
+        }
+      }
     }
     return false;
   }
