@@ -18,28 +18,28 @@ package net.curre.jjeopardy.ui.player;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.event.ClosingWindowListener;
 import net.curre.jjeopardy.service.AppRegistry;
-import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
-import net.curre.jjeopardy.service.Registry;
-import net.curre.jjeopardy.ui.landing.LandingUi;
 import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+import javax.validation.constraints.NotNull;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.List;
 
 /**
- * Dialog to add or update players joining the game.
+ * Dialog to add or update players for a game.
+ *
  * @author Yevgeny Nyden
  */
 public class PlayerDialog extends JDialog {
@@ -47,21 +47,25 @@ public class PlayerDialog extends JDialog {
   /** Class logger. */
   private static final Logger logger = LogManager.getLogger(PlayerDialog.class.getName());
 
-  /** Reference to the main Landing dialog. */
-  private final LandingUi landingUi;
-
   /** Container of the players' names/data. */
   private PlayersPane playersPane;
 
+  /** Code to run when players have been updated (on a valid Save button action). */
+  private final Runnable updatePlayersFn;
+
   /**
    * Ctor.
-   * @param landingUi reference to the main Landing dialog.
+   * @param updatePlayersFn handler for a valid Save button action
    */
-  public PlayerDialog(LandingUi landingUi) {
-    this.landingUi = landingUi;
+  public PlayerDialog(Runnable updatePlayersFn) {
+    // Providing a new frame for the dialog will enable handling
+    // multiple JDialogs at the same time.
+    super(new JFrame());
 
+    this.updatePlayersFn = updatePlayersFn;
     this.setTitle(LocaleService.getString("jj.playerdialog.addplayers.title"));
     this.setResizable(false);
+    this.setModal(true);
     this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     this.addWindowListener(new ClosingWindowListener(this::handleWindowClosing));
 
@@ -69,11 +73,21 @@ public class PlayerDialog extends JDialog {
   }
 
   /**
-   * Updates the players pane.
-   * @param players list of players
+   * Updates the players in the dialog and shows the dialog.
+   * @param playerNames most current list of player names
    */
-  public void updatePlayersPane(List<Player> players) {
-    this.playersPane.updatePlayersPane(players);
+  public void showDialog(@NotNull List<String> playerNames) {
+    this.playersPane.updatePlayersPane(playerNames);
+    super.setVisible(true);
+  }
+
+  /**
+   * Gets the current dialog player names. If this method is called in a handler
+   * for the Save button, it can be assumed the players value is valid (min count of not blank names).
+   * @return list of player names
+   */
+  public @NotNull List<String> getPlayerNames() {
+    return this.playersPane.getPlayerNames();
   }
 
   /**
@@ -99,44 +113,60 @@ public class PlayerDialog extends JDialog {
     this.add(this.playersPane, new TableLayoutConstraints(
       1, 3, 1, 3, TableLayout.CENTER, TableLayout.CENTER));
 
+    // ******* Delete All button.
+    JPanel buttonPanel = new JPanel();
+    JButton deleteAllButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(deleteAllButton, this::handleDeleteAllPlayersAction);
+    deleteAllButton.setFont(font);
+    deleteAllButton.setText(LocaleService.getString("jj.dialog.button.deleteall"));
+    buttonPanel.add(deleteAllButton);
+
     // ******* Save button.
-    final JButton saveButton = new JButton();
+    JButton saveButton = new JButton();
     ClickAndKeyAction.createAndAddAction(saveButton, this::handleSavePlayersAction);
     saveButton.setFont(font);
     saveButton.setText(LocaleService.getString("jj.dialog.button.save"));
-    this.add(saveButton, new TableLayoutConstraints(
+    buttonPanel.add(saveButton);
+
+    this.add(buttonPanel, new TableLayoutConstraints(
       1, 5, 1, 5, TableLayout.CENTER, TableLayout.CENTER));
 
     this.setPreferredSize(new Dimension(JjDefaults.PLAYER_DIALOG_WIDTH, JjDefaults.PLAYER_DIALOG_HEIGHT));
     this.pack();
   }
 
+  /** Handles the Delete all players action. */
+  private void handleDeleteAllPlayersAction() {
+    logger.info("Deleting all players.");
+    PlayerDialog.this.playersPane.deleteAllPlayers();
+    this.updatePlayersFn.run();
+    this.setVisible(false);
+  }
+
   /** Handles the Save players action. */
   private void handleSavePlayersAction() {
     logger.info("Saving players.");
-    Registry registry = AppRegistry.getInstance();
-    GameDataService gameService = registry.getGameDataService();
 
-    PlayerDialog.this.playersPane.cleanEmptyPlayers();
-    List<String> playerNames = playersPane.getPlayerNames();
+    this.playersPane.cleanEmptyPlayers();
+    List<String> playerNames = this.playersPane.getPlayerNames();
     if (playerNames.size() < JjDefaults.MIN_NUMBER_OF_PLAYERS) {
       logger.info("Not enough non-blank player names");
-      PlayerDialog.this.setVisible(false);
-      registry.getUiService().showWarningDialog(
+      this.setVisible(false);
+      AppRegistry.getInstance().getUiService().showWarningDialog(
           LocaleService.getString("jj.playerdialog.addplayers.warn.title"),
           LocaleService.getString("jj.playerdialog.addplayers.warn.msg",
-              String.valueOf(JjDefaults.MIN_NUMBER_OF_PLAYERS)),
-          PlayerDialog.this);
-      PlayerDialog.this.setVisible(true);
+              String.valueOf(JjDefaults.MIN_NUMBER_OF_PLAYERS)),this);
+      this.setVisible(true);
       return;
     }
-    gameService.updateCurrentPlayers(playerNames);
-    PlayerDialog.this.landingUi.updateLandingUi();
-    PlayerDialog.this.setVisible(false);
+
+    this.updatePlayersFn.run();
+    this.setVisible(false);
   }
 
   /** Clears the players pane when window closes. */
   private void handleWindowClosing() {
+    // Closing window has no effect on the game state.
     this.setVisible(false);
     this.playersPane.cleanEmptyPlayers();
   }

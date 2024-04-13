@@ -16,7 +16,9 @@
 
 package net.curre.jjeopardy.ui.edit;
 
+import net.curre.jjeopardy.event.ClosingWindowListener;
 import net.curre.jjeopardy.service.LocaleService;
+import net.curre.jjeopardy.ui.player.PlayerDialog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,6 +30,8 @@ import javax.swing.JPanel;
 import javax.swing.LayoutStyle;
 import javax.swing.border.TitledBorder;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.util.List;
 
 /**
  * Represents an edit settings UI displayed on the edit game table.
@@ -41,6 +45,9 @@ public class EditSettingPanel extends JPanel {
 
   /** Reference to the edit game window. */
   private final EditGameWindow editGameWindow;
+
+  /** Reference to the PlayerDialog. */
+  private final PlayerDialog playerDialog;
 
   /** Checkbox to enable or disable table editing. */
   private JCheckBox enableEditBox;
@@ -62,6 +69,10 @@ public class EditSettingPanel extends JPanel {
   public EditSettingPanel(EditGameWindow editGameWindow, boolean editEnabled) {
     this.editGameWindow = editGameWindow;
 
+    this.playerDialog = new PlayerDialog(this::handleSavePlayersAction);
+    this.playerDialog.setLocationRelativeTo(editGameWindow);
+    this.playerDialog.addWindowListener(new ClosingWindowListener(this::handlePlayerDialogClosing));
+
     this.initializeCheckboxes(editEnabled);
     this.initializeSaveButton();
     this.initialize();
@@ -72,6 +83,31 @@ public class EditSettingPanel extends JPanel {
    */
   protected void enableSaveButton() {
     this.saveButton.setEnabled(true);
+  }
+
+  /**
+   * Shows the player dialog to edit players for the current game.
+   * @param actionEvent ignored
+   */
+  private void handleShowPlayersDialogAction(ActionEvent actionEvent) {
+    this.playerDialog.showDialog(
+        this.editGameWindow.getGameData().getPlayerNames());
+  }
+
+  /** Updates the game players after they have been updated in the players' dialog. */
+  private void handleSavePlayersAction() {
+    List<String> playerNames = this.playerDialog.getPlayerNames();
+    boolean isChanged = this.editGameWindow.getGameData().setPlayersNames(playerNames);
+    if (isChanged) {
+      this.editGameWindow.enableSaveButton();
+    }
+  }
+
+  /**
+   * Deselects the edit players box on player dialog close.
+   */
+  private void handlePlayerDialogClosing() {
+    this.editPlayersBox.setSelected(false);
   }
 
   /**
@@ -101,11 +137,8 @@ public class EditSettingPanel extends JPanel {
     this.editPlayersBox = new JCheckBox();
     this.editPlayersBox.setText(LocaleService.getString("jj.edit.settings.players.message"));
     this.editPlayersBox.setToolTipText(LocaleService.getString("jj.edit.settings.players.tooltip"));
-    this.editPlayersBox.setEnabled(false);
-    this.editPlayersBox.addActionListener(e -> {
-      // TODO: implement editing player information.
-      EditSettingPanel.this.editPlayersBox.isSelected();
-    });
+    this.editPlayersBox.setSelected(false);
+    this.editPlayersBox.addActionListener(this::handleShowPlayersDialogAction);
   }
 
   /** Initializes the Save game button component. */

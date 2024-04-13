@@ -22,6 +22,7 @@ import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Settings;
 import net.curre.jjeopardy.event.ClosingWindowListener;
 import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
@@ -123,12 +124,34 @@ public class EditGameWindow extends JDialog {
   }
 
   /**
+   * Gets the game data in edit.
+   * @return reference to the game data we are editing
+   */
+  protected @NotNull GameData getGameData() {
+    return this.gameData;
+  }
+
+  /**
    * Saves the game data
    */
   protected void saveGameData() {
     logger.info("Saving game data");
     this.dataChanged = false;
-    AppRegistry.getInstance().getGameDataService().saveGameData(this.gameData, this);
+    GameDataService gameService = AppRegistry.getInstance().getGameDataService();
+    gameService.saveGameData(this.gameData, this);
+
+    // If the game is in the library, update the library.
+    if (gameService.isLibraryGame(this.gameData)) {
+      AppRegistry.getInstance().getLandingUi().updateLibrary();
+    }
+  }
+
+  /**
+   * Enables the Save button in the edit settings panel.
+   */
+  protected void enableSaveButton() {
+    this.dataChanged = true;
+    this.editSettingsPanel.enableSaveButton();
   }
 
   /**
@@ -136,14 +159,6 @@ public class EditGameWindow extends JDialog {
    */
   private void scrollToTop() {
     this.scrollPane.getVerticalScrollBar().setValue(0);
-  }
-
-  /**
-   * Enables the Save button in the edit settings panel.
-   */
-  private void enableSaveButton() {
-    this.dataChanged = true;
-    this.editSettingsPanel.enableSaveButton();
   }
 
   /** Saves dimensions of the edit window when window closes. */

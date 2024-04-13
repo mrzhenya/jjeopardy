@@ -111,7 +111,7 @@ public class LandingUi extends JFrame {
       this.getRootPane().putClientProperty("apple.awt.windowTitleVisible", false);
     }
 
-    this.playerDialog = new PlayerDialog(this);
+    this.playerDialog = new PlayerDialog(this::handleSavePlayersAction);
     this.playerDialog.setLocationRelativeTo(this);
     AppRegistry.getInstance().getLafService().registerUITreeForUpdates(this);
     AppRegistry.getInstance().getLafService().registerUITreeForUpdates(this.playerDialog);
@@ -121,18 +121,14 @@ public class LandingUi extends JFrame {
    * Displays the player dialog.
    */
   public void showPlayerDialog() {
-    playerDialog.setVisible(true);
+    this.playerDialog.showDialog(
+        AppRegistry.getInstance().getGameDataService().getCurrentPlayerNames());
   }
 
   /**
    * Updates the Landing UI according to the loaded game data.
    */
   public void updateUiWithLoadedGameFile() {
-    GameDataService gameService = AppRegistry.getInstance().getGameDataService();
-    final List<Player> players = gameService.getCurrentPlayers();
-    this.playerDialog.updatePlayersPane(players);
-
-    // Update the players list label in the Landing UI.
     this.updateLandingUi();
   }
 
@@ -216,6 +212,13 @@ public class LandingUi extends JFrame {
   public void quitApp() {
     logger.info("Handling application exit...");
     System.exit(0);
+  }
+
+  /** Updates the current game players after they have been updated in the players' dialog. */
+  private void handleSavePlayersAction() {
+    List<String> playerNames = this.playerDialog.getPlayerNames();
+    AppRegistry.getInstance().getGameDataService().updateCurrentPlayers(playerNames);
+    this.updateLandingUi();
   }
 
   /** Initializes UI components. */

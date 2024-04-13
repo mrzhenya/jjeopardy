@@ -18,7 +18,6 @@ package net.curre.jjeopardy.ui.player;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.validation.constraints.NotNull;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +62,7 @@ public class PlayersPane extends JPanel {
    * Gets the currently added names ignoring the blank ones.
    * @return a list of non-blank strings representing players
    */
-  public List<String> getPlayerNames() {
+  public @NotNull List<String> getPlayerNames() {
     List<String> names = new ArrayList<>();
     for (int ind = 0; ind < this.containerPane.getComponentCount(); ind++) {
       PlayerItem playerItem = (PlayerItem) this.containerPane.getComponent(ind);
@@ -106,6 +106,18 @@ public class PlayersPane extends JPanel {
   }
 
   /**
+   * Deletes all players.
+   */
+  protected void deleteAllPlayers() {
+    // Erasing the names from the existing player rows.
+    for (Component component : this.containerPane.getComponents()) {
+      ((PlayerItem) component).updatePlayer("");
+    }
+    // Removing the extra empty rows.
+    this.cleanEmptyPlayers();
+  }
+
+  /**
    * Prunes empty lines from the players pane.
    */
   protected void cleanEmptyPlayers() {
@@ -119,12 +131,12 @@ public class PlayersPane extends JPanel {
   }
 
   /**
-   * Updates the players pane.
-   * @param players list of players
+   * Updates the players pane with a current list of player names.
+   * @param playersNames list of player names
    */
-  protected void updatePlayersPane(@NotNull List<Player> players) {
-    if (players.size() < JjDefaults.MIN_NUMBER_OF_PLAYERS) {
-      if (players.isEmpty()) {
+  protected void updatePlayersPane(@NotNull List<String> playersNames) {
+    if (playersNames.size() < JjDefaults.MIN_NUMBER_OF_PLAYERS) {
+      if (playersNames.isEmpty()) {
         logger.warn("No players are found.");
       } else {
         logger.warn("Provided too few players, ignoring.");
@@ -136,18 +148,18 @@ public class PlayersPane extends JPanel {
     }
     // Updating player text labels from the passed array.
     final int currPlayersNum = this.containerPane.getComponentCount();
-    for (int ind = 0; ind < players.size(); ind++) {
-      Player player = players.get(ind);
+    for (int ind = 0; ind < playersNames.size(); ind++) {
+      String player = playersNames.get(ind);
       if (ind < currPlayersNum) {
-        ((PlayerItem) this.containerPane.getComponent(ind)).updatePlayer(player.getName());
+        ((PlayerItem) this.containerPane.getComponent(ind)).updatePlayer(player);
       } else {
-        this.addNewPlayerItem(player.getName());
+        this.addNewPlayerItem(player);
       }
     }
     // If there are more players in the UI, removing them.
-    if (players.size() < currPlayersNum) {
-      for (int ind = players.size(); ind < currPlayersNum; ind++) {
-        this.removePlayerItem(players.size());
+    if (playersNames.size() < currPlayersNum) {
+      for (int ind = playersNames.size(); ind < currPlayersNum; ind++) {
+        this.removePlayerItem(playersNames.size());
       }
     }
     this.updateButtonState();

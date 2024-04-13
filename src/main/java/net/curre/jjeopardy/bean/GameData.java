@@ -203,12 +203,23 @@ public class GameData implements Comparable<GameData> {
   }
 
   /**
-   * Updates player names as parsed from a games file.
-   * @param playerNames player names
+   * Updates player names.
+   * @param playerNames list of player names
+   * @return true if the players count or their names changed as a result of calling this method; false if otherwise
    */
-  public void setPlayersNames(List<String> playerNames) {
+  public boolean setPlayersNames(List<String> playerNames) {
+    boolean isChanged = this.playerNames.size() != playerNames.size();
+    if (!isChanged) {
+      for (int ind = 0; ind < playerNames.size(); ind++) {
+        if (!playerNames.get(ind).equals(this.playerNames.get(ind))) {
+          isChanged = true;
+          break;
+        }
+      }
+    }
     this.playerNames.clear();
     this.playerNames.addAll(playerNames);
+    return isChanged;
   }
 
   /**

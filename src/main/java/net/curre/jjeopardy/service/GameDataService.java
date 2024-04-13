@@ -184,6 +184,20 @@ public class GameDataService {
   }
 
   /**
+   * Gets the current player names. Note that in most cases, <code>getCurrentPlayers</code>
+   * method should be called.
+   * @return player names
+   * @see #getCurrentPlayers()
+   */
+  public @NotNull List<String> getCurrentPlayerNames() {
+    List<String> playerNames = new ArrayList<>(this.currentPlayers.size());
+    for (Player player : this.currentPlayers) {
+      playerNames.add(player.getName());
+    }
+    return playerNames;
+  }
+
+  /**
    * Determines if the game is ready to start, which means it has enough players
    * and enough game categories and questions.
    * @return true if we have enough data to start a game; false if otherwise
@@ -220,6 +234,15 @@ public class GameDataService {
       logger.log(Level.ERROR, "Unable to copy default game files", e);
     }
     logger.info("Finished copying the library games");
+  }
+
+  /**
+   * Determines if the game resides in the library.
+   * @param gameData game data to check
+   * @return true if the game file path is in the library directory
+   */
+  public boolean isLibraryGame(GameData gameData) {
+    return FilenameUtils.directoryContains(getGameLibraryDirectoryPath(), gameData.getFilePath());
   }
 
   /**
@@ -512,7 +535,9 @@ public class GameDataService {
   }
 
   /**
-   * Updates current game players using data from the settings UI.
+   * Updates current game players using data from the settings UI. Note that
+   * the current player state (including players' scores) will be erased as a result
+   * of calling this method.
    * @param playerNames player names from the player dialog
    */
   public void updateCurrentPlayers(@NotNull List<String> playerNames) {
@@ -527,7 +552,7 @@ public class GameDataService {
    * Note, that the path may not exist yet.
    * @return absolute path to the games folder
    */
-  private static @NotNull String getGameLibraryDirectoryPath() {
+  protected static @NotNull String getGameLibraryDirectoryPath() {
     return SettingsService.getVerifiedSettingsDirectoryPath() + File.separatorChar + GAME_DIRECTORY;
   }
 

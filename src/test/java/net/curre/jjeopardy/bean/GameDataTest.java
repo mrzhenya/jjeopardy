@@ -111,7 +111,7 @@ public class GameDataTest {
     List<String> playerNames = new ArrayList<>();
     playerNames.add("One");
     playerNames.add("Two");
-    data.setPlayersNames(playerNames);
+    assertTrue("Wrong isChanged", data.setPlayersNames(playerNames));
 
     List<String> playerNamesAfter = data.getPlayerNames();
     assertNotNull("Player names list is null", playerNamesAfter);
@@ -119,10 +119,17 @@ public class GameDataTest {
     assertEquals("Wrong player 0 name", "One", playerNamesAfter.get(0));
     assertEquals("Wrong player 1 name", "Two", playerNamesAfter.get(1));
 
+    // Trying to update with the same players
+    assertFalse("Wrong isChanged", data.setPlayersNames(playerNames));
+
+    // Removing one player name
+    playerNames.remove(1);
+    assertTrue("Wrong isChanged", data.setPlayersNames(playerNames));
+
     // Updating player should reset the previous players list.
     List<String> newPlayerNames = new ArrayList<>();
     newPlayerNames.add("Three");
-    data.setPlayersNames(newPlayerNames);
+    assertTrue("Wrong isChanged", data.setPlayersNames(newPlayerNames));
     assertNotNull("Player names list is null", data.getPlayerNames());
     assertEquals("Wrong player names list size", 1, data.getPlayerNames().size());
     assertEquals("Wrong player 0 name", "Three", data.getPlayerNames().get(0));

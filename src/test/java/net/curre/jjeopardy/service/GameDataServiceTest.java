@@ -63,7 +63,7 @@ public class GameDataServiceTest {
   }
 
   /**
-   * Tests updating the players/names.
+   * Tests updating and retrieving the players/names.
    */
   @Test
   public void testUpdatePlayersFromNames() {
@@ -76,6 +76,31 @@ public class GameDataServiceTest {
     assertPlayer("Wrong player 1", players.get(1), 1, "Two", 0);
     assertPlayer("Wrong player 2", players.get(2), 2, "Three", 0);
     assertFalse("Game should still not be ready", this.testGameService.isGameReady());
+
+    // Test converting players to player names.
+    List<String> newPlayerNames = this.testGameService.getCurrentPlayerNames();
+    assertNotNull("List of players names should not be null", newPlayerNames);
+    assertEquals("Wrong number of player names", 3, newPlayerNames.size());
+    assertEquals("Wrong player 0", "One", newPlayerNames.get(0));
+    assertEquals("Wrong player 1", "Two", newPlayerNames.get(1));
+    assertEquals("Wrong player 2", "Three", newPlayerNames.get(2));
+
+    // Check if the player scores are reset after calling the setter.
+    this.testGameService.updateCurrentPlayers(playerNames);
+    players.get(0).addScore(10);
+    players.get(1).addScore(20);
+    players.get(2).addScore(30);
+    players = this.testGameService.getCurrentPlayers();
+    assertEquals("Wrong player 0 score", 10, players.get(0).getScore());
+    assertEquals("Wrong player 1 score", 20, players.get(1).getScore());
+    assertEquals("Wrong player 2 score", 30, players.get(2).getScore());
+    this.testGameService.updateCurrentPlayers(playerNames);
+
+    players = this.testGameService.getCurrentPlayers();
+    assertEquals("Wrong number of players", 3, players.size());
+    assertPlayer("Wrong player 0", players.get(0), 0, "One", 0);
+    assertPlayer("Wrong player 1", players.get(1), 1, "Two", 0);
+    assertPlayer("Wrong player 2", players.get(2), 2, "Three", 0);
 
     // This should reset the players.
     playerNames = new ArrayList<>();
@@ -131,6 +156,25 @@ public class GameDataServiceTest {
 
     this.testGameService.addToPlayerScore(1, 200);
     assertPlayer("Wrong winner 1", this.testGameService.getWinner(), 1, "Two", 301);
+  }
+
+  /**
+   * Tests the isLibraryGame method.
+   */
+  @Test
+  public void testIsLibraryGame() {
+    String libPath = GameDataService.getGameLibraryDirectoryPath();
+    GameData testGameData = new GameData(
+        libPath + File.separatorChar + "somefile.xml", null, true);
+    assertTrue("The game should be in the library", this.testGameService.isLibraryGame(testGameData));
+
+    // Just in case, test one level down.
+    GameData testGameData2 = new GameData(
+        libPath + File.separatorChar + "dir" + File.separatorChar + "somefile.xml", null, true);
+    assertTrue("The game should be in the library", this.testGameService.isLibraryGame(testGameData2));
+
+    GameData testGameData3 = new GameData("somefile.xml", null, true);
+    assertFalse("The game should not be in the library", this.testGameService.isLibraryGame(testGameData3));
   }
 
   /**
