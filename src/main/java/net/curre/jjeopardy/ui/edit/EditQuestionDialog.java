@@ -21,19 +21,23 @@ import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Question;
-import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.UiService;
+import net.curre.jjeopardy.ui.dialog.EditBaseDialog;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.JjDefaults;
-import net.curre.jjeopardy.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 import javax.swing.border.TitledBorder;
 import javax.validation.constraints.NotNull;
 import java.awt.Component;
@@ -43,11 +47,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a dialog to edit data for a single question.
+ * Represents a dialog to edit data for a single question. This dialog is not designed
+ * to be reused (a new instance should be created each time it is needed).
  *
  * @author Yevgeny Nyden
  */
-public class EditQuestionDialog extends JDialog {
+public class EditQuestionDialog extends EditBaseDialog {
 
   /** Private class logger. */
   private static final Logger logger = LogManager.getLogger(EditQuestionDialog.class.getName());
@@ -88,34 +93,96 @@ public class EditQuestionDialog extends JDialog {
     logger.info("Creating EditQuestionDialog for cell col=" + cell.getColumnIndex() + "; row=" + cell.getRowIndex());
     this.cell = cell;
     this.editTable = editTable;
-
-    this.setModal(true);
-    this.setAlwaysOnTop(true);
-    this.setResizable(false);
-    this.setPreferredSize(new Dimension(JjDefaults.EDIT_QUESTION_DIALOG_MIN_WIDTH, JjDefaults.EDIT_QUESTION_DIALOG_MIN_HEIGHT));
-    this.setTitle(LocaleService.getString("jj.editdialog.title"));
-
-    this.initComponents();
-
-    if (Utilities.isMacOs()) {
-      // Remove application name for the frame panel.
-      this.getRootPane().putClientProperty( "apple.awt.windowTitleVisible", false);
-    }
-
-    this.pack();
+    this.initializeDialog(LocaleService.getString("jj.editdialog.title"),
+        JjDefaults.EDIT_QUESTION_DIALOG_MIN_WIDTH, JjDefaults.EDIT_QUESTION_DIALOG_MIN_HEIGHT);
   }
 
-  /** Initializes the UI components. */
-  private void initComponents() {
+  /** @inheritDoc */
+  @Override
+  protected void handleCancelAction() {
+    logger.info("Cancelling the changes and closing the dialog.");
+    this.setVisible(false);
+    this.dispose();
+  }
+
+  /** @inheritDoc */
+  @Override
+  protected void handleOkAction() {
+    logger.info("Saving the question changes and closing the dialog.");
+
+    List<String> errors = new ArrayList<>();
+    int points = this.validatePointsValue(errors);
+
+    // Validating image paths.
+    String questionImagePath = this.validateQuestionImage(errors);
+    String answerImagePath = this.validateAnswerImage(errors);
+
+    // If there are errors, stop here.
+    if (!errors.isEmpty()) {
+      this.showErrorDialog(errors);
+      return;
+    }
+
+    // Validate the question and answer data.
+    String questionText = StringUtils.trimToNull(this.questionPane.getText());
+    if (questionText == null && questionImagePath == null) {
+      errors.add(ERROR_PREFIX + LocaleService.getString("jj.editdialog.invalid.question") + "\n");
+    }
+    String answerText = StringUtils.trimToNull(this.answerPane.getText());
+    if (answerText == null && answerImagePath == null) {
+      errors.add(ERROR_PREFIX + LocaleService.getString("jj.editdialog.invalid.answer") + "\n");
+    }
+
+    // Check again for errors, stop if there are any.
+    if (!errors.isEmpty()) {
+      this.showErrorDialog(errors);
+      return;
+    }
+
+    // Warn the user that the points will be updated on all questions in the row.
+    boolean isDataChanged = false;
+    if (points != this.cell.getQuestion().getPoints()) {
+      isDataChanged = true;
+      this.setModal(false);
+      this.setAlwaysOnTop(false);
+      GameData gameData = this.editTable.getGameData();
+      AppRegistry.getInstance().getUiService().showInfoDialog(
+          LocaleService.getString("jj.editdialog.points.update.title"),
+          LocaleService.getString("jj.editdialog.points.update.msg"), this);
+      for (Category category : gameData.getCategories()) {
+        category.getQuestion(this.cell.getRowIndex()).setPoints(points);
+      }
+    }
+
+    // Update the rest of the question data.
+    Question question = this.cell.getQuestion();
+    isDataChanged |= question.setQuestion(questionText);
+    isDataChanged |= question.setQuestionImage(questionImagePath);
+    isDataChanged |= question.setAnswer(answerText);
+    isDataChanged |= question.setAnswerImage(answerImagePath);
+
+    // Update the table and dispose the edit dialog.
+    this.editTable.updateDataChanged(isDataChanged);
+    this.editTable.refreshAndResize();
+
+    this.setVisible(false);
+    this.dispose();
+  }
+
+  /** @inheritDoc */
+  @Override
+  protected JPanel getDialogBodyComponent() {
+    JPanel bodyPanel = new JPanel();
+
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int padding = lafTheme.getPanelPadding();
     Font pointsLabelFont = lafTheme.getEditTableCellFont().deriveFont(Font.BOLD, 30);
 
     // Settings the main layout.
-    this.setLayout(new TableLayout(new double[][] {
-        {padding, TableLayout.FILL, padding}, // columns
-        {padding, TableLayout.PREFERRED, padding, TableLayout.FILL, padding, TableLayout.PREFERRED, padding,
-            TableLayout.FILL, padding, TableLayout.PREFERRED, padding}})); // rows
+    bodyPanel.setLayout(new TableLayout(new double[][] {
+        {TableLayout.FILL}, // columns
+        {TableLayout.PREFERRED, padding, TableLayout.FILL, padding,
+            TableLayout.PREFERRED, padding, TableLayout.FILL}})); // rows
 
     // ******* Question points text pane.
     this.pointsPane = new JTextPane();
@@ -123,30 +190,27 @@ public class EditQuestionDialog extends JDialog {
     this.pointsPane.setText(String.valueOf(this.cell.getQuestion().getPoints()));
     this.pointsPane.setFont(pointsLabelFont);
     this.pointsPane.setPreferredSize(new Dimension(POINTS_PANE_WIDTH, this.pointsPane.getPreferredSize().height));
-    this.add(this.pointsPane, new TableLayoutConstraints(
-        1, 1, 1, 1, TableLayout.CENTER, TableLayout.CENTER));
+    bodyPanel.add(this.pointsPane, new TableLayoutConstraints(
+        0, 0, 0, 0, TableLayout.CENTER, TableLayout.CENTER));
 
     // ******* Question section panel.
     JPanel questionPanel = this.createQuestionPanel();
-    this.add(questionPanel, new TableLayoutConstraints(
-        1, 3, 1, 3, TableLayout.FULL, TableLayout.FULL));
+    bodyPanel.add(questionPanel, new TableLayoutConstraints(
+        0, 2, 0, 2, TableLayout.FULL, TableLayout.FULL));
 
     // ******* Separator label icon.
     JLabel mainSeparator = new JLabel();
     mainSeparator.setIcon(ImageEnum.VERTICAL_SPACER_24.toImageIcon());
     mainSeparator.setAlignmentX(Component.CENTER_ALIGNMENT);
-    this.add(mainSeparator, new TableLayoutConstraints(
-        1, 5, 1, 5, TableLayout.CENTER, TableLayout.CENTER));
+    bodyPanel.add(mainSeparator, new TableLayoutConstraints(
+        0, 4, 0, 4, TableLayout.CENTER, TableLayout.CENTER));
 
     // ******* Answer section panel.
     JPanel answerPanel = this.createAnswerPanel();
-    this.add(answerPanel, new TableLayoutConstraints(
-        1, 7, 1, 7, TableLayout.FULL, TableLayout.FULL));
+    bodyPanel.add(answerPanel, new TableLayoutConstraints(
+        0, 6, 0, 6, TableLayout.FULL, TableLayout.FULL));
 
-    // ******* Buttons panel.
-    JPanel buttonPanel = this.createButtonPanel();
-    this.add(buttonPanel, new TableLayoutConstraints(
-        1, 9, 1, 9, TableLayout.CENTER, TableLayout.CENTER));
+    return bodyPanel;
   }
 
   /**
@@ -207,117 +271,16 @@ public class EditQuestionDialog extends JDialog {
   }
 
   /**
-   * Creates and initializes the button panel that's displayed at the bottom of the dialog.
-   * @return panel that contains the action buttons
-   */
-  private @NotNull JPanel createButtonPanel() {
-    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
-    final int spacing = lafTheme.getButtonSpacing();
-    JPanel panel = new JPanel();
-
-    // ******* Save button.
-    final JButton okButton = new JButton();
-    ClickAndKeyAction.createAndAddAction(okButton, this::handleOkQuestionAction);
-    okButton.setFont(lafTheme.getButtonFont());
-    okButton.setText(LocaleService.getString("jj.dialog.button.ok"));
-    panel.add(okButton);
-    panel.add(Box.createRigidArea(new Dimension(spacing, 1)));
-
-    // ******* Cancel button.
-    final JButton cancelButton = new JButton();
-    ClickAndKeyAction.createAndAddAction(cancelButton, this::handleCancelQuestionAction);
-    cancelButton.setFont(lafTheme.getButtonFont());
-    cancelButton.setText(LocaleService.getString("jj.dialog.button.cancel"));
-    panel.add(cancelButton);
-
-    return panel;
-  }
-
-  /**
-   * Handles cancelling the changes action and closes the dialog.
-   */
-  private void handleCancelQuestionAction() {
-    logger.info("Cancelling the changes and closing the dialog.");
-    this.setVisible(false);
-    this.dispose();
-  }
-
-  /**
-   * Handles saving the changes action and closes the dialog.
-   */
-  private void handleOkQuestionAction() {
-    logger.info("Saving the question changes and closing the dialog.");
-
-    List<String> errors = new ArrayList<>();
-    int points = this.validatePointsValue(errors);
-
-    // Validating image paths.
-    String questionImagePath = this.validateQuestionImage(errors);
-    String answerImagePath = this.validateAnswerImage(errors);
-
-    // If there are errors, stop here.
-    if (!errors.isEmpty()) {
-      this.showErrorDialog(errors);
-      return;
-    }
-
-    // Validate the question and answer data.
-    String questionText = StringUtils.trimToNull(this.questionPane.getText());
-    if (questionText == null && questionImagePath == null) {
-      errors.add(ERROR_PREFIX + LocaleService.getString("jj.editdialog.invalid.question") + "\n");
-    }
-    String answerText = StringUtils.trimToNull(this.answerPane.getText());
-    if (answerText == null && answerImagePath == null) {
-      errors.add(ERROR_PREFIX + LocaleService.getString("jj.editdialog.invalid.answer") + "\n");
-    }
-
-    // Check again for errors, stop if there are any.
-    if (!errors.isEmpty()) {
-      this.showErrorDialog(errors);
-      return;
-    }
-
-    // Warn the user that the points will be updated on all questions in the row.
-    boolean isDataChanged = false;
-    if (points != this.cell.getQuestion().getPoints()) {
-      isDataChanged = true;
-      this.setModal(false);
-      this.setAlwaysOnTop(false);
-      GameData gameData = this.editTable.getGameData();
-      AppRegistry.getInstance().getUiService().showInfoDialog(
-          LocaleService.getString("jj.editdialog.points.update.title"),
-          LocaleService.getString("jj.editdialog.points.update.msg"), this);
-      for (Category category : gameData.getCategories()) {
-        category.getQuestion(this.cell.getRowIndex()).setPoints(points);
-      }
-    }
-
-    // Update the rest of the question data.
-    Question question = this.cell.getQuestion();
-    isDataChanged |= question.setQuestion(questionText);
-    isDataChanged |= question.setQuestionImage(questionImagePath);
-    isDataChanged |= question.setAnswer(answerText);
-    isDataChanged |= question.setAnswerImage(answerImagePath);
-
-    // Update the table and dispose the edit dialog.
-    this.editTable.updateDataChanged(isDataChanged);
-    this.editTable.refreshAndResize();
-    this.setVisible(false);
-    this.dispose();
-  }
-
-  /**
    * Shows the error dialog to the user.
    * @param errors errors to show to the user
    */
   private void showErrorDialog(List<String> errors) {
-    this.setModal(false);
-    this.setAlwaysOnTop(false);
-    AppRegistry.getInstance().getUiService().showErrorDialog(
-        LocaleService.getString("jj.editdialog.error.title"),
-        LocaleService.getString("jj.editdialog.error.header") + errors, this);
-    this.setModal(true);
-    this.setAlwaysOnTop(true);
+    StringBuilder errorMessage = new StringBuilder();
+    for (String error : errors) {
+      errorMessage.append(error).append("\n");
+    }
+    super.showErrorDialog(LocaleService.getString("jj.editdialog.error.title"),
+        LocaleService.getString("jj.editdialog.error.header") + errorMessage);
   }
 
   /**
@@ -336,7 +299,7 @@ public class EditQuestionDialog extends JDialog {
       }
     }
     if (points <= 0) {
-      errors.add(ERROR_PREFIX + LocaleService.getString("jj.editdialog.invalid.points") + "\n");
+      errors.add(ERROR_PREFIX + LocaleService.getString("jj.editdialog.invalid.points"));
     }
     return points;
   }
@@ -349,7 +312,7 @@ public class EditQuestionDialog extends JDialog {
   private String validateQuestionImage(List<String> errors) {
     String path = null;
     if (this.questionImagePicker.isInvalidImage()) {
-      errors.add(ERROR_PREFIX + LocaleService.getString("jj.editdialog.invalid.question.image") + "\n");
+      errors.add(ERROR_PREFIX + LocaleService.getString("jj.editdialog.invalid.question.image"));
     } else {
       path = this.questionImagePicker.getImagePathOrNull();
     }
@@ -364,7 +327,7 @@ public class EditQuestionDialog extends JDialog {
   private String validateAnswerImage(List<String> errors) {
     String path = null;
     if (this.answerImagePicker.isInvalidImage()) {
-      errors.add(ERROR_PREFIX + LocaleService.getString("jj.editdialog.invalid.answer.image") + "\n");
+      errors.add(ERROR_PREFIX + LocaleService.getString("jj.editdialog.invalid.answer.image"));
     } else {
       path = this.answerImagePicker.getImagePathOrNull();
     }

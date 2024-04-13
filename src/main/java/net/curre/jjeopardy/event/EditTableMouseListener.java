@@ -16,7 +16,7 @@
 
 package net.curre.jjeopardy.event;
 
-import net.curre.jjeopardy.ui.edit.EditCell;
+import net.curre.jjeopardy.ui.edit.EditableCell;
 
 import javax.annotation.Nullable;
 import javax.swing.JTextPane;
@@ -69,7 +69,7 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
   @Override
   public void mouseReleased(MouseEvent e) {
     if (this.editEnabled) {
-      EditCell cell = this.getEditCellFromEvent(e);
+      EditableCell cell = this.getEditCellFromEvent(e);
       if (cell != null) {
         cell.showEditDialog();
       }
@@ -84,7 +84,7 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
   @Override
   public void mouseEntered(MouseEvent e) {
     if (this.editEnabled) {
-      EditCell cell = this.getEditCellFromEvent(e);
+      EditableCell cell = this.getEditCellFromEvent(e);
       if (cell != null) {
         cell.decorateHoverState(true);
       }
@@ -99,7 +99,7 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
   @Override
   public void mouseExited(MouseEvent e) {
     if (this.editEnabled) {
-      EditCell cell = this.getEditCellFromEvent(e);
+      EditableCell cell = this.getEditCellFromEvent(e);
       if (cell != null) {
         cell.decorateHoverState(false);
       }
@@ -115,13 +115,13 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
    * @param event mouse event
    * @return Edit cell reference or null if unable to find
    */
-  private @Nullable EditCell getEditCellFromEvent(@NotNull MouseEvent event) {
+  private @Nullable EditableCell getEditCellFromEvent(@NotNull MouseEvent event) {
     Component component = event.getComponent();
-    if (component instanceof EditCell) {
-      return ((EditCell) component);
+    if (component instanceof EditableCell) {
+      return ((EditableCell) component);
     } else if (component instanceof JTextPane)  {
       // We also listen for enter events on the child text panes.
-      return ((EditCell) component.getParent());
+      return ((EditableCell) component.getParent());
     }
     return null;
   }

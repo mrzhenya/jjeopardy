@@ -47,8 +47,9 @@ public class EditHeader extends JPanel {
   /**
    * Ctor.
    * @param categories an ordered list of categories to create a table header for
+   * @param editTable reference to the edit table; not nullable
    */
-  public EditHeader(@NotNull List<Category> categories) {
+  public EditHeader(@NotNull List<Category> categories, EditTable editTable) {
     this.headerCells = new ArrayList<>();
     this.rowHeight = 0;
 
@@ -56,8 +57,9 @@ public class EditHeader extends JPanel {
     this.setLayout(new GridLayout(1, 0));
     this.setBorder(new EmptyBorder(BORDER_WIDTH, BORDER_WIDTH, 0, BORDER_WIDTH));
 
+    int ind = 0;
     for (Category category : categories) {
-      EditHeaderCell cell = new EditHeaderCell(category.getName());
+      EditHeaderCell cell = new EditHeaderCell(category.getName(), ind++, editTable);
       this.headerCells.add(cell);
       this.add(cell);
     }

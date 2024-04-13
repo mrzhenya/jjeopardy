@@ -21,7 +21,6 @@ import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.images.ImageUtilities;
 import net.curre.jjeopardy.service.AppRegistry;
-import net.curre.jjeopardy.service.LafService;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
@@ -45,7 +44,7 @@ import java.awt.Font;
  *
  * @author Yevgeny Nyden
  */
-public class EditCell extends JPanel {
+public class EditCell extends JPanel implements EditableCell {
 
   /** Maximum height of a question or answer image. */
   private static final int MAX_IMAGE_HEIGHT = 100;
@@ -69,9 +68,6 @@ public class EditCell extends JPanel {
 
   /** An invisible text pane to help determining the text areas sizes (not thread safe!). */
   private static final JTextPane HELPER_TEXT_PANE = UiService.createDefaultTextPane();
-
-  /** Reference to the currently hovered cell. Assume there is only one edit table open at the same time. */
-  private static EditCell hoveredCell;
 
   /** The question to use for this cell. */
   private final Question question;
@@ -119,7 +115,7 @@ public class EditCell extends JPanel {
   public EditCell(Question question, EditTable editTable) {
     this.question = question;
     this.editTable = editTable;
-    hoveredCell = null;
+    EditTable.hoveredCell = null;
 
     // Initialize the layout and the default, view border.
     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -179,32 +175,18 @@ public class EditCell extends JPanel {
     this.activateViewStyle();
   }
 
-  /**
-   * Shows edit question dialog for this cell/question.
-   */
+  /** @inheritDoc */
   public void showEditDialog() {
     EditQuestionDialog editDialog = new EditQuestionDialog(this, this.editTable);
+    editDialog.setLocationRelativeTo(null);
     editDialog.setVisible(true);
   }
 
-  /**
-   * Decorates the state of this cell as hovered or not hovered.
-   * @param isHovered true if the cell is hovered; false if not
-   */
+  /** @inheritDoc */
   public void decorateHoverState(boolean isHovered) {
-    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
-    Color background = lafTheme.getGameTableHeaderBackgroundColor();
-    if (isHovered) {
-      int colorChange = lafTheme.isDarkTheme() ? 30 : -30;
-      background = LafService.createAdjustedColor(background, colorChange);
-      if (hoveredCell != null && hoveredCell != this) {
-        hoveredCell.decorateHoverState(false);
-      }
-      hoveredCell = this;
-    }
+    Color background = EditTable.decorateHoverStateHelper(this, isHovered);
     this.qTextPane.setBackground(background);
     this.aTextPane.setBackground(background);
-    this.setBackground(background);
     this.repaint();
   }
 

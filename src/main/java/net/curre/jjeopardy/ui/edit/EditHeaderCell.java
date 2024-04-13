@@ -18,6 +18,8 @@ package net.curre.jjeopardy.ui.edit;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.bean.Category;
+import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
@@ -27,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
+import javax.validation.constraints.NotNull;
 import java.awt.Color;
 import java.awt.Dimension;
 
@@ -36,7 +39,7 @@ import java.awt.Dimension;
  *
  * @author Yevgeny Nyden
  */
-public class EditHeaderCell extends JPanel {
+public class EditHeaderCell extends JPanel implements EditableCell {
 
   /** Background color to use for print. */
   private static final Color PRINT_BACKGROUND_COLOR = new Color(210, 233, 248);
@@ -44,18 +47,31 @@ public class EditHeaderCell extends JPanel {
   /** An invisible text pane to help determining the text areas sizes (not thread safe!). */
   private static final JTextPane HELPER_TEXT_PANE = UiService.createDefaultTextPane();
 
+  /** Category index (zero based). */
+  private final int categoryIndex;
+
+  /** Reference to the edit table. */
+  private final EditTable editTable;
+
   /** Text area where category name is rendered. */
   private final JTextPane textPane;
 
   /**
    * Ctor.
    * @param name header cell text (category name)
+   * @param categoryIndex category index (zero based)
+   * @param editTable reference to the edit table; not nullable
    */
-  public EditHeaderCell(String name) {
+  public EditHeaderCell(String name, int categoryIndex, EditTable editTable) {
+    this.categoryIndex = categoryIndex;
+    this.editTable = editTable;
+
     // Layout helps to vertically center the text content.
     this.setLayout(new TableLayout(new double[][] {
         {TableLayout.FILL}, // columns
         {TableLayout.FILL}})); // rows
+
+    EditTableMouseListener mouseListener = this.editTable.getTableMouseListener();
 
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.textPane = UiService.createDefaultTextPane();
@@ -64,10 +80,57 @@ public class EditHeaderCell extends JPanel {
     if (!StringUtils.isBlank(name)) {
       this.textPane.setText(name.toUpperCase());
     }
+    this.textPane.addMouseListener(mouseListener);
+    this.textPane.addMouseMotionListener(mouseListener);
 
     this.add(this.textPane, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.CENTER, TableLayout.CENTER));
     this.activateViewStyle();
+
+    this.addMouseMotionListener(mouseListener);
+    this.addMouseListener(mouseListener);
+  }
+
+  /** @inheritDoc */
+  public void showEditDialog() {
+    EditCategoryDialog dialog = new EditCategoryDialog(this);
+    dialog.setLocationRelativeTo(null);
+    dialog.setVisible(true);
+  }
+
+  /** @inheritDoc */
+  public void decorateHoverState(boolean isHovered) {
+    Color background = EditTable.decorateHoverStateHelper(this, isHovered);
+    this.textPane.setBackground(background);
+    this.repaint();
+  }
+
+  /**
+   * Gets the category name.
+   * @return the current category name
+   */
+  protected String getCategoryName() {
+    return this.editTable.getGameData().getCategories().get(this.categoryIndex).getName();
+  }
+
+  /**
+   * Gets the category index.
+   * @return the current category index (zero based)
+   */
+  protected int getCategoryIndex() {
+    return this.categoryIndex;
+  }
+
+  /**
+   * Updates the cell's corresponding category name in the UI and in the game data.
+   * @param name new category name (assume not blank).
+   */
+  protected void updateCategoryName(@NotNull String name) {
+    Category category = this.editTable.getGameData().getCategories().get(this.categoryIndex);
+    if (category.setName(name)) {
+      this.editTable.updateDataChanged(true);
+    }
+    this.textPane.setText(name.toUpperCase());
   }
 
   /**

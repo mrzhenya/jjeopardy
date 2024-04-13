@@ -19,6 +19,7 @@ package net.curre.jjeopardy.ui.edit;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
+import net.curre.jjeopardy.service.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.PrintUtilities;
 
@@ -29,6 +30,7 @@ import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.validation.constraints.NotNull;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -49,6 +51,9 @@ public class EditTable extends JPanel implements Printable {
 
   /** Thickness of line printed at the top of the table for more emphasis. */
   private static final int EMPHASIS_LINE_HEIGHT = 1;
+
+  /** Reference to the currently hovered cell. Assume there is only one edit table open at the same time. */
+  protected static EditableCell hoveredCell;
 
   /** Edit table header (to display game categories). */
   private final EditHeader header;
@@ -91,13 +96,12 @@ public class EditTable extends JPanel implements Printable {
     this.editTableMode = editTableMode;
     this.scrollToTopFn = scrollToTopFn;
     this.enableSaveFn = enableSaveFn;
+    this.tableMouseListener = new EditTableMouseListener(editEnabled);
 
     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-    this.header = new EditHeader(gameData.getCategories());
+    this.header = new EditHeader(gameData.getCategories(), this);
     this.add(this.header);
-
-    this.tableMouseListener = new EditTableMouseListener(editEnabled);
 
     this.rows = new ArrayList<>();
     for (int ind = 0; ind < gameData.getCategoryQuestionsCount(); ind++) {
@@ -307,6 +311,27 @@ public class EditTable extends JPanel implements Printable {
     if (isDataChanged) {
       this.enableSaveFn.run();
     }
+  }
+
+  /**
+   * Helper method to decorate a cell (table cell or header cell) as hovered or unhovered.
+   * @param component cell or header cell component
+   * @param isHovered true if the cell is hovered; false if otherwise
+   * @return the current background color
+   */
+  protected static Color decorateHoverStateHelper(Component component, boolean isHovered) {
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
+    Color background = lafTheme.getGameTableHeaderBackgroundColor();
+    if (isHovered) {
+      int colorChange = lafTheme.isDarkTheme() ? 30 : -30;
+      background = LafService.createAdjustedColor(background, colorChange);
+      if (hoveredCell != null && hoveredCell != component) {
+        hoveredCell.decorateHoverState(false);
+      }
+      hoveredCell = (EditableCell) component;
+    }
+    component.setBackground(background);
+    return background;
   }
 
   /** Activates the table's view style/presentation. */

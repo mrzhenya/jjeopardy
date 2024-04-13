@@ -18,6 +18,7 @@ package net.curre.jjeopardy.bean;
 
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.util.JjDefaults;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.List;
 public class Category implements HasName {
 
   /** Name of this category. */
-  private final String name;
+  private String name;
 
   /** List of questions for this category. */
   private final List<Question> questions;
@@ -60,6 +61,17 @@ public class Category implements HasName {
    */
   public String getName() {
     return this.name;
+  }
+
+  /**
+   * Sets the category's name.
+   * @param newName the new name of this category
+   * @return true if the value has changed; false if otherwise
+   */
+  public boolean setName(String newName) {
+    boolean isChanged = !StringUtils.equals(newName, this.name);
+    this.name = newName;
+    return isChanged;
   }
 
   /**

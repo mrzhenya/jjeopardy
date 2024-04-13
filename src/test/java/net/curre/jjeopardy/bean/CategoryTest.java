@@ -32,9 +32,9 @@ import static org.junit.Assert.*;
  */
 public class CategoryTest {
 
-  /** Tests ctor and getter methods. */
+  /** Tests ctor and the getter methods. */
   @Test
-  public void testAll() {
+  public void testGetters() {
     List<Question> questions = new ArrayList<>();
     Question question = new Question(
         "Question 1", null, "Answer 1", null,11);
@@ -53,6 +53,17 @@ public class CategoryTest {
 
     assertNotNull("Parent name should not be blank", question.getParentName());
     assertTrue("Wrong parent question name", question.getParentName().contains("Bum"));
+  }
+
+  /** Tests the setName method. */
+  @Test
+  public void testSetName() {
+    Category category = new Category("Bum", new ArrayList<>());
+    assertEquals("Wrong category name", "Bum", category.getName());
+    assertFalse("Wrong isChanged value", category.setName("Bum"));
+    assertEquals("Wrong category name", "Bum", category.getName());
+    assertTrue("Wrong isChanged value", category.setName("Zoom"));
+    assertEquals("Wrong category name", "Zoom", category.getName());
   }
 
   /** Tests ensureMaxQuestionsCount. */
