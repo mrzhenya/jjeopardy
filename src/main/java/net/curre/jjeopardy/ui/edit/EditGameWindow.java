@@ -75,6 +75,11 @@ public class EditGameWindow extends JDialog {
     this.gameData = gameData;
     this.dataChanged = false;
 
+    if (!this.gameData.isNativeData()) {
+      logger.info("Opened edit game window with non-native data, editing is going to be disabled");
+      editEnabled = false;
+    }
+
     this.setTitle(gameData.getGameName());
     this.addWindowListener(new ClosingWindowListener(this::handleWindowClosing));
     this.addComponentListener(new ComponentAdapter() {

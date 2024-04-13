@@ -507,11 +507,12 @@ public class GameDataService {
   }
 
   /**
-   * Saves the passed game.
+   * Saves the passed game in the game file it corresponds to.
    * @param gameData game data to save
    * @param editGameWindow reference to the parent game window
    */
   public void saveGameData(GameData gameData, EditGameWindow editGameWindow) {
+    assert(gameData.isNativeData());
     ProgressDialog progressDialog = new ProgressDialog(editGameWindow,
         LocaleService.getString("jj.dialog.save.title"),
         LocaleService.getString("jj.dialog.save.header"));

@@ -46,6 +46,9 @@ public class EditSettingPanel extends JPanel {
   /** Reference to the edit game window. */
   private final EditGameWindow editGameWindow;
 
+  /** Editing is not available on non-native data files. */
+  private final boolean editAvailable;
+
   /** Reference to the PlayerDialog. */
   private final PlayerDialog playerDialog;
 
@@ -69,6 +72,9 @@ public class EditSettingPanel extends JPanel {
   public EditSettingPanel(EditGameWindow editGameWindow, boolean editEnabled) {
     this.editGameWindow = editGameWindow;
 
+    // Note that editing is not available on non-native data files.
+    this.editAvailable = this.editGameWindow.getGameData().isNativeData();
+
     this.playerDialog = new PlayerDialog(this::handleSavePlayersAction);
     this.playerDialog.setLocationRelativeTo(editGameWindow);
     this.playerDialog.addWindowListener(new ClosingWindowListener(this::handlePlayerDialogClosing));
@@ -76,13 +82,19 @@ public class EditSettingPanel extends JPanel {
     this.initializeCheckboxes(editEnabled);
     this.initializeSaveButton();
     this.initialize();
+
+    if (!this.editAvailable) {
+      this.setToolTipText(LocaleService.getString("jj.edit.button.save.disabled.tooltip"));
+    }
   }
 
   /**
-   * Enables the Save button.
+   * Enables the Save button. Does nothing if edit function is not available.
    */
   protected void enableSaveButton() {
-    this.saveButton.setEnabled(true);
+    if (this.editAvailable) {
+      this.saveButton.setEnabled(true);
+    }
   }
 
   /**
@@ -118,15 +130,14 @@ public class EditSettingPanel extends JPanel {
     // Checkbox to change the editing mode of the edit table.
     this.enableEditBox = new JCheckBox();
     this.enableEditBox.setText(LocaleService.getString("jj.edit.setting.edit.message"));
-    this.enableEditBox.setToolTipText(LocaleService.getString("jj.edit.setting.edit.tooltip"));
-    this.enableEditBox.setSelected(editEnabled);
+    this.enableEditBox.setSelected(editEnabled && this.editAvailable);
+    this.enableEditBox.setEnabled(this.editAvailable);
     this.enableEditBox.addActionListener(e -> EditSettingPanel.this.editGameWindow.setEditEnabled(
         EditSettingPanel.this.enableEditBox.isSelected()));
 
     // Checkbox to edit additional game information such as the game name or description.
     this.editGameInfoBox = new JCheckBox();
     this.editGameInfoBox.setText(LocaleService.getString("jj.edit.settings.extra.message"));
-    this.editGameInfoBox.setToolTipText(LocaleService.getString("jj.edit.settings.extra.tooltip"));
     this.editGameInfoBox.setEnabled(false);
     this.editGameInfoBox.addActionListener(e -> {
       // TODO: implement editing additional game information.
@@ -136,26 +147,38 @@ public class EditSettingPanel extends JPanel {
     // Checkbox to edit game players.
     this.editPlayersBox = new JCheckBox();
     this.editPlayersBox.setText(LocaleService.getString("jj.edit.settings.players.message"));
-    this.editPlayersBox.setToolTipText(LocaleService.getString("jj.edit.settings.players.tooltip"));
     this.editPlayersBox.setSelected(false);
+    this.editPlayersBox.setEnabled(this.editAvailable);
     this.editPlayersBox.addActionListener(this::handleShowPlayersDialogAction);
+
+    // Set tooltips only when editing is available.
+    if (this.editAvailable) {
+      this.enableEditBox.setToolTipText(LocaleService.getString("jj.edit.setting.edit.tooltip"));
+      this.editGameInfoBox.setToolTipText(LocaleService.getString("jj.edit.settings.extra.tooltip"));
+      this.editPlayersBox.setToolTipText(LocaleService.getString("jj.edit.settings.players.tooltip"));
+    }
   }
 
-  /** Initializes the Save game button component. */
+  /**
+   * Initializes the Save game button component.
+   */
   private void initializeSaveButton() {
     this.saveButton = new JButton(LocaleService.getString("jj.edit.button.save.message"));
-    this.saveButton.setToolTipText(LocaleService.getString("jj.edit.button.save.tooltip"));
     this.saveButton.setEnabled(false);
-    this.saveButton.addActionListener(ae -> {
-      logger.info("Saving game changes...");
-      this.saveButton.setEnabled(false);
-      this.editGameWindow.saveGameData();
-    });
+    if (this.editAvailable) {
+      this.saveButton.setToolTipText(LocaleService.getString("jj.edit.button.save.tooltip"));
+      this.saveButton.addActionListener(ae -> {
+        logger.info("Saving game changes...");
+        this.saveButton.setEnabled(false);
+        this.editGameWindow.saveGameData();
+      });
+    }
   }
 
   /** Initializes the main layout and its components for this edit settings panel. */
   private void initialize() {
-    TitledBorder titledBorder = BorderFactory.createTitledBorder(LocaleService.getString("jj.edit.setting.message"));
+    TitledBorder titledBorder = BorderFactory.createTitledBorder(LocaleService.getString(
+        this.editAvailable ? "jj.edit.setting.message" : "jj.edit.setting.disabled.message"));
     Font titleFont = titledBorder.getTitleFont();
     titledBorder.setTitleFont(titleFont.deriveFont(Font.BOLD, titleFont.getSize()));
     this.setBorder(titledBorder);
