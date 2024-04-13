@@ -30,6 +30,7 @@ import net.curre.jjeopardy.ui.edit.EditTableMode;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.JjDefaults;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -68,8 +69,7 @@ public class LibraryGameItem extends JPanel {
     this.setMaximumSize(new Dimension(JjDefaults.LANDING_UI_WIDTH, 36));
 
     // Game size icon.
-    JLabel sizeLabel = new ItemIconLabel(
-        null, gameData.getGameSizeIconSmall(), null, gameData.getGameSizeText(), null);
+    JLabel sizeLabel = new ItemIconLabel(null, gameData.getGameSizeIconSmall(), gameData.getGameSizeText());
     this.add(sizeLabel, new TableLayoutConstraints(
         1, 1, 1, 1, TableLayout.CENTER, TableLayout.CENTER));
 
@@ -88,16 +88,16 @@ public class LibraryGameItem extends JPanel {
     // Players number label.
     int playersCount = gameData.getPlayerNames().size();
     if (playersCount > 0) {
-      JLabel playersLabel = new ItemIconLabel(String.valueOf(playersCount), ImageEnum.USER_24, null,
-          LocaleService.getString("jj.library.players.message", String.valueOf(playersCount)), null);
+      JLabel playersLabel = new ItemIconLabel(String.valueOf(playersCount), ImageEnum.USER_24,
+          LocaleService.getString("jj.library.players.message", String.valueOf(playersCount)));
       this.add(playersLabel, new TableLayoutConstraints(
           9, 1, 9, 1, TableLayout.CENTER, TableLayout.CENTER));
     }
 
     // Image download failure icon.
     if (gameData.isImageDownloadFailure()) {
-      JLabel failureLabel = new ItemIconLabel(null, ImageEnum.IMAGE_FAILURE_24, null,
-          LocaleService.getString("jj.library.failed.image"), null);
+      JLabel failureLabel = new ItemIconLabel(null, ImageEnum.IMAGE_FAILURE_24,
+          LocaleService.getString("jj.library.failed.image"));
       this.add(failureLabel, new TableLayoutConstraints(
           11, 1, 11, 1, TableLayout.CENTER, TableLayout.CENTER));
     }
@@ -109,17 +109,17 @@ public class LibraryGameItem extends JPanel {
     this.add(dimensionLabel, new TableLayoutConstraints(
         13, 1, 13, 1, TableLayout.CENTER, TableLayout.CENTER));
 
-    // Questions info button (to display game questions and answers).
-    JLabel infoLabel = new ItemIconLabel(null, ImageEnum.EDIT_24, ImageEnum.EDIT_24_HOVER,
+    // Game edit button (to edit game information).
+    JButton editLabel = new ItemIconButton(null, ImageEnum.EDIT_24, ImageEnum.EDIT_24_HOVER,
         LocaleService.getString("jj.library.info.button"), () -> {
-      EditGameWindow frame = new EditGameWindow(gameData, true, EditTableMode.ALL);
+      EditGameWindow frame = new EditGameWindow(this.gameData, true, EditTableMode.ALL);
       frame.setVisible(true);
     });
-    this.add(infoLabel, new TableLayoutConstraints(
+    this.add(editLabel, new TableLayoutConstraints(
         15, 1, 15, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Remove game button.
-    JLabel trashLabel = new ItemIconLabel(null, ImageEnum.TRASH_24, ImageEnum.TRASH_24_HOVER,
+    JButton trashLabel = new ItemIconButton(null, ImageEnum.TRASH_24, ImageEnum.TRASH_24_HOVER,
         LocaleService.getString("jj.file.info.remove.message"), this::handleDeleteGameItem);
     this.add(trashLabel, new TableLayoutConstraints(
         17, 1, 17, 1, TableLayout.CENTER, TableLayout.CENTER));

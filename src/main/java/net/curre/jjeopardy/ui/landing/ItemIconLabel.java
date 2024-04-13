@@ -20,11 +20,8 @@ import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import java.awt.Font;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 /**
  * Label with an icon to display on a game line item.
@@ -33,79 +30,21 @@ import java.awt.event.MouseListener;
  */
 public class ItemIconLabel extends JLabel {
 
-  /** Icon to use for the label. */
-  private final ImageIcon icon;
-
-  /** Icon to use for the label on mouse hover. */
-  private final ImageIcon iconHover;
-
   /**
    * Ctor.
    * @param textOrNull text for the label or null if no text is present
    * @param icon icon to use
-   * @param iconHover icon to use on hover or null if icon shouldn't be changed
    * @param tooltip tooltip text
-   * @param taskOrNull task to run on mouse click or null if none
    */
-  public ItemIconLabel(String textOrNull, ImageEnum icon, ImageEnum iconHover, String tooltip, Runnable taskOrNull) {
+  public ItemIconLabel(String textOrNull, ImageEnum icon, String tooltip) {
     if (textOrNull != null) {
       LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
       Font font = lafTheme.getDialogTextFont();
       this.setFont(font);
       this.setText(textOrNull);
     }
-    this.icon = icon.toImageIcon();
-    this.iconHover = iconHover == null ? null : iconHover.toImageIcon();
 
-    this.setIcon(this.icon);
+    this.setIcon(icon.toImageIcon());
     this.setToolTipText(tooltip);
-    this.addMouseListener(new ItemIconMouseListener(taskOrNull));
-  }
-
-  /** Mouse listener for the <code>ItemIconLabel</code>. */
-  private class ItemIconMouseListener implements MouseListener {
-
-    /** Task to run on mouse click. */
-    private final Runnable taskOrNull;
-
-    /**
-     * Ctor.
-     * @param taskOrNull the task to run on mouse click
-     */
-    public ItemIconMouseListener(Runnable taskOrNull) {
-      this.taskOrNull = taskOrNull;
-    }
-
-    /** Runs the task. */
-    @Override
-    public void mouseClicked(MouseEvent e) {
-      if (taskOrNull != null) {
-        this.taskOrNull.run();
-      }
-    }
-
-    /** Updates the label's icon to the hover icon if it's set. */
-    @Override
-    public void mouseEntered(MouseEvent e) {
-      if (ItemIconLabel.this.iconHover != null) {
-        ItemIconLabel.this.setIcon(ItemIconLabel.this.iconHover);
-      }
-    }
-
-    /** Updates the label's icon back to the original. */
-    @Override
-    public void mouseExited(MouseEvent e) {
-      if (ItemIconLabel.this.iconHover != null) {
-        ItemIconLabel.this.setIcon(ItemIconLabel.this.icon);
-      }
-    }
-
-    /** Does nothing. */
-    @Override
-    public void mousePressed(MouseEvent e) {}
-
-    /** Does nothing. */
-    @Override
-    public void mouseReleased(MouseEvent e) {}
   }
 }
