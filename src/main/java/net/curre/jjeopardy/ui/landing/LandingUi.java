@@ -367,6 +367,7 @@ public class LandingUi extends JFrame {
   private @NotNull Component createLibraryPanel() {
     this.libraryPanel = new JPanel();
     JScrollPane scrollPane = new JScrollPane(this.libraryPanel);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(10);
     scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
     boolean loadSuccess = AppRegistry.getInstance().getGameDataService().loadLibraryGames();
