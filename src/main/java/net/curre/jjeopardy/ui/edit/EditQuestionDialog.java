@@ -92,7 +92,7 @@ public class EditQuestionDialog extends JDialog {
     this.setModal(true);
     this.setAlwaysOnTop(true);
     this.setResizable(false);
-    this.setPreferredSize(new Dimension(JjDefaults.EDIT_DIALOG_MIN_WIDTH, JjDefaults.EDIT_DIALOG_MIN_HEIGHT));
+    this.setPreferredSize(new Dimension(JjDefaults.EDIT_QUESTION_DIALOG_MIN_WIDTH, JjDefaults.EDIT_QUESTION_DIALOG_MIN_HEIGHT));
     this.setTitle(LocaleService.getString("jj.editdialog.title"));
 
     this.initComponents();
@@ -103,7 +103,6 @@ public class EditQuestionDialog extends JDialog {
     }
 
     this.pack();
-    this.setLocationRelativeTo(null);
   }
 
   /** Initializes the UI components. */
@@ -195,7 +194,7 @@ public class EditQuestionDialog extends JDialog {
     panel.setBorder(border);
 
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
-    int panelWidth = JjDefaults.EDIT_DIALOG_MIN_WIDTH - 2 * lafTheme.getPanelPadding();
+    int panelWidth = JjDefaults.EDIT_QUESTION_DIALOG_MIN_WIDTH - 2 * lafTheme.getPanelPadding();
     textPane.setPreferredSize(new Dimension(panelWidth - 20, 75));
     JScrollPane scrollPane = new JScrollPane(textPane);
     scrollPane.setPreferredSize(new Dimension(panelWidth - 20, 75));

@@ -73,10 +73,16 @@ public class JjDefaults {
   public static final int EDIT_GAME_WINDOW_MIN_HEIGHT;
 
   /** Min width for the edit question dialog. */
-  public static final int EDIT_DIALOG_MIN_WIDTH;
+  public static final int EDIT_QUESTION_DIALOG_MIN_WIDTH;
 
   /** Min height for the edit question dialog. */
-  public static final int EDIT_DIALOG_MIN_HEIGHT;
+  public static final int EDIT_QUESTION_DIALOG_MIN_HEIGHT;
+
+  /** Min width for the edit game info dialog. */
+  public static final int EDIT_INFO_DIALOG_MIN_WIDTH;
+
+  /** Min height for the edit game info dialog. */
+  public static final int EDIT_INFO_DIALOG_MIN_HEIGHT;
 
   /** Min width for the game window. */
   public static final int GAME_WINDOW_MIN_WIDTH;
@@ -120,8 +126,10 @@ public class JjDefaults {
     LANDING_UI_LIBRARY_HEIGHT = getDefaultIntProperty("jj.defaults.landing.ui.library.height");
     EDIT_GAME_WINDOW_MIN_WIDTH = getDefaultIntProperty("jj.defaults.edit.game.window.min.width");
     EDIT_GAME_WINDOW_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.edit.game.window.min.height");
-    EDIT_DIALOG_MIN_WIDTH = getDefaultIntProperty("jj.defaults.edit.dialog.min.width");
-    EDIT_DIALOG_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.edit.dialog.min.height");
+    EDIT_QUESTION_DIALOG_MIN_WIDTH = getDefaultIntProperty("jj.defaults.edit.question.dialog.min.width");
+    EDIT_QUESTION_DIALOG_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.edit.question.dialog.min.height");
+    EDIT_INFO_DIALOG_MIN_WIDTH = getDefaultIntProperty("jj.defaults.edit.info.dialog.min.width");
+    EDIT_INFO_DIALOG_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.edit.info.dialog.min.height");
     GAME_WINDOW_MIN_WIDTH = getDefaultIntProperty("jj.defaults.game.window.min.width");
     GAME_WINDOW_MIN_HEIGHT = getDefaultIntProperty("jj.defaults.game.window.min.height");
     GAME_TABLE_MIN_ROW_HEIGHT = getDefaultIntProperty("jj.defaults.min.row.height");

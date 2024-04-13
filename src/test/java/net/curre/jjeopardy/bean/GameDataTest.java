@@ -65,13 +65,28 @@ public class GameDataTest {
     assertEquals("Wrong dir path", "TestDirPath2", data.getBundlePath());
   }
 
-  /** Tests setGameName. */
+  /** Tests setGameName and getGameName. */
   @Test
   public void testSetGameName() {
     GameData data = new GameData("", null, true);
     assertNull(data.getGameName());
-    data.setGameName("TestName");
+    assertTrue("Wrong isChanged", data.setGameName("TestName"));
     assertEquals("Wrong game name", "TestName", data.getGameName());
+
+    assertTrue("Wrong isChanged", data.setGameName("New Name"));
+    assertEquals("Wrong game name", "New Name", data.getGameName());
+  }
+
+  /** Tests setGameDescription and getGameDescription. */
+  @Test
+  public void testSetGameDescription() {
+    GameData data = new GameData("", null, true);
+    assertNull(data.getGameDescription());
+    assertTrue("Wrong isChanged", data.setGameDescription("TestDescription"));
+    assertEquals("Wrong game description", "TestDescription", data.getGameDescription());
+
+    assertTrue("Wrong isChanged", data.setGameDescription("New Description"));
+    assertEquals("Wrong game description", "New Description", data.getGameDescription());
   }
 
   /** Tests changeToNativeData. */

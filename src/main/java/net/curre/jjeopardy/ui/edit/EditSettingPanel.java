@@ -16,7 +16,7 @@
 
 package net.curre.jjeopardy.ui.edit;
 
-import net.curre.jjeopardy.event.ClosingWindowListener;
+import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.player.PlayerDialog;
 import org.apache.logging.log4j.LogManager;
@@ -31,6 +31,8 @@ import javax.swing.LayoutStyle;
 import javax.swing.border.TitledBorder;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
 
 /**
@@ -51,6 +53,9 @@ public class EditSettingPanel extends JPanel {
 
   /** Reference to the PlayerDialog. */
   private final PlayerDialog playerDialog;
+
+  /** Reference to the EditInfoDialog. */
+  private final EditInfoDialog infoDialog;
 
   /** Checkbox to enable or disable table editing. */
   private JCheckBox enableEditBox;
@@ -77,8 +82,12 @@ public class EditSettingPanel extends JPanel {
 
     this.playerDialog = new PlayerDialog(this::handleSavePlayersAction);
     this.playerDialog.setLocationRelativeTo(editGameWindow);
-    this.playerDialog.addWindowListener(new ClosingWindowListener(this::handlePlayerDialogClosing));
+    ComponentAdapter hiddenAdapter = new ComponentHiddenAdapter();
+    this.playerDialog.addComponentListener(hiddenAdapter);
 
+    this.infoDialog = new EditInfoDialog(this::handleSaveInfoAction);
+    this.infoDialog.setLocationRelativeTo(editGameWindow);
+    this.infoDialog.addComponentListener(hiddenAdapter);
     this.initializeCheckboxes(editEnabled);
     this.initializeSaveButton();
     this.initialize();
@@ -115,16 +124,20 @@ public class EditSettingPanel extends JPanel {
     }
   }
 
-  /**
-   * Deselects the edit players box on player dialog close.
-   */
-  private void handlePlayerDialogClosing() {
-    this.editPlayersBox.setSelected(false);
+  /** Updates the game information after it has been updated in the edit info dialog. */
+  private void handleSaveInfoAction() {
+    GameData gameData = this.editGameWindow.getGameData();
+    boolean isChanged = gameData.setGameName(this.infoDialog.getGameName());
+    isChanged |= gameData.setGameDescription(this.infoDialog.getGameDescription());
+    if (isChanged) {
+      this.editGameWindow.enableSaveButton();
+    }
+    this.editGameWindow.refreshGameName();
   }
 
   /**
    * Initializes the checkbox action elements of the edit settings dialog.
-   * @param editEnabled true if editing is enable; false if otherwise
+   * @param editEnabled true if editing is enabled (ignored if edit is not available); false if otherwise
    */
   private void initializeCheckboxes(boolean editEnabled) {
     // Checkbox to change the editing mode of the edit table.
@@ -132,16 +145,15 @@ public class EditSettingPanel extends JPanel {
     this.enableEditBox.setText(LocaleService.getString("jj.edit.setting.edit.message"));
     this.enableEditBox.setSelected(editEnabled && this.editAvailable);
     this.enableEditBox.setEnabled(this.editAvailable);
-    this.enableEditBox.addActionListener(e -> EditSettingPanel.this.editGameWindow.setEditEnabled(
-        EditSettingPanel.this.enableEditBox.isSelected()));
+    this.enableEditBox.addActionListener(e ->
+        this.editGameWindow.setEditEnabled(this.enableEditBox.isSelected()));
 
     // Checkbox to edit additional game information such as the game name or description.
     this.editGameInfoBox = new JCheckBox();
     this.editGameInfoBox.setText(LocaleService.getString("jj.edit.settings.extra.message"));
-    this.editGameInfoBox.setEnabled(false);
+    this.editGameInfoBox.setEnabled(this.editAvailable);
     this.editGameInfoBox.addActionListener(e -> {
-      // TODO: implement editing additional game information.
-      EditSettingPanel.this.editGameInfoBox.isSelected();
+      this.infoDialog.showDialog(this.editGameWindow.getGameData());
     });
 
     // Checkbox to edit game players.
@@ -214,5 +226,21 @@ public class EditSettingPanel extends JPanel {
                     .addComponent(this.saveButton))
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
+  }
+
+  /**
+   * Deselects the edit players box and the edit info box on the dialogs close.
+   */
+  private class ComponentHiddenAdapter extends ComponentAdapter {
+
+    /**
+     * Deselects the player edit and the info edit checkboxes.
+     * @param e the event to be processed
+     */
+    @Override
+    public void componentHidden(ComponentEvent e) {
+      EditSettingPanel.this.editPlayersBox.setSelected(false);
+      EditSettingPanel.this.editGameInfoBox.setSelected(false);
+    }
   }
 }

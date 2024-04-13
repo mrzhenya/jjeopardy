@@ -126,7 +126,7 @@ public class ImagePickerPanel extends JPanel {
       }
       boolean success = ImageUtilities.updateLabelIconImage(
           this.imageLabel, imageFilepathOrUrl, bundlePath,
-          JjDefaults.EDIT_DIALOG_MIN_WIDTH - 100, IMAGE_HEIGHT);
+          JjDefaults.EDIT_QUESTION_DIALOG_MIN_WIDTH - 100, IMAGE_HEIGHT);
       if (!success) {
         this.invalidImage = true;
         this.imageLabel.setIcon(ImageEnum.IMAGE_FAILURE_64.toImageIcon());

@@ -136,6 +136,14 @@ public class EditGameWindow extends JDialog {
     return this.gameData;
   }
 
+
+  /**
+   * Updates the title of this window with a new game name.
+   */
+  public void refreshGameName() {
+    this.setTitle(this.gameData.getGameName());
+  }
+
   /**
    * Saves the game data
    */

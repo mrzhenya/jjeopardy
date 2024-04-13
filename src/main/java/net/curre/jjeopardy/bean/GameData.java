@@ -155,9 +155,12 @@ public class GameData implements Comparable<GameData> {
   /**
    * Sets the game name.
    * @param gameName game name to set
+   * @return true if the name changed as a result of calling this method; false if otherwise
    */
-  public void setGameName(String gameName) {
+  public boolean setGameName(String gameName) {
+    boolean isChanged = !StringUtils.equals(gameName, this.gameName);
     this.gameName = gameName;
+    return isChanged;
   }
 
   /**
@@ -171,9 +174,12 @@ public class GameData implements Comparable<GameData> {
   /**
    * Sets game description.
    * @param gameDescription game description
+   * @return true if the description changed as a result of calling this method; false if otherwise
    */
-  public void setGameDescription(String gameDescription) {
+  public boolean setGameDescription(String gameDescription) {
+    boolean isChanged = !StringUtils.equals(gameDescription, this.gameDescription);
     this.gameDescription = gameDescription;
+    return isChanged;
   }
 
   /**
