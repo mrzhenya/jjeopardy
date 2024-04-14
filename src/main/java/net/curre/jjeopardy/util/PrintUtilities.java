@@ -71,6 +71,7 @@ public class PrintUtilities {
         job.print();
       } catch (PrinterException e) {
         // Printing failed.
+        table.activateViewStyle();
         logger.warn("Printing failed", e);
         String reason = e.getMessage() == null ? "Unknown" : e.getMessage();
         AppRegistry.getInstance().getUiService().showErrorDialog(

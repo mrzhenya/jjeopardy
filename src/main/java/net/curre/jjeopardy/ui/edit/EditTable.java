@@ -335,7 +335,7 @@ public class EditTable extends JPanel implements Printable {
   }
 
   /** Activates the table's view style/presentation. */
-  private void activateViewStyle() {
+  public void activateViewStyle() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     this.setBackground(lafTheme.getGameTableBorderColor());
     this.header.activateViewStyle();
