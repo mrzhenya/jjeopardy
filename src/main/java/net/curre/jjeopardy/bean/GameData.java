@@ -21,6 +21,7 @@ import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,6 +199,34 @@ public class GameData implements Comparable<GameData> {
     this.categories.clear();
     this.categories.addAll(categories);
   }
+  
+  /**
+   * Removes a category (with its questions) from the game data.
+   * @param categoryInd index of the category to remove (zero based)
+   */
+  public void removeCategory(int categoryInd) {
+    this.categories.remove(categoryInd);
+  }
+
+
+  /**
+   * Moves a category (with its questions) in the game data.
+   * @param categoryInd index of the category to move (zero based)
+   * @param toRight true if the index of the category should be increased; false if decreased
+   */
+  public void moveCategory(int categoryInd, boolean toRight) {
+    if (toRight) {
+      if (categoryInd + 1 >= this.categories.size()) {
+        throw new IllegalArgumentException("Unable to increase category index " + categoryInd);
+      }
+    } else {
+      if (categoryInd == 0) {
+        throw new IllegalArgumentException("Unable to decrease category index 0");
+      }
+    }
+    Category category = this.categories.remove(categoryInd);
+    this.categories.add(categoryInd + (toRight ? 1 : -1), category);
+  }
 
   /**
    * Gets the player names parsed from a games file.
@@ -271,8 +300,9 @@ public class GameData implements Comparable<GameData> {
   }
 
   /** @inheritDoc */
+  @SuppressWarnings("NullableProblems")
   @Override
-  public int compareTo(GameData other) {
+  public int compareTo(@NotNull GameData other) {
     if (this == other) {
       return 0;
     }

@@ -18,17 +18,19 @@ package net.curre.jjeopardy.event;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.validation.constraints.NotNull;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 /**
- * Mouse listener to set a proper image on the JButton on mouse hover.
+ * Mouse listener to set a proper image on JButton or JLabel on mouse hover.
  *
  * @author Yevgeny Nyden
  */
-public class ButtonMouseHoverListener extends MouseAdapter implements MouseListener {
+public class IconMouseHoverListener extends MouseAdapter implements MouseListener {
 
   /** Non-hovered button icon. */
   private final Icon icon;
@@ -41,7 +43,7 @@ public class ButtonMouseHoverListener extends MouseAdapter implements MouseListe
    * @param icon non-hovered button icon
    * @param hoverIcon hovered button icon
    */
-  public ButtonMouseHoverListener(Icon icon, Icon hoverIcon) {
+  public IconMouseHoverListener(Icon icon, Icon hoverIcon) {
     this.icon = icon;
     this.hoverIcon = hoverIcon;
   }
@@ -52,8 +54,12 @@ public class ButtonMouseHoverListener extends MouseAdapter implements MouseListe
    */
   @Override
   public void mouseEntered(@NotNull MouseEvent e) {
-    JButton button = (JButton) e.getComponent();
-    button.setIcon(this.hoverIcon);
+    Component component = e.getComponent();
+    if (component instanceof JButton) {
+      ((JButton) component).setIcon(this.hoverIcon);
+    } else if (component instanceof JLabel) {
+      ((JLabel) component).setIcon(this.hoverIcon);
+    }
   }
 
   /**
@@ -62,7 +68,11 @@ public class ButtonMouseHoverListener extends MouseAdapter implements MouseListe
    */
   @Override
   public void mouseExited(@NotNull MouseEvent e) {
-    JButton button = (JButton) e.getComponent();
-    button.setIcon(this.icon);
+    Component component = e.getComponent();
+    if (component instanceof JButton) {
+      ((JButton) component).setIcon(this.icon);
+    } else if (component instanceof JLabel) {
+      ((JLabel) component).setIcon(this.icon);
+    }
   }
 }

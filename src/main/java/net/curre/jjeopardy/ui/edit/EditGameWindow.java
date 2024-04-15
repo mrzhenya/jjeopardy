@@ -75,6 +75,7 @@ public class EditGameWindow extends JDialog {
     this.gameData = gameData;
     this.dataChanged = false;
 
+    logger.info("Creating the edit game window");
     if (!this.gameData.isNativeData()) {
       logger.info("Opened edit game window with non-native data, editing is going to be disabled");
       editEnabled = false;
@@ -117,7 +118,19 @@ public class EditGameWindow extends JDialog {
     contentPane.add(panelWrap, new TableLayoutConstraints(
         0, 2, 0, 2, TableLayout.CENTER, TableLayout.CENTER));
 
-    SwingUtilities.invokeLater(this.table::refreshAndResize);
+    this.table.refreshAndResize();
+  }
+
+  /**
+   * Scrolls to the top after dialog is set visible.
+   * @inheritDoc
+   */
+  @Override
+  public void setVisible(boolean isVisible) {
+    super.setVisible(isVisible);
+    if (isVisible) {
+      this.scrollToTop();
+    }
   }
 
   /**
@@ -171,7 +184,7 @@ public class EditGameWindow extends JDialog {
    * Scrolls the scroll panel to the very top.
    */
   private void scrollToTop() {
-    this.scrollPane.getVerticalScrollBar().setValue(0);
+    SwingUtilities.invokeLater(() -> this.scrollPane.getVerticalScrollBar().setValue(0));
   }
 
   /** Saves dimensions of the edit window when window closes. */

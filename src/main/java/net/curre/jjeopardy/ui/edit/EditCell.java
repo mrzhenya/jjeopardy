@@ -225,6 +225,14 @@ public class EditCell extends JPanel implements EditableCell {
   }
 
   /**
+   * Updates the index of this cell relative to other cells in the same row.
+   * @param newIndex the new index of this cell
+   */
+  protected void updateColumnIndex(int newIndex) {
+    this.columnIndex = newIndex;
+  }
+
+  /**
    * Determines the preferred height of this cell taking into consideration
    * the current view mode and the provided column width. Size/dimension of the cell
    * component is not affected by calling this method.
@@ -387,14 +395,12 @@ public class EditCell extends JPanel implements EditableCell {
     if (isVisible) {
       boolean success = ImageUtilities.updateLabelIconImage(
           this.qImageLabel, question.getQuestionImage(), this.editTable.getGameBundlePath(), width, MAX_IMAGE_HEIGHT);
-      if (success) {
-        return this.qImageLabel.getIcon().getIconHeight();
-      } else {
+      if (!success) {
         this.qImageLabel.setIcon(ImageEnum.IMAGE_FAILURE_64.toImageIcon());
         this.qImageLabel.setToolTipText(
             LocaleService.getString("jj.print.image.failure", question.getQuestionImage()));
-        return this.qImageLabel.getIcon().getIconHeight();
       }
+      return this.qImageLabel.getIcon().getIconHeight();
     } else {
       return 0;
     }
@@ -411,14 +417,12 @@ public class EditCell extends JPanel implements EditableCell {
     if (isVisible) {
       boolean success = ImageUtilities.updateLabelIconImage(
           this.aImageLabel, question.getAnswerImage(), this.editTable.getGameBundlePath(), width, MAX_IMAGE_HEIGHT);
-      if (success) {
-        return this.aImageLabel.getIcon().getIconHeight();
-      } else {
+      if (!success) {
         this.aImageLabel.setIcon(ImageEnum.IMAGE_FAILURE_64.toImageIcon());
         this.aImageLabel.setToolTipText(
             LocaleService.getString("jj.print.image.failure", question.getAnswerImage()));
-        return this.aImageLabel.getIcon().getIconHeight();
       }
+      return this.aImageLabel.getIcon().getIconHeight();
     } else {
       return 0;
     }

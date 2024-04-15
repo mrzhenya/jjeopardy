@@ -64,6 +64,7 @@ public class ItemIconButton extends JButton {
     this.addMouseListener(new ItemIconButton.ItemIconMouseListener(task));
     this.setBorderPainted(false);
     this.setFocusable(false);
+    this.setOpaque(true);
   }
 
   /** Mouse listener for the <code>ItemIconLabel</code>. */

@@ -27,7 +27,7 @@ import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.BorderFactory;
-import javax.swing.JPanel;
+import javax.swing.JLayeredPane;
 import javax.swing.JTextPane;
 import javax.validation.constraints.NotNull;
 import java.awt.Color;
@@ -39,7 +39,7 @@ import java.awt.Dimension;
  *
  * @author Yevgeny Nyden
  */
-public class EditHeaderCell extends JPanel implements EditableCell {
+public class EditHeaderCell extends JLayeredPane implements EditableCell {
 
   /** Background color to use for print. */
   private static final Color PRINT_BACKGROUND_COLOR = new Color(210, 233, 248);
@@ -48,13 +48,16 @@ public class EditHeaderCell extends JPanel implements EditableCell {
   private static final JTextPane HELPER_TEXT_PANE = UiService.createDefaultTextPane();
 
   /** Category index (zero based). */
-  private final int categoryIndex;
+  private int categoryIndex;
 
   /** Reference to the edit table. */
   private final EditTable editTable;
 
   /** Text area where category name is rendered. */
   private final JTextPane textPane;
+
+  /** Overlay with buttons to move or delete this category. */
+  private final CategoryOverlay editOverlay;
 
   /**
    * Ctor.
@@ -65,6 +68,8 @@ public class EditHeaderCell extends JPanel implements EditableCell {
   public EditHeaderCell(String name, int categoryIndex, EditTable editTable) {
     this.categoryIndex = categoryIndex;
     this.editTable = editTable;
+
+    this.setOpaque(true);
 
     // Layout helps to vertically center the text content.
     this.setLayout(new TableLayout(new double[][] {
@@ -85,6 +90,18 @@ public class EditHeaderCell extends JPanel implements EditableCell {
 
     this.add(this.textPane, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.CENTER, TableLayout.CENTER));
+
+    this.editOverlay = new CategoryOverlay(categoryIndex, editTable);
+    this.editOverlay.setVisible(false);
+    if (categoryIndex == 0) {
+      this.editOverlay.setLeftMoveEnabled(false);
+    } else if (categoryIndex == this.editTable.getGameData().getCategoriesCount() - 1) {
+      this.editOverlay.setRightMoveEnabled(false);
+    }
+    this.add(this.editOverlay, new TableLayoutConstraints(
+        0, 0, 0, 0, TableLayout.CENTER, TableLayout.TOP), 3);
+    this.moveToFront(this.editOverlay);
+
     this.activateViewStyle();
 
     this.addMouseMotionListener(mouseListener);
@@ -100,9 +117,22 @@ public class EditHeaderCell extends JPanel implements EditableCell {
 
   /** @inheritDoc */
   public void decorateHoverState(boolean isHovered) {
+    this.editOverlay.setVisible(isHovered);
     Color background = EditTable.decorateHoverStateHelper(this, isHovered);
     this.textPane.setBackground(background);
     this.repaint();
+  }
+
+  /**
+   * Updates the relative index of this cell and its overlay. Note that the left button
+   * will be disabled by default on the cell with index 0.
+   * @param newIndex the new index of this cell
+   * @param rightEnabled true to enable the right arrow button
+   * @param removeEnabled true to enable the remove button
+   */
+  public void updateIndexAndOverlay(int newIndex, boolean rightEnabled, boolean removeEnabled) {
+    this.categoryIndex = newIndex;
+    this.editOverlay.updateState(newIndex, rightEnabled, removeEnabled);
   }
 
   /**

@@ -22,6 +22,8 @@ import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.PrintUtilities;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -48,6 +50,9 @@ import java.util.ArrayList;
  * @author Yevgeny Nyden
  */
 public class EditTable extends JPanel implements Printable {
+
+  /** Private class logger. */
+  private static final Logger logger = LogManager.getLogger(EditTable.class.getName());
 
   /** Thickness of line printed at the top of the table for more emphasis. */
   private static final int EMPHASIS_LINE_HEIGHT = 1;
@@ -190,6 +195,72 @@ public class EditTable extends JPanel implements Printable {
       }
     }
     this.repaint();
+  }
+
+  /**
+   * Moves the category to the left.
+   * @param categoryInd index of the category to move (zero based)
+   */
+  public void moveCategoryToTheLeft(int categoryInd) {
+    logger.info("Moving category with index " + categoryInd + " to the left");
+
+    // First, update the game data.
+    this.gameData.moveCategory(categoryInd, false);
+
+    // Update the header and row cells.
+    this.header.moveCell(categoryInd, false);
+    for (EditRow row : this.rows) {
+      row.moveCell(categoryInd, false);
+    }
+
+    // Now refresh the UI.
+    this.refreshAndResize();
+    this.scrollToTopFn.run();
+    this.updateDataChanged(true);
+  }
+
+  /**
+   * Removes the category from the game data and updates the UI.
+   * @param categoryInd index of the category to remove (zero based)
+   */
+  public void removeCategory(int categoryInd) {
+    logger.info("Removing category with index " + categoryInd);
+
+    // First, update the game data.
+    this.gameData.removeCategory(categoryInd);
+
+    // Update the header and row cells.
+    this.header.removeCell(categoryInd);
+    for (EditRow row : this.rows) {
+      row.removeCell(categoryInd);
+    }
+
+    // Now refresh the UI.
+    this.refreshAndResize();
+    this.scrollToTopFn.run();
+    this.updateDataChanged(true);
+  }
+
+  /**
+   * Moves the category to the right.
+   * @param categoryInd index of the category to move (zero based)
+   */
+  public void moveCategoryToTheRight(int categoryInd) {
+    logger.info("Moving category with index " + categoryInd + " to the right");
+
+    // First, update the game data.
+    this.gameData.moveCategory(categoryInd, true);
+
+    // Update the header and row cells.
+    this.header.moveCell(categoryInd, true);
+    for (EditRow row : this.rows) {
+      row.moveCell(categoryInd, true);
+    }
+
+    // Now refresh the UI.
+    this.refreshAndResize();
+    this.scrollToTopFn.run();
+    this.updateDataChanged(true);
   }
 
   /** Prints the table. */

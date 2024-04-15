@@ -36,6 +36,9 @@ public class EditRow extends JPanel {
   /** Edit row border width. */
   protected static final int BORDER_WIDTH = 1;
 
+  /** Row padding. */
+  private static final int PADDING = EditRow.BORDER_WIDTH;
+
   /** Ordered list of cells for this row. */
   private final ArrayList<EditCell> cells;
 
@@ -51,7 +54,7 @@ public class EditRow extends JPanel {
     this.rowHeight = 0;
 
     this.setLayout(new GridLayout(1, 0));
-    this.setBorder(new EmptyBorder(BORDER_WIDTH, BORDER_WIDTH, 0, BORDER_WIDTH));
+    this.setBorder(new EmptyBorder(PADDING, PADDING, 0, PADDING));
 
     GameData gameData = editTable.getGameData();
     this.cells = new ArrayList<>();
@@ -70,12 +73,37 @@ public class EditRow extends JPanel {
   }
 
   /**
+   * Removes a cell from the row.
+   * @param removeInd index of the cell to remove
+   */
+  protected void removeCell(int removeInd) {
+    EditCell cell = this.cells.remove(removeInd);
+    this.remove(cell);
+    this.updateIndexesAndOverlays();
+  }
+
+  /**
+   * Moves a cell in the row.
+   * @param cellInd index of the cell to move
+   * @param toRight true if the index of the cell should be increased; false if decreased
+   */
+  protected void moveCell(int cellInd, boolean toRight) {
+    final int newInd = cellInd + (toRight ? 1 : -1);
+    EditCell cell = this.cells.remove(cellInd);
+    this.cells.add(newInd, cell);
+
+    this.remove(cell);
+    this.add(cell, newInd);
+    this.updateIndexesAndOverlays();
+  }
+
+  /**
    * Updates the size of all row cells. The height is determined based on the tallest cell.
    * @param columnWidth total width of a column
    * @param rowWidth all available row width
    * @return the determined row height
    */
-  public int refreshAndResize(int columnWidth, int rowWidth) {
+  protected int refreshAndResize(int columnWidth, int rowWidth) {
     int maxHeight = 0;
     for (EditCell cell : this.cells) {
       int height = cell.refreshAndResize(columnWidth);
@@ -95,7 +123,7 @@ public class EditRow extends JPanel {
    * @param width row width
    * @param height row height
    */
-  public void setRowSize(int width, int height) {
+  protected void setRowSize(int width, int height) {
     this.rowHeight = height;
     Dimension size = new Dimension(width, height);
     super.setPreferredSize(size);
@@ -113,6 +141,17 @@ public class EditRow extends JPanel {
   protected void activatePrintStyle() {
     for (EditCell cell : this.cells) {
       cell.activatePrintStyle();
+    }
+  }
+
+  /**
+   * Updates the relative index of each cell and their overlays. Depending on the
+   * position of the cell, some move buttons will be disabled.
+   */
+  private void updateIndexesAndOverlays() {
+    final int cellCount = this.cells.size();
+    for (int ind = 0; ind < cellCount; ind++) {
+      this.cells.get(ind).updateColumnIndex(ind);
     }
   }
 }

@@ -119,6 +119,23 @@ public class GameDataTest {
     assertEquals("Wrong questions count", 3, categoriesAfter.get(2).getQuestionsCount());
   }
 
+  /** Tests removeCategory. */
+  @Test
+  public void testRemoveCategory() {
+    GameData data = new GameData("", null, true);
+    List<Category> categories = new ArrayList<>();
+    categories.add(createTestCategory("Category 1"));
+    categories.add(createTestCategory("Category 2"));
+    categories.add(createTestCategory("Category 3"));
+    data.setCategories(categories);
+
+    data.removeCategory(1);
+    assertEquals("Wrong size of categories list", 2, data.getCategories().size());
+    data.removeCategory(0);
+    assertEquals("Wrong size of categories list", 1, data.getCategories().size());
+    assertEquals("Wrong name", "Category 3", data.getCategories().get(0).getName());
+  }
+
   /** Tests updateBonusQuestions and related logic. */
   @Test
   public void testPlayers() {

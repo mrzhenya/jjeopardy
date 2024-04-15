@@ -19,7 +19,6 @@ package net.curre.jjeopardy.event;
 import net.curre.jjeopardy.ui.edit.EditableCell;
 
 import javax.annotation.Nullable;
-import javax.swing.JTextPane;
 import javax.validation.constraints.NotNull;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
@@ -69,7 +68,7 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
   @Override
   public void mouseReleased(MouseEvent e) {
     if (this.editEnabled) {
-      EditableCell cell = this.getEditCellFromEvent(e);
+      EditableCell cell = this.getEditCellFromEvent(e, false);
       if (cell != null) {
         cell.showEditDialog();
       }
@@ -84,7 +83,7 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
   @Override
   public void mouseEntered(MouseEvent e) {
     if (this.editEnabled) {
-      EditableCell cell = this.getEditCellFromEvent(e);
+      EditableCell cell = this.getEditCellFromEvent(e, true);
       if (cell != null) {
         cell.decorateHoverState(true);
       }
@@ -99,7 +98,7 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
   @Override
   public void mouseExited(MouseEvent e) {
     if (this.editEnabled) {
-      EditableCell cell = this.getEditCellFromEvent(e);
+      EditableCell cell = this.getEditCellFromEvent(e, true);
       if (cell != null) {
         cell.decorateHoverState(false);
       }
@@ -111,17 +110,21 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
   public void mouseMoved(MouseEvent e) {}
 
   /**
-   * Finds the EditCell the mouse event has occured.
+   * Finds the EditCell the mouse event has occurred.
    * @param event mouse event
+   * @param includeOverlay when true, get the event from the overlays (two levels down)
    * @return Edit cell reference or null if unable to find
    */
-  private @Nullable EditableCell getEditCellFromEvent(@NotNull MouseEvent event) {
+  private @Nullable EditableCell getEditCellFromEvent(@NotNull MouseEvent event, boolean includeOverlay) {
     Component component = event.getComponent();
     if (component instanceof EditableCell) {
       return ((EditableCell) component);
-    } else if (component instanceof JTextPane)  {
-      // We also listen for enter events on the child text panes.
+    } else if (component.getParent() instanceof EditableCell)  {
+      // Handle events on the child components (text panes).
       return ((EditableCell) component.getParent());
+    } else if (includeOverlay && component.getParent().getParent() instanceof EditableCell) {
+      // Handle events on the overlays if requested.
+      return ((EditableCell) component.getParent().getParent());
     }
     return null;
   }

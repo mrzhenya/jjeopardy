@@ -31,6 +31,51 @@ import java.util.Objects;
  */
 public enum ImageEnum {
 
+  /** Down arrow medium size icon. */
+  ARROW_DOWN_32("arrow_down-32.png"),
+
+  /** Disabled down arrow medium size icon. */
+  ARROW_DOWN_32_DISABLED("arrow_down-32-disabled.png"),
+
+  /** Down arrow medium size hover icon. */
+  ARROW_DOWN_32_HOVER("arrow_down-32-hover.png"),
+
+  /** Left arrow medium size icon. */
+  ARROW_LEFT_32("arrow_left-32.png"),
+
+  /** Disabled left arrow medium size icon. */
+  ARROW_LEFT_32_DISABLED("arrow_left-32-disabled.png"),
+
+  /** Left arrow medium size hover icon. */
+  ARROW_LEFT_32_HOVER("arrow_left-32-hover.png"),
+
+  /** Right arrow medium size icon. */
+  ARROW_RIGHT_32("arrow_right-32.png"),
+
+  /** Disabled right arrow medium size icon. */
+  ARROW_RIGHT_32_DISABLED("arrow_right-32-disabled.png"),
+
+  /** Right arrow medium size hover icon. */
+  ARROW_RIGHT_32_HOVER("arrow_right-32-hover.png"),
+
+  /** Up arrow medium size icon. */
+  ARROW_UP_32("arrow_up-32.png"),
+
+  /** Disabled up arrow medium size icon. */
+  ARROW_UP_32_DISABLED("arrow_up-32-disabled.png"),
+
+  /** Up arrow medium size hover icon. */
+  ARROW_UP_32_HOVER("arrow_up-32-hover.png"),
+
+  /** Remove (x) medium size icon. */
+  REMOVE_32("remove-32.png"),
+
+  /** Disabled remove (x) medium size icon. */
+  REMOVE_32_DISABLED("remove-32-disabled.png"),
+
+  /** Hover remove (x) medium size icon. */
+  REMOVE_32_HOVER("remove-32-hover.png"),
+
   /** Small success icon. */
   SUCCESS_24("success-24.png"),
 

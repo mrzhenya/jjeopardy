@@ -18,7 +18,7 @@ package net.curre.jjeopardy.ui.edit;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.event.ButtonMouseHoverListener;
+import net.curre.jjeopardy.event.IconMouseHoverListener;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.images.ImageUtilities;
@@ -162,7 +162,7 @@ public class ImagePickerPanel extends JPanel {
 
     // ***** Select image file button.
     JButton selectButton = new JButton();
-    selectButton.addMouseListener(new ButtonMouseHoverListener(
+    selectButton.addMouseListener(new IconMouseHoverListener(
         ImageEnum.OPEN_FILE_24.toImageIcon(), ImageEnum.OPEN_FILE_24_HOVER.toImageIcon()));
     ClickAndKeyAction.createAndAddAction(selectButton, this::handleSelectFileAction);
     selectButton.setIcon(ImageEnum.OPEN_FILE_24.toImageIcon());
@@ -171,7 +171,7 @@ public class ImagePickerPanel extends JPanel {
 
     // ***** Delete image button.
     JButton deleteButton = new JButton();
-    deleteButton.addMouseListener(new ButtonMouseHoverListener(
+    deleteButton.addMouseListener(new IconMouseHoverListener(
         ImageEnum.TRASH_24.toImageIcon(), ImageEnum.TRASH_24_HOVER.toImageIcon()));
     ClickAndKeyAction.createAndAddAction(deleteButton, this::handleDeleteImageAction);
     deleteButton.setIcon(ImageEnum.TRASH_24.toImageIcon());

@@ -17,6 +17,7 @@
 package net.curre.jjeopardy.ui.edit;
 
 import net.curre.jjeopardy.bean.Category;
+import net.curre.jjeopardy.util.JjDefaults;
 
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -25,8 +26,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
-
-import static net.curre.jjeopardy.ui.edit.EditRow.BORDER_WIDTH;
 
 /**
  * Represents a game edit table header to display game categories.
@@ -37,6 +36,9 @@ public class EditHeader extends JPanel {
 
   /** Minimum header height (in px). */
   private static final int MIN_HEIGHT = 50;
+
+  /** Header padding. */
+  private static final int PADDING = EditRow.BORDER_WIDTH;
 
   /** Ordered list of header cells. */
   private final ArrayList<EditHeaderCell> headerCells;
@@ -55,7 +57,7 @@ public class EditHeader extends JPanel {
 
     // Items will flow left to right and will take all available panel height.
     this.setLayout(new GridLayout(1, 0));
-    this.setBorder(new EmptyBorder(BORDER_WIDTH, BORDER_WIDTH, 0, BORDER_WIDTH));
+    this.setBorder(new EmptyBorder(PADDING, PADDING, 0, PADDING));
 
     int ind = 0;
     for (Category category : categories) {
@@ -72,6 +74,31 @@ public class EditHeader extends JPanel {
    */
   public int getHeaderHeight() {
     return this.rowHeight;
+  }
+
+  /**
+   * Removes a header cell from the header.
+   * @param removeInd index of the cell to remove
+   */
+  protected void removeCell(int removeInd) {
+    EditHeaderCell cell = this.headerCells.remove(removeInd);
+    this.remove(cell);
+    this.updateIndexesAndOverlays();
+  }
+
+  /**
+   * Moves a header cell in the header row.
+   * @param cellInd index of the cell to move
+   * @param toRight true if the index of the cell should be increased; false if decreased
+   */
+  protected void moveCell(int cellInd, boolean toRight) {
+    final int newInd = cellInd + (toRight ? 1 : -1);
+    EditHeaderCell cell = this.headerCells.remove(cellInd);
+    this.headerCells.add(newInd, cell);
+
+    this.remove(cell);
+    this.add(cell, newInd);
+    this.updateIndexesAndOverlays();
   }
 
   /**
@@ -110,6 +137,20 @@ public class EditHeader extends JPanel {
   protected void activatePrintStyle() {
     for (EditHeaderCell cell : this.headerCells) {
       cell.activatePrintStyle();
+    }
+  }
+
+  /**
+   * Updates the relative index of each cell and their overlays. Depending on the
+   * position of the cell, some move buttons will be disabled. Also, when we reach
+   * min number of categories (header cells), remove button gets disabled.
+   */
+  private void updateIndexesAndOverlays() {
+    final int cellCount = this.headerCells.size();
+    final boolean removeEnabled = cellCount > JjDefaults.MIN_NUMBER_OF_CATEGORIES;
+    for (int ind = 0; ind < cellCount; ind++) {
+      boolean rightEnabled = ind + 1 < cellCount;
+      this.headerCells.get(ind).updateIndexAndOverlay(ind, rightEnabled, removeEnabled);
     }
   }
 }
