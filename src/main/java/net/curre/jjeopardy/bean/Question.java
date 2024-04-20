@@ -78,6 +78,17 @@ public class Question {
   }
 
   /**
+   * Creates a copy/clone of this question. Note, that parentWithName is not
+   * initialized in the copied object.
+   * @return a new question initialized with the same question data
+   */
+  public Question createCopy() {
+    Question question = new Question(this.question, this.questionImage, this.answer, this.answerImage, this.points);
+    question.hasBeenAsked = this.hasBeenAsked;
+    return question;
+  }
+
+  /**
    * Gets the question text.
    * @return the question
    */

@@ -50,8 +50,11 @@ public class EditGameWindow extends JDialog {
   /** Private class logger. */
   private static final Logger logger = LogManager.getLogger(EditGameWindow.class.getName());
 
-  /** Reference to the game data we are editing or printing. */
+  /** Reference to the game data we are editing or printing (a copu of the original). */
   private final GameData gameData;
+
+  /** Reference to the original game data we are editing or printing. */
+  private final GameData originalGameData;
 
   /** Indicates that game data has been changed. */
   private boolean dataChanged;
@@ -72,7 +75,9 @@ public class EditGameWindow extends JDialog {
    * @param editTableMode view mode (questions, answers, all)
    */
   public EditGameWindow(@NotNull GameData gameData, boolean editEnabled, EditTableMode editTableMode) {
-    this.gameData = gameData;
+    // Create a copy of game data in case the user cancels to save the changes.
+    this.originalGameData = gameData;
+    this.gameData = gameData.createCopy();
     this.dataChanged = false;
 
     logger.info("Creating the edit game window");
@@ -81,7 +86,7 @@ public class EditGameWindow extends JDialog {
       editEnabled = false;
     }
 
-    this.setTitle(gameData.getGameName());
+    this.setTitle(this.gameData.getGameName());
     this.addWindowListener(new ClosingWindowListener(this::handleWindowClosing));
     this.addComponentListener(new ComponentAdapter() {
       public void componentResized(ComponentEvent e) {
@@ -100,7 +105,7 @@ public class EditGameWindow extends JDialog {
         {TableLayout.FILL, 15, TableLayout.PREFERRED, 15}})); // rows
 
     // Game table wrapped in a scroll pane.
-    this.table = new EditTable(gameData, editEnabled, editTableMode, this::scrollToTop, this::enableSaveButton);
+    this.table = new EditTable(this.gameData, editEnabled, editTableMode, this::scrollToTop, this::enableSaveButton);
     // Note that the table assumes its direct parent is the scroll pane.
     this.scrollPane = new JScrollPane(this.table);
     this.scrollPane.getVerticalScrollBar().setUnitIncrement(10);
@@ -158,13 +163,14 @@ public class EditGameWindow extends JDialog {
   }
 
   /**
-   * Saves the game data
+   * Saves the game data to the disk. The original game data is also updated.
    */
   protected void saveGameData() {
     logger.info("Saving game data");
     this.dataChanged = false;
     GameDataService gameService = AppRegistry.getInstance().getGameDataService();
     gameService.saveGameData(this.gameData, this);
+    this.originalGameData.copyFrom(this.gameData);
 
     // If the game is in the library, update the library.
     if (gameService.isLibraryGame(this.gameData)) {

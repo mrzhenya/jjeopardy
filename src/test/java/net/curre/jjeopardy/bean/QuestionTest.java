@@ -37,6 +37,19 @@ public class QuestionTest {
     assertNull("Parent name should be null", question.getParentName());
   }
 
+  /** Tests createCopy. */
+  @Test
+  public void testCreateCopy() {
+    Question question = new Question(
+        "Question 1", "IMG1","Answer 1", "IMG2", 11);
+
+    Question copyQuestion = question.createCopy();
+
+    assertQuestion(copyQuestion, "Question 1", "IMG1",
+        "Answer 1", "IMG2", 11, false);
+    assertNull("Parent name should be null", copyQuestion.getParentName());
+  }
+
   /** Tests setter methods. */
   @Test
   public void testSetters() {

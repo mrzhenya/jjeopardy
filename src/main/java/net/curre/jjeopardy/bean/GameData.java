@@ -96,10 +96,57 @@ public class GameData implements Comparable<GameData> {
     this.bundlePath = bundleOrNull;
     this.nativeData = isNativeData;
     this.isFileDataAcquired = false;
+    this.gameName = null;
+    this.gameDescription = null;
     this.categories = new ArrayList<>();
     this.playerNames = new ArrayList<>();
     this.bonusQuestions = new ArrayList<>();
     this.failedImageDownload = false;
+  }
+
+  /**
+   * Creates a copy/clone of this game data.
+   * @return a new game data object identical to this game data
+   */
+  public GameData createCopy() {
+    GameData gameData = new GameData(this.filePath, this.bundlePath, this.nativeData);
+    gameData.isFileDataAcquired = this.isFileDataAcquired;
+    gameData.failedImageDownload = this.failedImageDownload;
+    gameData.gameName = this.gameName;
+    gameData.gameDescription = this.gameDescription;
+    gameData.categories.clear();;
+    for (Category category : this.categories) {
+      gameData.categories.add(category.createCopy());
+    }
+    gameData.setPlayersNames(this.playerNames);
+    gameData.bonusQuestions.clear();
+    for (Question question : this.bonusQuestions) {
+      gameData.bonusQuestions.add(question.createCopy());
+    }
+    return gameData;
+  }
+
+  /**
+   * Initializes this game data with the data from the passed gameData.
+   * @param gameData game data to copy
+   */
+  public void copyFrom(GameData gameData) {
+    this.filePath = gameData.filePath;
+    this.bundlePath = gameData.bundlePath;
+    this.nativeData = gameData.nativeData;
+    this.isFileDataAcquired = gameData.isFileDataAcquired;
+    this.gameName = gameData.gameName;
+    this.gameDescription = gameData.getGameDescription();
+    this.categories.clear();
+    for (Category category : gameData.categories) {
+      this.categories.add(category.createCopy());
+    }
+    this.setPlayersNames(gameData.playerNames);
+    this.bonusQuestions.clear();
+    for (Question question : gameData.bonusQuestions) {
+      this.bonusQuestions.add(question.createCopy());
+    }
+    this.failedImageDownload = gameData.failedImageDownload;
   }
 
   /**

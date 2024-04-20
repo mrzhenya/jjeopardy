@@ -54,6 +54,103 @@ public class GameDataTest {
     assertFalse("Should not be enough players", data.hasEnoughPlayers());
   }
 
+  /** Tests createCopy. */
+  @Test
+  public void testCreateCopy() {
+    GameData data = new GameData("TestFilePath", "TestDirPath", true);
+    List<Category> categories = new ArrayList<>();
+    categories.add(createTestCategory("Category 1"));
+    categories.add(createTestCategory("Category 2"));
+    data.setCategories(categories);
+    data.setImageDownloadFailure();
+
+    List<String> playerNames = new ArrayList<>();
+    playerNames.add("Abba");
+    playerNames.add("Bubba");
+    data.setPlayersNames(playerNames);
+
+    List<Question> bonusQuestions = createTestQuestions(3);
+    data.setBonusQuestions(bonusQuestions);
+
+    data.setGameName("testName");
+    data.setGameDescription("testDescription");
+    data.setImageDownloadFailure();
+
+    GameData copyData = data.createCopy();
+
+    assertEquals("Wrong game name", "testName", copyData.getGameName());
+    assertEquals("Wrong game description", "testDescription", copyData.getGameDescription());
+    assertTrue("Wrong isImageDownloadFailure", copyData.isImageDownloadFailure());
+
+    List<Category> categoriesAfter = copyData.getCategories();
+    assertNotNull("List of copied categories should not be null", categoriesAfter);
+    assertEquals("Wrong size of categories list", 2, categoriesAfter.size());
+    assertEquals("Wrong name", "Category 1", categoriesAfter.get(0).getName());
+    assertEquals("Wrong questions count", 3, categoriesAfter.get(0).getQuestionsCount());
+    assertEquals("Wrong name", "Category 2", categoriesAfter.get(1).getName());
+    assertEquals("Wrong questions count", 3, categoriesAfter.get(1).getQuestionsCount());
+
+    List<String> playerNamesAfter = copyData.getPlayerNames();
+    assertNotNull("Player names list is null", playerNamesAfter);
+    assertEquals("Wrong player names list size", 2, playerNamesAfter.size());
+    assertEquals("Wrong player 0 name", "Abba", playerNamesAfter.get(0));
+    assertEquals("Wrong player 1 name", "Bubba", playerNamesAfter.get(1));
+
+    List<Question> questionsAfter = copyData.getBonusQuestions();
+    assertNotNull("List of bonus questions should not be null", questionsAfter);
+    assertEquals("Wrong size of bonus questions list", 3, questionsAfter.size());
+    assertTrue("Bonus questions should not have been asked", data.bonusQuestionsHaveBeenAsked());
+  }
+
+  /** Tests copyFrom. */
+  @Test
+  public void testCopyFrom() {
+    GameData data = new GameData("TestFilePath", "TestDirPath", true);
+    List<Category> categories = new ArrayList<>();
+    categories.add(createTestCategory("Category 1"));
+    categories.add(createTestCategory("Category 2"));
+    data.setCategories(categories);
+    data.setImageDownloadFailure();
+
+    List<String> playerNames = new ArrayList<>();
+    playerNames.add("Abba");
+    playerNames.add("Bubba");
+    data.setPlayersNames(playerNames);
+
+    List<Question> bonusQuestions = createTestQuestions(3);
+    data.setBonusQuestions(bonusQuestions);
+
+    data.setGameName("testName");
+    data.setGameDescription("testDescription");
+    data.setImageDownloadFailure();
+
+    GameData copyData = new GameData("somePath", null, false);
+    copyData.copyFrom(data);
+
+    assertEquals("Wrong game name", "testName", copyData.getGameName());
+    assertEquals("Wrong game description", "testDescription", copyData.getGameDescription());
+    assertTrue("Wrong isImageDownloadFailure", copyData.isImageDownloadFailure());
+
+    List<Category> categoriesAfter = copyData.getCategories();
+    assertNotNull("List of copied categories should not be null", categoriesAfter);
+    assertEquals("Wrong size of categories list", 2, categoriesAfter.size());
+    assertEquals("Wrong name", "Category 1", categoriesAfter.get(0).getName());
+    assertEquals("Wrong questions count", 3, categoriesAfter.get(0).getQuestionsCount());
+    assertEquals("Wrong name", "Category 2", categoriesAfter.get(1).getName());
+    assertEquals("Wrong questions count", 3, categoriesAfter.get(1).getQuestionsCount());
+
+    List<String> playerNamesAfter = copyData.getPlayerNames();
+    assertNotNull("Player names list is null", playerNamesAfter);
+    assertEquals("Wrong player names list size", 2, playerNamesAfter.size());
+    assertEquals("Wrong player 0 name", "Abba", playerNamesAfter.get(0));
+    assertEquals("Wrong player 1 name", "Bubba", playerNamesAfter.get(1));
+
+    List<Question> questionsAfter = copyData.getBonusQuestions();
+    assertNotNull("List of bonus questions should not be null", questionsAfter);
+    assertEquals("Wrong size of bonus questions list", 3, questionsAfter.size());
+    assertTrue("Bonus questions should not have been asked", data.bonusQuestionsHaveBeenAsked());
+  }
+
   /** Tests setGameFilePaths. */
   @Test
   public void testSetGameFilePaths() {

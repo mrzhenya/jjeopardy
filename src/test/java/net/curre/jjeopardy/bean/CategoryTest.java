@@ -32,6 +32,46 @@ import static org.junit.Assert.*;
  */
 public class CategoryTest {
 
+  /**
+   * Tests createCopy;
+   */
+  @Test
+  public void testCreateCopy() {
+    List<Question> questions = new ArrayList<>();
+    Question question = new Question(
+        "Question 1", "question.jpg", "Answer 1", "answer.jpg",11);
+    questions.add(question);
+    Category category = new Category("Bum", questions);
+
+    Category copyCategory = category.createCopy();
+
+    assertEquals("Wrong category name", "Bum", copyCategory.getName());
+    assertEquals("Wrong number of questions", 1, copyCategory.getQuestionsCount());
+    assertNotNull("Questions should not be null", copyCategory.getQuestions());
+    assertEquals("Wrong number of questions", 1, copyCategory.getQuestions().size());
+    Question copyQuestion = copyCategory.getQuestion(0);
+    assertEquals("Wrong question text", "Question 1", copyQuestion.getQuestion());
+    assertEquals("Wrong question answer", "Answer 1", copyQuestion.getAnswer());
+    assertEquals("Wrong question image", "question.jpg", copyQuestion.getQuestionImage());
+    assertEquals("Wrong answer image", "answer.jpg", copyQuestion.getAnswerImage());
+    assertEquals("Wrong question points", 11, copyQuestion.getPoints());
+    assertNotNull("Parent name should not be blank", question.getParentName());
+    assertTrue("Wrong parent question name", question.getParentName().contains("Bum"));
+
+    // Now change the original question and check the copy doesn't change.
+    question.setQuestion("New Question");
+    question.setAnswer("New answer");
+    question.setQuestionImage("newQuestion.jpg");
+    question.setAnswerImage("newAnswer.jpg");
+    question.setPoints(555);
+
+    assertEquals("Wrong question text", "Question 1", copyQuestion.getQuestion());
+    assertEquals("Wrong question answer", "Answer 1", copyQuestion.getAnswer());
+    assertEquals("Wrong question image", "question.jpg", copyQuestion.getQuestionImage());
+    assertEquals("Wrong answer image", "answer.jpg", copyQuestion.getAnswerImage());
+    assertEquals("Wrong question points", 11, copyQuestion.getPoints());
+  }
+
   /** Tests ctor and the getter methods. */
   @Test
   public void testGetters() {

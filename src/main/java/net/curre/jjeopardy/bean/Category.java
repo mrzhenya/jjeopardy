@@ -21,6 +21,7 @@ import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,6 +54,22 @@ public class Category implements HasName {
     for (Question q : questions) {
       q.setParentWithName(this);
     }
+  }
+
+  /**
+   * Creates a copy/clone of this category.
+   * @return a new category object initialized with the same data
+   */
+  public Category createCopy() {
+    List<Question> questions = new ArrayList<>();
+    for (Question question : this.questions) {
+      questions.add(question.createCopy());
+    }
+    Category clone = new Category(this.name, questions);
+    for (Question question : clone.questions) {
+      question.setParentWithName(clone);
+    }
+    return clone;
   }
 
   /**
