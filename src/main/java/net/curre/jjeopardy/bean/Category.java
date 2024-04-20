@@ -133,4 +133,12 @@ public class Category implements HasName {
       this.questions.remove(this.questions.size() - 1);
     }
   }
+
+  /**
+   * Removes a question from this category.
+   * @param questionInd index of the question to remove (zero based)
+   */
+  public void removeQuestion(int questionInd) {
+    this.questions.remove(questionInd);
+  }
 }

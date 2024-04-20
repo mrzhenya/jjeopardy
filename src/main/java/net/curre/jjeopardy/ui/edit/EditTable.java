@@ -293,15 +293,23 @@ public class EditTable extends JPanel implements Printable {
   }
 
   /**
-   * Erases the content of a question.
-   * @param categoryIndex index of the category this question belongs to
-   * @param questionInd index of the question to be erased (zero based)
+   * Removes a question row (all questions in a given row).
+   * @param questionInd index of the question row to be removed (zero based)
    */
-  public void eraseQuestion(int categoryIndex, int questionInd) {
-    logger.info("Erasing question with index " + questionInd);
+  public void removeQuestionRow(int questionInd) {
+    logger.info("Erasing question row with index " + questionInd);
 
-    Question question = this.gameData.getCategories().get(categoryIndex).getQuestion(questionInd);
-    question.reset();
+    // Update game data.
+    for (Category category : this.gameData.getCategories()) {
+      category.removeQuestion(questionInd);
+    }
+
+    // Update the rows.
+    this.remove(this.rows.get(questionInd));
+    this.rows.remove(questionInd);
+    for (EditRow row : this.rows) {
+      row.updateColumnIndexesAndOverlays();
+    }
 
     // Now refresh the UI.
     this.refreshAndResize();

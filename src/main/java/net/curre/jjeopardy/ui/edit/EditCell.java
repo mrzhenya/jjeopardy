@@ -186,7 +186,7 @@ public class EditCell extends JLayeredPane implements EditableCell {
     this.addMouseMotionListener(mouseListener);
     this.addMouseListener(mouseListener);
 
-    this.editOverlay = new QuestionOverlay(columnIndex, rowIndex, this, editTable);
+    this.editOverlay = new QuestionOverlay(columnIndex, rowIndex, editTable);
     this.editOverlay.setVisible(false);
     if (rowIndex == 0) {
       this.editOverlay.setUpMoveEnabled(false);

@@ -156,7 +156,7 @@ public class EditRow extends JPanel {
   /**
    * Updates the relative column index of each cell and their overlays.
    */
-  private void updateColumnIndexesAndOverlays() {
+  protected void updateColumnIndexesAndOverlays() {
     final int cellCount = this.cells.size();
     for (int ind = 0; ind < cellCount; ind++) {
       this.cells.get(ind).updateColumnIndex(ind);

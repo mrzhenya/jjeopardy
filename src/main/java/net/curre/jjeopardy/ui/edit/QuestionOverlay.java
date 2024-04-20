@@ -18,6 +18,7 @@ package net.curre.jjeopardy.ui.edit;
 
 import net.curre.jjeopardy.event.EditOverlayLabelMouseListener;
 import net.curre.jjeopardy.event.EditTableMouseListener;
+import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 
 import javax.swing.Box;
@@ -44,9 +45,6 @@ public class QuestionOverlay extends JPanel {
   /** Question index (zero based). */
   private int questionIndex;
 
-  /** Reference to the edit cell this overlay is for. */
-  private final EditCell cell;
-
   /** Reference to the edit table. */
   private final EditTable editTable;
 
@@ -56,11 +54,11 @@ public class QuestionOverlay extends JPanel {
   /** Up arrow/move mouse listener (to handle clicks and hovers). */
   private final EditOverlayLabelMouseListener upArrowMouseListener;
 
-  /** Erase action label. */
-  private final JLabel eraseLabel;
+  /** Remove row action label. */
+  private final JLabel removeLabel;
 
-  /** Erase mouse listener (to handle clicks and hovers). */
-  private final EditOverlayLabelMouseListener eraseMouseListener;
+  /** Remove row mouse listener (to handle clicks and hovers). */
+  private final EditOverlayLabelMouseListener removeMouseListener;
 
   /** Down arrow/move action label. */
   private final JLabel downArrowLabel;
@@ -73,10 +71,9 @@ public class QuestionOverlay extends JPanel {
    * @param questionIndex question index (zero based)
    * @param editTable reference to the edit table; not nullable
    */
-  public QuestionOverlay(int categoryIndex, int questionIndex, @NotNull EditCell cell, @NotNull EditTable editTable) {
+  public QuestionOverlay(int categoryIndex, int questionIndex, @NotNull EditTable editTable) {
     this.categoryIndex = categoryIndex;
     this.questionIndex = questionIndex;
-    this.cell = cell;
     this.editTable = editTable;
 
     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
@@ -92,12 +89,12 @@ public class QuestionOverlay extends JPanel {
     this.setUpMoveEnabled(true);
 
     // ******* Initializing the left arrow action label in the default enabled state.
-    this.eraseLabel = new JLabel();
-    this.add(this.eraseLabel);
+    this.removeLabel = new JLabel();
+    this.add(this.removeLabel);
     this.add(Box.createRigidArea(new Dimension(1, 5)));
-    this.eraseMouseListener = new EditOverlayLabelMouseListener(REMOVE_32, REMOVE_32_HOVER, this::eraseQuestion);
-    this.eraseLabel.addMouseListener(this.eraseMouseListener);
-    this.setEraseEnabled(true);
+    this.removeMouseListener = new EditOverlayLabelMouseListener(REMOVE_32, REMOVE_32_HOVER, this::removeQuestionRow);
+    this.removeLabel.addMouseListener(this.removeMouseListener);
+    this.setRemoveEnabled(true);
 
     // ******* Initializing the left arrow action label in the default enabled state.
     this.downArrowLabel = new JLabel();
@@ -110,7 +107,7 @@ public class QuestionOverlay extends JPanel {
     // This listener is needed for the non-interrupted hover effect on the parent header cell.
     EditTableMouseListener mouseListener = this.editTable.getTableMouseListener();
     this.upArrowLabel.addMouseListener(mouseListener);
-    this.eraseLabel.addMouseListener(mouseListener);
+    this.removeLabel.addMouseListener(mouseListener);
     this.downArrowLabel.addMouseListener(mouseListener);
   }
 
@@ -127,15 +124,15 @@ public class QuestionOverlay extends JPanel {
   }
 
   /**
-   * Enables/disables the erase action on this overlay.
-   * @param isEnabled true if erase action is enabled
+   * Enables/disables the remove row action on this overlay.
+   * @param isEnabled true if remove action is enabled
    */
-  public void setEraseEnabled(boolean isEnabled) {
-    this.eraseLabel.setIcon(
+  public void setRemoveEnabled(boolean isEnabled) {
+    this.removeLabel.setIcon(
         isEnabled ? REMOVE_32.toImageIcon() : REMOVE_32_DISABLED.toImageIcon());
-    this.eraseLabel.setToolTipText(isEnabled ?
-        LocaleService.getString("jj.edit.question.erase") : null);
-    this.eraseMouseListener.setEnabled(isEnabled);
+    this.removeLabel.setToolTipText(isEnabled ?
+        LocaleService.getString("jj.edit.question.remove.tooltip") : null);
+    this.removeMouseListener.setEnabled(isEnabled);
   }
 
   /**
@@ -178,10 +175,13 @@ public class QuestionOverlay extends JPanel {
   }
 
   /**
-   * Erases the content of this question (w/o user confirmation).
+   * Removes the current row of questions (with a user confirmation).
    */
-  private void eraseQuestion() {
-    this.editTable.eraseQuestion(this.categoryIndex, this.questionIndex);
+  private void removeQuestionRow() {
+    AppRegistry.getInstance().getUiService().showConfirmationDialog(
+        LocaleService.getString("jj.edit.question.remove.title"),
+        LocaleService.getString("jj.edit.question.remove.message"),
+        () -> this.editTable.removeQuestionRow(this.questionIndex), null);
   }
 
   /**
