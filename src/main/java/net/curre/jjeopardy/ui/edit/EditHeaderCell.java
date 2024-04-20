@@ -98,6 +98,10 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
     } else if (categoryIndex == this.editTable.getGameData().getCategoriesCount() - 1) {
       this.editOverlay.setRightMoveEnabled(false);
     }
+    if (this.editTable.getGameData().getCategoriesCount() <= JjDefaults.MIN_NUMBER_OF_CATEGORIES) {
+      this.editOverlay.setRemoveEnabled(false);
+    }
+
     this.add(this.editOverlay, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.CENTER, TableLayout.TOP), 3);
     this.moveToFront(this.editOverlay);

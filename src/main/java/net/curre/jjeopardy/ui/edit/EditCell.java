@@ -27,6 +27,7 @@ import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
+import net.curre.jjeopardy.util.JjDefaults;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -188,10 +189,14 @@ public class EditCell extends JLayeredPane implements EditableCell {
 
     this.editOverlay = new QuestionOverlay(columnIndex, rowIndex, editTable);
     this.editOverlay.setVisible(false);
+    int questionsCount = this.editTable.getGameData().getCategories().get(columnIndex).getQuestionsCount();
     if (rowIndex == 0) {
       this.editOverlay.setUpMoveEnabled(false);
-    } else if (rowIndex == this.editTable.getGameData().getCategories().get(columnIndex).getQuestionsCount() - 1) {
+    } else if (rowIndex == questionsCount - 1) {
       this.editOverlay.setDownMoveEnabled(false);
+    }
+    if (questionsCount <= JjDefaults.MIN_NUMBER_OF_QUESTIONS) {
+      this.editOverlay.setRemoveEnabled(false);
     }
     this.add(this.editOverlay, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.RIGHT, TableLayout.CENTER), 3);
@@ -221,10 +226,11 @@ public class EditCell extends JLayeredPane implements EditableCell {
    * will be disabled by default on the cell with index 0.
    * @param newIndex the new index of this cell
    * @param downEnabled true to enable the Down arrow button
+   * @param removeEnabled true to enable the Remove row button
    */
-  public void updateRowIndexAndOverlay(int newIndex, boolean downEnabled) {
+  public void updateRowIndexAndOverlay(int newIndex, boolean downEnabled, boolean removeEnabled) {
     this.rowIndex = newIndex;
-    this.editOverlay.updateState(newIndex, downEnabled);
+    this.editOverlay.updateState(newIndex, downEnabled, removeEnabled);
   }
 
   /**

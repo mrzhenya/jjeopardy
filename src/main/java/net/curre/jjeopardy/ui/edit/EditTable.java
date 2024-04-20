@@ -23,6 +23,7 @@ import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LafService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
+import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.PrintUtilities;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -284,7 +285,7 @@ public class EditTable extends JPanel implements Printable {
     for (int ind = 0; ind < this.rows.size(); ind++) {
       EditRow row = this.rows.get(ind);
       boolean downEnabled = ind + 1 < this.rows.size();
-      row.updateRowIndexesAndOverlays(categoryIndex, ind, downEnabled);
+      row.updateRowIndexesAndOverlays(categoryIndex, ind, downEnabled, true);
     }
 
     // Now refresh the UI.
@@ -307,8 +308,13 @@ public class EditTable extends JPanel implements Printable {
     // Update the rows.
     this.remove(this.rows.get(questionInd));
     this.rows.remove(questionInd);
-    for (EditRow row : this.rows) {
-      row.updateColumnIndexesAndOverlays();
+    boolean removeEnabled = this.rows.size() > JjDefaults.MIN_NUMBER_OF_QUESTIONS;
+    for (int colInd = 0; colInd < this.gameData.getCategoriesCount(); colInd++) {
+      for (int ind = 0; ind < this.rows.size(); ind++) {
+        EditRow row = this.rows.get(ind);
+        boolean downEnabled = ind + 1 < this.rows.size();
+        row.updateRowIndexesAndOverlays(colInd, ind, downEnabled, removeEnabled);
+      }
     }
 
     // Now refresh the UI.
@@ -335,7 +341,7 @@ public class EditTable extends JPanel implements Printable {
     for (int ind = 0; ind < this.rows.size(); ind++) {
       EditRow row = this.rows.get(ind);
       boolean downEnabled = ind + 1 < this.rows.size();
-      row.updateRowIndexesAndOverlays(categoryIndex, ind, downEnabled);
+      row.updateRowIndexesAndOverlays(categoryIndex, ind, downEnabled, true);
     }
 
     // Now refresh the UI.

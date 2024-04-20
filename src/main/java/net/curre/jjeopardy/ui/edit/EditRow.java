@@ -148,9 +148,9 @@ public class EditRow extends JPanel {
    * @param rowIndex current row index
    * @param downEnabled true if the down button should be enabled
    */
-  protected void updateRowIndexesAndOverlays(int categoryIndex, int rowIndex, boolean downEnabled) {
+  protected void updateRowIndexesAndOverlays(int categoryIndex, int rowIndex, boolean downEnabled, boolean removeEnabled) {
     EditCell cell = this.cells.get(categoryIndex);
-    cell.updateRowIndexAndOverlay(rowIndex, downEnabled);
+    cell.updateRowIndexAndOverlay(rowIndex, downEnabled, removeEnabled);
   }
 
   /**

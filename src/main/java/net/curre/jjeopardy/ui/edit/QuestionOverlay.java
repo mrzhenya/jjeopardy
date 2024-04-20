@@ -160,11 +160,13 @@ public class QuestionOverlay extends JPanel {
    * overlay buttons. Note that the Up button will be disabled by default on the cell with index 0.
    * @param newIndex the new index of the question
    * @param downEnabled true to enable the Down arrow button
+   * @param removeEnabled true to enable the Remove row action
    */
-  protected void updateState(int newIndex, boolean downEnabled) {
+  protected void updateState(int newIndex, boolean downEnabled, boolean removeEnabled) {
     this.questionIndex = newIndex;
     this.setUpMoveEnabled(newIndex != 0);
     this.setDownMoveEnabled(downEnabled);
+    this.setRemoveEnabled(removeEnabled);
   }
 
   /**
