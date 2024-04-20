@@ -16,7 +16,9 @@
 
 package net.curre.jjeopardy.ui.edit;
 
+import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
+import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LafService;
@@ -260,6 +262,76 @@ public class EditTable extends JPanel implements Printable {
     // Now refresh the UI.
     this.refreshAndResize();
     this.scrollToTopFn.run();
+    this.updateDataChanged(true);
+  }
+
+  /**
+   * Moves the question up.
+   * @param categoryIndex index of the category this question belongs to
+   * @param questionInd index of the question to move (zero based)
+   */
+  public void moveQuestionUp(int categoryIndex, int questionInd) {
+    logger.info("Moving question with index " + questionInd + " up");
+
+    if (questionInd  == 0) {
+      throw new IllegalArgumentException("Unable to move up question " + questionInd);
+    }
+    Category category = this.gameData.getCategories().get(categoryIndex);
+    Question questionFrom = category.getQuestion(questionInd);
+    Question questionTo = category.getQuestion(questionInd - 1);
+    questionFrom.swapQuestion(questionTo);
+    // TODO - factor out common code
+    for (int ind = 0; ind < this.rows.size(); ind++) {
+      EditRow row = this.rows.get(ind);
+      boolean downEnabled = ind + 1 < this.rows.size();
+      row.updateRowIndexesAndOverlays(categoryIndex, ind, downEnabled);
+    }
+
+    // Now refresh the UI.
+    this.refreshAndResize();
+    this.updateDataChanged(true);
+  }
+
+  /**
+   * Erases the content of a question.
+   * @param categoryIndex index of the category this question belongs to
+   * @param questionInd index of the question to be erased (zero based)
+   */
+  public void eraseQuestion(int categoryIndex, int questionInd) {
+    logger.info("Erasing question with index " + questionInd);
+
+    Question question = this.gameData.getCategories().get(categoryIndex).getQuestion(questionInd);
+    question.reset();
+
+    // Now refresh the UI.
+    this.refreshAndResize();
+    this.updateDataChanged(true);
+  }
+
+  /**
+   * Moves the question down.
+   * @param categoryIndex index of the category this question belongs to
+   * @param questionInd index of the question to move (zero based)
+   */
+  public void moveQuestionDown(int categoryIndex, int questionInd) {
+    logger.info("Moving question with index " + questionInd + " down");
+
+    Category category = this.gameData.getCategories().get(categoryIndex);
+    if (questionInd + 1 >= category.getQuestionsCount()) {
+      throw new IllegalArgumentException("Unable to move down question " + questionInd);
+    }
+
+    Question questionFrom = category.getQuestion(questionInd);
+    Question questionTo = category.getQuestion(questionInd + 1);
+    questionFrom.swapQuestion(questionTo);
+    for (int ind = 0; ind < this.rows.size(); ind++) {
+      EditRow row = this.rows.get(ind);
+      boolean downEnabled = ind + 1 < this.rows.size();
+      row.updateRowIndexesAndOverlays(categoryIndex, ind, downEnabled);
+    }
+
+    // Now refresh the UI.
+    this.refreshAndResize();
     this.updateDataChanged(true);
   }
 

@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.bean;
 
+import net.curre.jjeopardy.service.LocaleService;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -220,5 +221,39 @@ public class Question {
   public boolean isNotAskable() {
     return (StringUtils.isBlank(this.question) && this.questionImage == null) ||
         (StringUtils.isBlank(this.answer) && this.answerImage == null);
+  }
+
+  /**
+   * Resets this question - erases the images and sets the text field to placeholder values.
+   * Points value and the parent's name are left intact.
+   */
+  public void reset() {
+    this.questionImage = null;
+    this.answerImage = null;
+    this.hasBeenAsked = false;
+    this.question = LocaleService.getString("jj.game.question.placeholder");
+    this.answer = LocaleService.getString("jj.game.answer.placeholder");
+  }
+
+  /**
+   * Exchanges the text and image data with the passed question.
+   * @param questionTo question to exchange the data with
+   */
+  public void swapQuestion(Question questionTo) {
+    String temp = this.question;
+    this.question = questionTo.getQuestion();
+    questionTo.setQuestion(temp);
+
+    temp = this.questionImage;
+    this.questionImage = questionTo.getQuestionImage();
+    questionTo.setQuestionImage(temp);
+
+    temp = this.answer;
+    this.answer = questionTo.getAnswer();
+    questionTo.setAnswer(temp);
+
+    temp = this.answerImage;
+    this.answerImage = questionTo.getAnswerImage();
+    questionTo.setAnswerImage(temp);
   }
 }

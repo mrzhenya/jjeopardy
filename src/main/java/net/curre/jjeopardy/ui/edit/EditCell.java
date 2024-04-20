@@ -16,6 +16,9 @@
 
 package net.curre.jjeopardy.ui.edit;
 
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.images.ImageEnum;
@@ -26,12 +29,7 @@ import net.curre.jjeopardy.service.UiService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.validation.constraints.NotNull;
 import java.awt.Color;
@@ -44,7 +42,7 @@ import java.awt.Font;
  *
  * @author Yevgeny Nyden
  */
-public class EditCell extends JPanel implements EditableCell {
+public class EditCell extends JLayeredPane implements EditableCell {
 
   /** Maximum height of a question or answer image. */
   private static final int MAX_IMAGE_HEIGHT = 100;
@@ -105,20 +103,36 @@ public class EditCell extends JPanel implements EditableCell {
   /** Border to use during view (not print). */
   private static Border viewBorder;
 
+  /** Overlay with buttons to move or erase this question. */
+  private final QuestionOverlay editOverlay;
+
   /**
    * Ctor. Note that cell's column and row index has to be initialized by calling the
    * <code>setColumnAndRowIndexes</code> method after a row is created. These indexes could
    * change while the game data is being edited.
-   * @param question the question for this cell; not nullable
+   * @param columnIndex column index (the index of the category in the game data)
+   * @param rowIndex row index (the index of the question on the category questions list)
    * @param editTable reference to the edit table; not nullable
    */
-  public EditCell(Question question, EditTable editTable) {
-    this.question = question;
+  public EditCell(int columnIndex, int rowIndex, EditTable editTable) {
+    this.columnIndex = columnIndex;
+    this.rowIndex = rowIndex;
+    Category category = editTable.getGameData().getCategories().get(columnIndex);
+    this.question = category.getQuestion(rowIndex);
     this.editTable = editTable;
     EditTable.hoveredCell = null;
 
+    this.setOpaque(true);
+    this.setLayout(new TableLayout(new double[][] {
+        {TableLayout.FILL}, // columns
+        {TableLayout.FILL}})); // rows
+    JPanel wrapPanel = new JPanel();
+    wrapPanel.setOpaque(false);
+    wrapPanel.setLayout(new BoxLayout(wrapPanel, BoxLayout.PAGE_AXIS));
+    this.add(wrapPanel, new TableLayoutConstraints(
+        0, 0, 0, 0, TableLayout.CENTER, TableLayout.TOP));
+
     // Initialize the layout and the default, view border.
-    this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     if (viewBorder == null) {
       viewBorder = BorderFactory.createCompoundBorder(
@@ -134,7 +148,7 @@ public class EditCell extends JPanel implements EditableCell {
     Font pointsLabelFont = lafTheme.getEditTableCellFont().deriveFont(Font.BOLD, 30);
     this.pointsLabelHeight = this.getFontMetrics(pointsLabelFont).getHeight();
     this.pointsLabel.setFont(pointsLabelFont);
-    this.add(this.pointsLabel);
+    wrapPanel.add(this.pointsLabel);
 
     // Initialize the question text pane, which may be hidden for some view modes or if there is no question text.
     EditTableMouseListener mouseListener = this.editTable.getTableMouseListener();
@@ -143,17 +157,17 @@ public class EditCell extends JPanel implements EditableCell {
     this.qTextPane.setAlignmentX(Component.CENTER_ALIGNMENT);
     this.qTextPane.addMouseListener(mouseListener);
     this.qTextPane.addMouseMotionListener(mouseListener);
-    this.add(this.qTextPane);
+    wrapPanel.add(this.qTextPane);
 
     // Initialize the question image label, which may be hidden for some view modes or if there is no question image.
     this.qImageLabel = new JLabel();
     this.qImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-    this.add(this.qImageLabel);
+    wrapPanel.add(this.qImageLabel);
 
     // Horizontal line separator.
     this.mainSeparator = new JLabel(ImageEnum.VERTICAL_SPACER_24.toImageIcon());
     this.mainSeparator.setAlignmentX(Component.CENTER_ALIGNMENT);
-    this.add(this.mainSeparator);
+    wrapPanel.add(this.mainSeparator);
 
     // Initialize the answer text pane, which may be hidden for some view modes or if there is no answer text.
     this.aTextPane = UiService.createDefaultTextPane();
@@ -161,16 +175,27 @@ public class EditCell extends JPanel implements EditableCell {
     this.aTextPane.setAlignmentX(Component.CENTER_ALIGNMENT);
     this.aTextPane.addMouseListener(mouseListener);
     this.aTextPane.addMouseMotionListener(mouseListener);
-    this.add(this.aTextPane);
+    wrapPanel.add(this.aTextPane);
 
     // Initialize the answer image label, which may be hidden for some view modes or if there is no answer image.
     this.aImageLabel = new JLabel();
     this.aImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-    this.add(this.aImageLabel);
-    this.add(Box.createRigidArea(new Dimension(0, BOX_PADDING)));
+    wrapPanel.add(this.aImageLabel);
+    wrapPanel.add(Box.createRigidArea(new Dimension(0, BOX_PADDING)));
 
     this.addMouseMotionListener(mouseListener);
     this.addMouseListener(mouseListener);
+
+    this.editOverlay = new QuestionOverlay(columnIndex, rowIndex, this, editTable);
+    this.editOverlay.setVisible(false);
+    if (rowIndex == 0) {
+      this.editOverlay.setUpMoveEnabled(false);
+    } else if (rowIndex == this.editTable.getGameData().getCategories().get(columnIndex).getQuestionsCount() - 1) {
+      this.editOverlay.setDownMoveEnabled(false);
+    }
+    this.add(this.editOverlay, new TableLayoutConstraints(
+        0, 0, 0, 0, TableLayout.RIGHT, TableLayout.CENTER), 3);
+    this.moveToFront(this.editOverlay);
 
     this.activateViewStyle();
   }
@@ -184,10 +209,22 @@ public class EditCell extends JPanel implements EditableCell {
 
   /** @inheritDoc */
   public void decorateHoverState(boolean isHovered) {
+    this.editOverlay.setVisible(isHovered);
     Color background = EditTable.decorateHoverStateHelper(this, isHovered);
     this.qTextPane.setBackground(background);
     this.aTextPane.setBackground(background);
     this.repaint();
+  }
+
+  /**
+   * Updates the relative row index of this cell and its overlay. Note that the up button
+   * will be disabled by default on the cell with index 0.
+   * @param newIndex the new index of this cell
+   * @param downEnabled true to enable the Down arrow button
+   */
+  public void updateRowIndexAndOverlay(int newIndex, boolean downEnabled) {
+    this.rowIndex = newIndex;
+    this.editOverlay.updateState(newIndex, downEnabled);
   }
 
   /**
@@ -215,21 +252,12 @@ public class EditCell extends JPanel implements EditableCell {
   }
 
   /**
-   * Sets the table column and row indexes of this cell.
-   * @param columnIndex column index of this cell
-   * @param rowIndex row index of this cell
-   */
-  protected void setColumnAndRowIndexes(int columnIndex, int rowIndex) {
-    this.columnIndex = columnIndex;
-    this.rowIndex = rowIndex;
-  }
-
-  /**
    * Updates the index of this cell relative to other cells in the same row.
    * @param newIndex the new index of this cell
    */
   protected void updateColumnIndex(int newIndex) {
     this.columnIndex = newIndex;
+    this.editOverlay.updateCategoryIndex(newIndex);
   }
 
   /**

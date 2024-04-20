@@ -16,7 +16,6 @@
 
 package net.curre.jjeopardy.ui.edit;
 
-import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 
 import javax.swing.JPanel;
@@ -59,9 +58,7 @@ public class EditRow extends JPanel {
     GameData gameData = editTable.getGameData();
     this.cells = new ArrayList<>();
     for (int columnIndex = 0; columnIndex < gameData.getCategoriesCount(); columnIndex++) {
-      Category category = gameData.getCategories().get(columnIndex);
-      EditCell cell = new EditCell(category.getQuestion(rowIndex), editTable);
-      cell.setColumnAndRowIndexes(columnIndex, rowIndex);
+      EditCell cell = new EditCell(columnIndex, rowIndex, editTable);
       this.cells.add(cell);
       this.add(cell);
     }
@@ -79,7 +76,7 @@ public class EditRow extends JPanel {
   protected void removeCell(int removeInd) {
     EditCell cell = this.cells.remove(removeInd);
     this.remove(cell);
-    this.updateIndexesAndOverlays();
+    this.updateColumnIndexesAndOverlays();
   }
 
   /**
@@ -94,7 +91,7 @@ public class EditRow extends JPanel {
 
     this.remove(cell);
     this.add(cell, newInd);
-    this.updateIndexesAndOverlays();
+    this.updateColumnIndexesAndOverlays();
   }
 
   /**
@@ -145,10 +142,21 @@ public class EditRow extends JPanel {
   }
 
   /**
-   * Updates the relative index of each cell and their overlays. Depending on the
+   * Updates the relative row index of each cell and its overlays. Depending on the
    * position of the cell, some move buttons will be disabled.
+   * @param categoryIndex category (column) index cell to update the row index on
+   * @param rowIndex current row index
+   * @param downEnabled true if the down button should be enabled
    */
-  private void updateIndexesAndOverlays() {
+  protected void updateRowIndexesAndOverlays(int categoryIndex, int rowIndex, boolean downEnabled) {
+    EditCell cell = this.cells.get(categoryIndex);
+    cell.updateRowIndexAndOverlay(rowIndex, downEnabled);
+  }
+
+  /**
+   * Updates the relative column index of each cell and their overlays.
+   */
+  private void updateColumnIndexesAndOverlays() {
     final int cellCount = this.cells.size();
     for (int ind = 0; ind < cellCount; ind++) {
       this.cells.get(ind).updateColumnIndex(ind);

@@ -16,16 +16,14 @@
 
 package net.curre.jjeopardy.ui.edit;
 
+import net.curre.jjeopardy.event.EditOverlayLabelMouseListener;
 import net.curre.jjeopardy.event.EditTableMouseListener;
-import net.curre.jjeopardy.event.IconMouseHoverListener;
-import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.validation.constraints.NotNull;
-import java.awt.event.MouseEvent;
 
 import static net.curre.jjeopardy.images.ImageEnum.*;
 
@@ -47,19 +45,19 @@ public class CategoryOverlay extends JPanel {
   private final JLabel leftArrowLabel;
 
   /** Left arrow/move mouse listener (to handle clicks and hovers). */
-  private final LabelMouseListener leftArrowMouseListener;
+  private final EditOverlayLabelMouseListener leftArrowMouseListener;
 
   /** Remove action label. */
   private final JLabel removeLabel;
 
   /** Remove mouse listener (to handle clicks and hovers). */
-  private final LabelMouseListener removeMouseListener;
+  private final EditOverlayLabelMouseListener removeMouseListener;
 
   /** Right arrow/move action label. */
   private final JLabel rightArrowLabel;
 
   /** Right arrow/move mouse listener (to handle clicks and hovers). */
-  private final LabelMouseListener rightArrowMouseListener;
+  private final EditOverlayLabelMouseListener rightArrowMouseListener;
 
   /**
    * Ctor.
@@ -74,7 +72,7 @@ public class CategoryOverlay extends JPanel {
     // ******* Initializing the left arrow action label in the default enabled state.
     this.leftArrowLabel = new JLabel();
     this.add(this.leftArrowLabel);
-    this.leftArrowMouseListener = new LabelMouseListener(
+    this.leftArrowMouseListener = new EditOverlayLabelMouseListener(
         ARROW_LEFT_32, ARROW_LEFT_32_HOVER, this::moveCategoryToTheLeft);
     this.leftArrowLabel.addMouseListener(this.leftArrowMouseListener);
     this.setLeftMoveEnabled(true);
@@ -82,14 +80,14 @@ public class CategoryOverlay extends JPanel {
     // ******* Initializing the left arrow action label in the default enabled state.
     this.removeLabel = new JLabel();
     this.add(this.removeLabel);
-    this.removeMouseListener = new LabelMouseListener(REMOVE_32, REMOVE_32_HOVER, this::removeCategory);
+    this.removeMouseListener = new EditOverlayLabelMouseListener(REMOVE_32, REMOVE_32_HOVER, this::removeCategory);
     this.removeLabel.addMouseListener(this.removeMouseListener);
     this.setRemoveEnabled(true);
 
     // ******* Initializing the left arrow action label in the default enabled state.
     this.rightArrowLabel = new JLabel();
     this.add(this.rightArrowLabel);
-    this.rightArrowMouseListener = new LabelMouseListener(
+    this.rightArrowMouseListener = new EditOverlayLabelMouseListener(
         ARROW_RIGHT_32, ARROW_RIGHT_32_HOVER, this::moveCategoryToTheRight);
     this.rightArrowLabel.addMouseListener(this.rightArrowMouseListener);
     this.setRightMoveEnabled(true);
@@ -173,60 +171,5 @@ public class CategoryOverlay extends JPanel {
    */
   private void moveCategoryToTheRight() {
     this.editTable.moveCategoryToTheRight(this.categoryIndex);
-  }
-
-  /**
-   * Listener for the action labels on the overlay.
-   */
-  private static class LabelMouseListener extends IconMouseHoverListener {
-
-    /** Indicates whether this listener should be enabled or disabled. */
-    private boolean enabled;
-
-    /** Code to run on the user click action. */
-    private final Runnable actionFn;
-
-    /**
-     * Ctor.
-     * @param icon icon to set on the label in a non-hovered state
-     * @param hoverIcon icon to set on the label in a hovered state
-     */
-    public LabelMouseListener(ImageEnum icon, ImageEnum hoverIcon, Runnable actionFn) {
-      super(icon.toImageIcon(), hoverIcon.toImageIcon());
-      this.enabled = true;
-      this.actionFn = actionFn;
-    }
-
-    /**
-     * Sets this listener to enabled/disabled mode.
-     * @param isEnabled true if this listener should be enabled; false if otherwise
-     */
-    public void setEnabled(boolean isEnabled) {
-      this.enabled = isEnabled;
-    }
-
-    /** @inheritDoc */
-    @Override
-    public void mouseReleased(MouseEvent e) {
-      if (this.enabled) {
-        this.actionFn.run();
-      }
-    }
-
-    /** @inheritDoc */
-    @Override
-    public void mouseEntered(@NotNull MouseEvent e) {
-      if (this.enabled) {
-        super.mouseEntered(e);
-      }
-    }
-
-    /** @inheritDoc */
-    @Override
-    public void mouseExited(@NotNull MouseEvent e) {
-      if (this.enabled) {
-        super.mouseExited(e);
-      }
-    }
   }
 }
