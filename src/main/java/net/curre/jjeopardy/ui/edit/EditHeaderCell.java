@@ -48,7 +48,7 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
   private static final JTextPane HELPER_TEXT_PANE = UiService.createDefaultTextPane();
 
   /** Category index (zero based). */
-  private int categoryIndex;
+  private int columnIndex;
 
   /** Reference to the edit table. */
   private final EditTable editTable;
@@ -66,7 +66,7 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
    * @param editTable reference to the edit table; not nullable
    */
   public EditHeaderCell(String name, int categoryIndex, EditTable editTable) {
-    this.categoryIndex = categoryIndex;
+    this.columnIndex = categoryIndex;
     this.editTable = editTable;
 
     this.setOpaque(true);
@@ -101,7 +101,7 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
     if (this.editTable.getGameData().getCategoriesCount() <= JjDefaults.MIN_NUMBER_OF_CATEGORIES) {
       this.editOverlay.setRemoveEnabled(false);
     }
-
+    // When changing the overlay component depth, adjust assumptions in EditTableMouseListener.
     this.add(this.editOverlay, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.CENTER, TableLayout.TOP), 3);
     this.moveToFront(this.editOverlay);
@@ -120,9 +120,17 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
   }
 
   /** @inheritDoc */
-  public void decorateHoverState(boolean isHovered) {
+  public void decorateHoverState(boolean isHovered, boolean isSingleCellHover) {
     this.editOverlay.setVisible(isHovered);
-    Color background = EditTable.decorateHoverStateHelper(this, isHovered);
+
+    Color background = isHovered ? EditTable.cellHoveredBackground : EditTable.cellBackground;
+    if (isSingleCellHover && isHovered) {
+      if (EditTable.hoveredCell != null && EditTable.hoveredCell != this) {
+        EditTable.hoveredCell.decorateHoverState(false, true);
+      }
+      EditTable.hoveredCell = this;
+    }
+    this.setBackground(background);
     this.textPane.setBackground(background);
     this.repaint();
   }
@@ -135,7 +143,7 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
    * @param removeEnabled true to enable the remove button
    */
   public void updateIndexAndOverlay(int newIndex, boolean rightEnabled, boolean removeEnabled) {
-    this.categoryIndex = newIndex;
+    this.columnIndex = newIndex;
     this.editOverlay.updateState(newIndex, rightEnabled, removeEnabled);
   }
 
@@ -152,15 +160,12 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
    * @return the current category name
    */
   protected String getCategoryName() {
-    return this.editTable.getGameData().getCategories().get(this.categoryIndex).getName();
+    return this.editTable.getGameData().getCategories().get(this.columnIndex).getName();
   }
 
-  /**
-   * Gets the category index.
-   * @return the current category index (zero based)
-   */
-  protected int getCategoryIndex() {
-    return this.categoryIndex;
+  /** @inheritDoc */
+  public int getColumnIndex() {
+    return this.columnIndex;
   }
 
   /**
@@ -168,7 +173,7 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
    * @param name new category name (assume not blank).
    */
   protected void updateCategoryName(@NotNull String name) {
-    Category category = this.editTable.getGameData().getCategories().get(this.categoryIndex);
+    Category category = this.editTable.getGameData().getCategories().get(this.columnIndex);
     if (category.setName(name)) {
       this.editTable.updateDataChanged(true);
     }

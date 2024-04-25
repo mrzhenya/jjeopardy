@@ -56,6 +56,7 @@ public class EditOverlayLabelMouseListener extends IconMouseHoverListener {
   /** @inheritDoc */
   @Override
   public void mouseReleased(MouseEvent e) {
+    e.consume();
     if (this.enabled) {
       this.actionFn.run();
     }

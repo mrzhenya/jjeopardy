@@ -16,6 +16,8 @@
 
 package net.curre.jjeopardy.ui.edit;
 
+import java.awt.Color;
+
 /**
  * Common interface for editable table cell or header cell.
  *
@@ -26,11 +28,24 @@ public interface EditableCell {
   /**
    * Decorates the state of this cell as hovered or not hovered.
    * @param isHovered true if the cell is hovered; false if not
+   * @param isSingleCellHover true if this is a single cell hover (vs row or columns hover effect)
    */
-  void decorateHoverState(boolean isHovered);
+  void decorateHoverState(boolean isHovered, boolean isSingleCellHover);
 
   /**
    * Shows edit question dialog for this cell.
    */
   void showEditDialog();
+
+  /**
+   * Gets the column index of this cell (which is also the category index in the game data).
+   * @return column index
+   */
+  int getColumnIndex();
+
+  /**
+   * Sets the background color on the cell.
+   * @param color new background color for the cell
+   */
+  void setBackground(Color color);
 }

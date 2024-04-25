@@ -16,7 +16,9 @@
 
 package net.curre.jjeopardy.event;
 
+import net.curre.jjeopardy.ui.edit.EditTable;
 import net.curre.jjeopardy.ui.edit.EditableCell;
+import net.curre.jjeopardy.ui.edit.OverlayActionLabel;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -33,14 +35,19 @@ import java.awt.event.MouseMotionListener;
  */
 public class EditTableMouseListener extends MouseAdapter implements MouseListener, MouseMotionListener {
 
+  /** Reference to the edit table. */
+  private final EditTable editTable;
+
   /** Indicates that the edit mode is enabled. */
   private boolean editEnabled;
 
   /**
    * Ctor.
+   * @param editTable reference to the edit table
    * @param editEnabled true if the editing is enabled
    */
-  public EditTableMouseListener(boolean editEnabled) {
+  public EditTableMouseListener(EditTable editTable, boolean editEnabled) {
+    this.editTable = editTable;
     this.editEnabled = editEnabled;
   }
 
@@ -67,8 +74,8 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
    */
   @Override
   public void mouseReleased(MouseEvent e) {
-    if (this.editEnabled) {
-      EditableCell cell = this.getEditCellFromEvent(e, false);
+    if (this.editEnabled && !e.isConsumed()) {
+      EditableCell cell = this.getEditCellFromEvent(e);
       if (cell != null) {
         cell.showEditDialog();
       }
@@ -83,9 +90,15 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
   @Override
   public void mouseEntered(MouseEvent e) {
     if (this.editEnabled) {
-      EditableCell cell = this.getEditCellFromEvent(e, true);
+      EditableCell cell = this.getEditCellFromEvent(e);
       if (cell != null) {
-        cell.decorateHoverState(true);
+        if (e.getComponent() instanceof OverlayActionLabel) {
+          // Highlight the whole column effect on header overlay buttons.
+          if (((OverlayActionLabel) e.getComponent()).isColumnHover()) {
+            this.editTable.decorateColumnHoverState(cell.getColumnIndex(), true);
+          }
+        }
+        cell.decorateHoverState(true, true);
       }
     }
   }
@@ -98,9 +111,15 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
   @Override
   public void mouseExited(MouseEvent e) {
     if (this.editEnabled) {
-      EditableCell cell = this.getEditCellFromEvent(e, true);
+      EditableCell cell = this.getEditCellFromEvent(e);
       if (cell != null) {
-        cell.decorateHoverState(false);
+        if (e.getComponent() instanceof OverlayActionLabel) {
+          // Highlight the whole column effect on header overlay buttons.
+          if (((OverlayActionLabel) e.getComponent()).isColumnHover()) {
+            this.editTable.decorateColumnHoverState(cell.getColumnIndex(), false);
+          }
+        }
+        cell.decorateHoverState(false, true);
       }
     }
   }
@@ -112,18 +131,17 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
   /**
    * Finds the EditCell the mouse event has occurred.
    * @param event mouse event
-   * @param includeOverlay when true, get the event from the overlays (two levels down)
    * @return Edit cell reference or null if unable to find
    */
-  private @Nullable EditableCell getEditCellFromEvent(@NotNull MouseEvent event, boolean includeOverlay) {
+  private @Nullable EditableCell getEditCellFromEvent(@NotNull MouseEvent event) {
     Component component = event.getComponent();
     if (component instanceof EditableCell) {
       return ((EditableCell) component);
     } else if (component.getParent() instanceof EditableCell)  {
       // Handle events on the child components (text panes).
       return ((EditableCell) component.getParent());
-    } else if (includeOverlay && component.getParent().getParent() instanceof EditableCell) {
-      // Handle events on the overlays if requested.
+    } else if (component.getParent().getParent() instanceof EditableCell) {
+      // Handle events on the overlays.
       return ((EditableCell) component.getParent().getParent());
     }
     return null;

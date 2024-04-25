@@ -64,7 +64,7 @@ public class EditCategoryDialog extends EditBaseDialog {
     this.headerLabel = new JLabel();
     this.headerLabel.setText(
         LocaleService.getString("jj.editinfo.category.message",
-            String.valueOf(editHeaderCell.getCategoryIndex() + 1)));
+            String.valueOf(editHeaderCell.getColumnIndex() + 1)));
 
     this.initializeDialog(LocaleService.getString("jj.editinfo.category.title"),
         JjDefaults.EDIT_INFO_DIALOG_MIN_WIDTH, JjDefaults.EDIT_INFO_DIALOG_MIN_HEIGHT / 2);

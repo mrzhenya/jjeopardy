@@ -74,6 +74,15 @@ public class EditRow extends JPanel {
   }
 
   /**
+   * Gets a cell with a given column index.
+   * @param columnInd column index of a cell
+   * @return the cell
+   */
+  protected EditCell getCellAt(int columnInd) {
+    return this.cells.get(columnInd);
+  }
+
+  /**
    * Removes a cell from the row.
    * @param removeInd index of the cell to remove
    */

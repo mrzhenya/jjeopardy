@@ -198,6 +198,7 @@ public class EditCell extends JLayeredPane implements EditableCell {
     if (questionsCount <= JjDefaults.MIN_NUMBER_OF_QUESTIONS) {
       this.editOverlay.setRemoveEnabled(false);
     }
+    // When changing the overlay component depth, adjust assumptions in EditTableMouseListener.
     this.add(this.editOverlay, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.RIGHT, TableLayout.CENTER), 3);
     this.moveToFront(this.editOverlay);
@@ -213,9 +214,23 @@ public class EditCell extends JLayeredPane implements EditableCell {
   }
 
   /** @inheritDoc */
-  public void decorateHoverState(boolean isHovered) {
-    this.editOverlay.setVisible(isHovered);
-    Color background = EditTable.decorateHoverStateHelper(this, isHovered);
+  public void decorateHoverState(boolean isHovered, boolean isSingleCellHover) {
+    // Don't display overlay on column or row hover effects.
+    if (isSingleCellHover) {
+      this.editOverlay.setVisible(isHovered);
+    }
+
+    // For single cell hovers, adjust the current hover cell state.
+    Color background = isHovered ? EditTable.cellHoveredBackground : EditTable.cellBackground;
+    if (isSingleCellHover && isHovered) {
+      if (EditTable.hoveredCell != null && EditTable.hoveredCell != this) {
+        EditTable.hoveredCell.decorateHoverState(false, true);
+      }
+      EditTable.hoveredCell = this;
+    }
+
+    // Set the proper background and repaint the cell.
+    this.setBackground(background);
     this.qTextPane.setBackground(background);
     this.aTextPane.setBackground(background);
     this.repaint();
@@ -245,7 +260,7 @@ public class EditCell extends JLayeredPane implements EditableCell {
    * Gets the current column index of this cell.
    * @return column index of this cell
    */
-  protected int getColumnIndex() {
+  public int getColumnIndex() {
     return this.columnIndex;
   }
 

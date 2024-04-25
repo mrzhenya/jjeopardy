@@ -18,12 +18,10 @@ package net.curre.jjeopardy.ui.edit;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.event.EditOverlayLabelMouseListener;
 import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.validation.constraints.NotNull;
 
@@ -44,25 +42,16 @@ public class HeaderOverlay extends JPanel {
   private final EditTable editTable;
 
   /** Left arrow/move action label. */
-  private final JLabel leftArrowLabel;
-
-  /** Left arrow/move mouse listener (to handle clicks and hovers). */
-  private final EditOverlayLabelMouseListener leftArrowMouseListener;
+  private final OverlayActionLabel leftArrowLabel;
 
   /** Remove action label. */
-  private final JLabel removeLabel;
-
-  /** Remove mouse listener (to handle clicks and hovers). */
-  private final EditOverlayLabelMouseListener removeMouseListener;
+  private final OverlayActionLabel removeLabel;
 
   /** Right arrow/move action label. */
-  private final JLabel rightArrowLabel;
-
-  /** Right arrow/move mouse listener (to handle clicks and hovers). */
-  private final EditOverlayLabelMouseListener rightArrowMouseListener;
+  private final OverlayActionLabel rightArrowLabel;
 
   /** Add category/column action label. */
-  private final JLabel addCategoryLabel;
+  private final OverlayActionLabel addCategoryLabel;
 
   /**
    * Ctor.
@@ -78,37 +67,26 @@ public class HeaderOverlay extends JPanel {
         {TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED}})); // rows
 
     // ******* Initializing the left arrow action label in the default enabled state.
-    this.leftArrowLabel = new JLabel();
+    this.leftArrowLabel = new OverlayActionLabel(ARROW_LEFT_32, ARROW_LEFT_32_HOVER, ARROW_LEFT_32_DISABLED,
+        "jj.edit.category.move.left", this::moveCategoryToTheLeft, true, false);
     this.add(this.leftArrowLabel, new TableLayoutConstraints(
         1, 0, 1, 0, TableLayout.CENTER, TableLayout.CENTER));
-    this.leftArrowMouseListener = new EditOverlayLabelMouseListener(
-        ARROW_LEFT_32, ARROW_LEFT_32_HOVER, this::moveCategoryToTheLeft);
-    this.leftArrowLabel.addMouseListener(this.leftArrowMouseListener);
-    this.setLeftMoveEnabled(true);
 
     // ******* Initializing the left arrow action label in the default enabled state.
-    this.removeLabel = new JLabel();
+    this.removeLabel = new OverlayActionLabel(REMOVE_32, REMOVE_32_HOVER, REMOVE_32_DISABLED,
+        "jj.edit.category.remove.tooltip", this::removeCategory, true, false);
     this.add(this.removeLabel, new TableLayoutConstraints(
         2, 0, 2, 0, TableLayout.CENTER, TableLayout.CENTER));
-    this.removeMouseListener = new EditOverlayLabelMouseListener(REMOVE_32, REMOVE_32_HOVER, this::removeCategory);
-    this.removeLabel.addMouseListener(this.removeMouseListener);
-    this.setRemoveEnabled(true);
 
     // ******* Initializing the left arrow action label in the default enabled state.
-    this.rightArrowLabel = new JLabel();
+    this.rightArrowLabel = new OverlayActionLabel(ARROW_RIGHT_32, ARROW_RIGHT_32_HOVER, ARROW_RIGHT_32_DISABLED,
+        "jj.edit.category.move.right", this::moveCategoryToTheRight, true, false);
     this.add(this.rightArrowLabel, new TableLayoutConstraints(
         3, 0, 3, 0, TableLayout.CENTER, TableLayout.CENTER));
-    this.rightArrowMouseListener = new EditOverlayLabelMouseListener(
-        ARROW_RIGHT_32, ARROW_RIGHT_32_HOVER, this::moveCategoryToTheRight);
-    this.rightArrowLabel.addMouseListener(this.rightArrowMouseListener);
-    this.setRightMoveEnabled(true);
 
     // ******* Initializing the left arrow action label in the default enabled state.
-    this.addCategoryLabel = new JLabel();
-    this.addCategoryLabel.setIcon(PLUS_ONE_32.toImageIcon());
-    EditOverlayLabelMouseListener plusOneMouseListener = new EditOverlayLabelMouseListener(
-        PLUS_ONE_32, PLUS_ONE_32_HOVER, this::addCategory);
-    this.addCategoryLabel.addMouseListener(plusOneMouseListener);
+    this.addCategoryLabel = new OverlayActionLabel(PLUS_ONE_32, PLUS_ONE_32_HOVER, PLUS_ONE_32_DISABLED,
+        "jj.edit.category.add.column", this::addCategory, true, false);
     this.add(this.addCategoryLabel, new TableLayoutConstraints(
         2, 2, 2, 2, TableLayout.CENTER, TableLayout.CENTER));
 
@@ -122,46 +100,34 @@ public class HeaderOverlay extends JPanel {
 
   /**
    * Enables/disables the left arrow/move action on this overlay.
-   * @param isEnabled true if left move is enabled
+   * @param isEnabled true if left move should be enabled
    */
   public void setLeftMoveEnabled(boolean isEnabled) {
-    this.leftArrowLabel.setIcon(
-        isEnabled ? ARROW_LEFT_32.toImageIcon() : ARROW_LEFT_32_DISABLED.toImageIcon());
-    this.leftArrowLabel.setToolTipText(isEnabled ?
-            LocaleService.getString("jj.edit.category.move.left") : null);
-    this.leftArrowMouseListener.setEnabled(isEnabled);
+    this.leftArrowLabel.setEnabled(isEnabled);
   }
 
   /**
    * Enables/disables the remove action on this overlay.
-   * @param isEnabled true if remove action is enabled
+   * @param isEnabled true if remove action should be enabled
    */
   public void setRemoveEnabled(boolean isEnabled) {
-    this.removeLabel.setIcon(
-        isEnabled ? REMOVE_32.toImageIcon() : REMOVE_32_DISABLED.toImageIcon());
-    this.removeLabel.setToolTipText(isEnabled ?
-            LocaleService.getString("jj.edit.category.remove.tooltip") : null);
-    this.removeMouseListener.setEnabled(isEnabled);
+    this.removeLabel.setEnabled(isEnabled);
   }
 
   /**
    * Enables/disables the right arrow/move action on this overlay.
-   * @param isEnabled true if right move is enabled
+   * @param isEnabled true if right move should be enabled
    */
   public void setRightMoveEnabled(boolean isEnabled) {
-    this.rightArrowLabel.setIcon(
-        isEnabled ? ARROW_RIGHT_32.toImageIcon() : ARROW_RIGHT_32_DISABLED.toImageIcon());
-    this.rightArrowLabel.setToolTipText(isEnabled ?
-        LocaleService.getString("jj.edit.category.move.right") : null);
-    this.rightArrowMouseListener.setEnabled(isEnabled);
+    this.rightArrowLabel.setEnabled(isEnabled);
   }
 
   /**
    * Sets the Add Category button enabled or disabled.
-   * @param enabled true if the button should be enabled
+   * @param isEnabled true if the button should be enabled
    */
-  protected void setAddCategoryEnabled(boolean enabled) {
-    this.addCategoryLabel.setVisible(enabled);
+  protected void setAddCategoryEnabled(boolean isEnabled) {
+    this.addCategoryLabel.setEnabled(isEnabled);
   }
 
   /**

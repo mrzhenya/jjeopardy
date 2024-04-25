@@ -82,6 +82,9 @@ public enum ImageEnum {
   /** Hover plus one medium size icon. */
   PLUS_ONE_32_HOVER("plus_one-32-hover.png"),
 
+  /** Disabled plus one medium size icon. */
+  PLUS_ONE_32_DISABLED("plus_one-32-disabled.png"),
+
   /** Small success icon. */
   SUCCESS_24("success-24.png"),
 

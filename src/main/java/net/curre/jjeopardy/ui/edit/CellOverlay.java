@@ -16,17 +16,14 @@
 
 package net.curre.jjeopardy.ui.edit;
 
-import net.curre.jjeopardy.event.EditOverlayLabelMouseListener;
 import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.validation.constraints.NotNull;
-
 import java.awt.Dimension;
 
 import static net.curre.jjeopardy.images.ImageEnum.*;
@@ -49,22 +46,13 @@ public class CellOverlay extends JPanel {
   private final EditTable editTable;
 
   /** Up arrow/move action label. */
-  private final JLabel upArrowLabel;
-
-  /** Up arrow/move mouse listener (to handle clicks and hovers). */
-  private final EditOverlayLabelMouseListener upArrowMouseListener;
+  private final OverlayActionLabel upArrowLabel;
 
   /** Remove row action label. */
-  private final JLabel removeLabel;
-
-  /** Remove row mouse listener (to handle clicks and hovers). */
-  private final EditOverlayLabelMouseListener removeMouseListener;
+  private final OverlayActionLabel removeLabel;
 
   /** Down arrow/move action label. */
-  private final JLabel downArrowLabel;
-
-  /** Down arrow/move mouse listener (to handle clicks and hovers). */
-  private final EditOverlayLabelMouseListener downArrowMouseListener;
+  private final OverlayActionLabel downArrowLabel;
 
   /**
    * Ctor.
@@ -80,29 +68,21 @@ public class CellOverlay extends JPanel {
     this.setOpaque(false);
 
     // ******* Initializing the Up arrow action label in the default enabled state.
-    this.upArrowLabel = new JLabel();
+    this.upArrowLabel = new OverlayActionLabel(ARROW_UP_32, ARROW_UP_32_HOVER, ARROW_UP_32_DISABLED,
+        "jj.edit.question.move.up", this::moveQuestionUp, false, false);
     this.add(this.upArrowLabel);
     this.add(Box.createRigidArea(new Dimension(1, 5)));
-    this.upArrowMouseListener = new EditOverlayLabelMouseListener(
-        ARROW_UP_32, ARROW_UP_32_HOVER, this::moveQuestionUp);
-    this.upArrowLabel.addMouseListener(this.upArrowMouseListener);
-    this.setUpMoveEnabled(true);
 
     // ******* Initializing the left arrow action label in the default enabled state.
-    this.removeLabel = new JLabel();
+    this.removeLabel = new OverlayActionLabel(REMOVE_32, REMOVE_32_HOVER, REMOVE_32_DISABLED,
+        "jj.edit.question.remove.tooltip", this::removeQuestionRow, false, false);
     this.add(this.removeLabel);
     this.add(Box.createRigidArea(new Dimension(1, 5)));
-    this.removeMouseListener = new EditOverlayLabelMouseListener(REMOVE_32, REMOVE_32_HOVER, this::removeQuestionRow);
-    this.removeLabel.addMouseListener(this.removeMouseListener);
-    this.setRemoveEnabled(true);
 
     // ******* Initializing the left arrow action label in the default enabled state.
-    this.downArrowLabel = new JLabel();
+    this.downArrowLabel = new OverlayActionLabel(ARROW_DOWN_32, ARROW_DOWN_32_HOVER, ARROW_DOWN_32_DISABLED,
+        "jj.edit.question.move.down", this::moveQuestionDown, false, false);
     this.add(this.downArrowLabel);
-    this.downArrowMouseListener = new EditOverlayLabelMouseListener(
-        ARROW_DOWN_32, ARROW_DOWN_32_HOVER, this::moveQuestionDown);
-    this.downArrowLabel.addMouseListener(this.downArrowMouseListener);
-    this.setDownMoveEnabled(true);
 
     // This listener is needed for the non-interrupted hover effect on the parent header cell.
     EditTableMouseListener mouseListener = this.editTable.getTableMouseListener();
@@ -113,14 +93,10 @@ public class CellOverlay extends JPanel {
 
   /**
    * Enables/disables the Up arrow/move action on this overlay.
-   * @param isEnabled true if the Up move is enabled
+   * @param isEnabled true if the Up move should be enabled
    */
   public void setUpMoveEnabled(boolean isEnabled) {
-    this.upArrowLabel.setIcon(
-        isEnabled ? ARROW_UP_32.toImageIcon() : ARROW_UP_32_DISABLED.toImageIcon());
-    this.upArrowLabel.setToolTipText(isEnabled ?
-        LocaleService.getString("jj.edit.question.move.up") : null);
-    this.upArrowMouseListener.setEnabled(isEnabled);
+    this.upArrowLabel.setEnabled(isEnabled);
   }
 
   /**
@@ -128,23 +104,15 @@ public class CellOverlay extends JPanel {
    * @param isEnabled true if remove action is enabled
    */
   public void setRemoveEnabled(boolean isEnabled) {
-    this.removeLabel.setIcon(
-        isEnabled ? REMOVE_32.toImageIcon() : REMOVE_32_DISABLED.toImageIcon());
-    this.removeLabel.setToolTipText(isEnabled ?
-        LocaleService.getString("jj.edit.question.remove.tooltip") : null);
-    this.removeMouseListener.setEnabled(isEnabled);
+    this.removeLabel.setEnabled(isEnabled);
   }
 
   /**
    * Enables/disables the Down arrow/move action on this overlay.
-   * @param isEnabled true if Down move is enabled
+   * @param isEnabled true if Down move should be enabled
    */
   public void setDownMoveEnabled(boolean isEnabled) {
-    this.downArrowLabel.setIcon(
-        isEnabled ? ARROW_DOWN_32.toImageIcon() : ARROW_DOWN_32_DISABLED.toImageIcon());
-    this.downArrowLabel.setToolTipText(isEnabled ?
-        LocaleService.getString("jj.edit.question.move.down") : null);
-    this.downArrowMouseListener.setEnabled(isEnabled);
+    this.downArrowLabel.setEnabled(isEnabled);
   }
 
   /**

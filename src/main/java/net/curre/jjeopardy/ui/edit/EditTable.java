@@ -36,7 +36,6 @@ import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.validation.constraints.NotNull;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -60,6 +59,12 @@ public class EditTable extends JPanel implements Printable {
 
   /** Thickness of line printed at the top of the table for more emphasis. */
   private static final int EMPHASIS_LINE_HEIGHT = 1;
+
+  /** Cell background color (assumed only used from the EditTable instance code). */
+  protected static Color cellBackground;
+
+  /** Hovered cell background color (assumed only used from the EditTable instance code). */
+  protected static Color cellHoveredBackground;
 
   /** Reference to the currently hovered cell. Assume there is only one edit table open at the same time. */
   protected static EditableCell hoveredCell;
@@ -105,9 +110,14 @@ public class EditTable extends JPanel implements Printable {
     this.editTableMode = editTableMode;
     this.scrollToTopFn = scrollToTopFn;
     this.enableSaveFn = enableSaveFn;
-    this.tableMouseListener = new EditTableMouseListener(editEnabled);
+    this.tableMouseListener = new EditTableMouseListener(this, editEnabled);
 
-    this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
+    cellBackground = lafTheme.getGameTableHeaderBackgroundColor();
+    int colorChange = lafTheme.isDarkTheme() ? 30 : -30;
+    cellHoveredBackground = LafService.createAdjustedColor(cellBackground, colorChange);
+
+      this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
     this.header = new EditHeaderRow(gameData.getCategories(), this);
     this.add(this.header);
@@ -276,6 +286,11 @@ public class EditTable extends JPanel implements Printable {
     if (this.gameData.getCategoriesCount() + 1 == JjDefaults.MAX_NUMBER_OF_CATEGORIES) {
       this.header.setAddCategoryEnabled(false);
     }
+
+    // Now refresh the UI.
+    this.refreshAndResize();
+    this.scrollToTopFn.run();
+    this.updateDataChanged(true);
   }
 
   /**
@@ -463,6 +478,21 @@ public class EditTable extends JPanel implements Printable {
   }
 
   /**
+   * Decorates the hovered state of a given column.
+   * @param columnIndex index of the column to decorate
+   * @param hovered true if the column should be decorated as hovered
+   */
+  public void decorateColumnHoverState(int columnIndex, boolean hovered) {
+    final int columnsCount = this.gameData.getCategoriesCount();
+    for (EditRow row : this.rows) {
+      for (int ind = 0; ind < columnsCount; ind++) {
+        boolean isHovered = hovered && columnIndex == ind;
+        row.getCellAt(ind).decorateHoverState(isHovered, false);
+      }
+    }
+  }
+
+  /**
    * Gets the current view mode (answers only, question and answers, etc.).
    * @return the current view mode
    */
@@ -502,27 +532,6 @@ public class EditTable extends JPanel implements Printable {
     if (isDataChanged) {
       this.enableSaveFn.run();
     }
-  }
-
-  /**
-   * Helper method to decorate a cell (table cell or header cell) as hovered or unhovered.
-   * @param component cell or header cell component
-   * @param isHovered true if the cell is hovered; false if otherwise
-   * @return the current background color
-   */
-  protected static Color decorateHoverStateHelper(Component component, boolean isHovered) {
-    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
-    Color background = lafTheme.getGameTableHeaderBackgroundColor();
-    if (isHovered) {
-      int colorChange = lafTheme.isDarkTheme() ? 30 : -30;
-      background = LafService.createAdjustedColor(background, colorChange);
-      if (hoveredCell != null && hoveredCell != component) {
-        hoveredCell.decorateHoverState(false);
-      }
-      hoveredCell = (EditableCell) component;
-    }
-    component.setBackground(background);
-    return background;
   }
 
   /** Activates the table's view style/presentation. */
