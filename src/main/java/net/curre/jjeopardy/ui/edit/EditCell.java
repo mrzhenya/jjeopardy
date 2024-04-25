@@ -268,7 +268,7 @@ public class EditCell extends JLayeredPane implements EditableCell {
    * Gets the current row index of this cell.
    * @return row index of this cell
    */
-  protected int getRowIndex() {
+  public int getRowIndex() {
     return this.rowIndex;
   }
 

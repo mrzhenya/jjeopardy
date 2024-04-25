@@ -47,7 +47,7 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
   /** An invisible text pane to help determining the text areas sizes (not thread safe!). */
   private static final JTextPane HELPER_TEXT_PANE = UiService.createDefaultTextPane();
 
-  /** Category index (zero based). */
+  /** Column index (zero based). */
   private int columnIndex;
 
   /** Reference to the edit table. */
@@ -166,6 +166,11 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
   /** @inheritDoc */
   public int getColumnIndex() {
     return this.columnIndex;
+  }
+
+  /** @inheritDoc */
+  public int getRowIndex() {
+    return -1;
   }
 
   /**

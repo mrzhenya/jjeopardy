@@ -39,9 +39,15 @@ public interface EditableCell {
 
   /**
    * Gets the column index of this cell (which is also the category index in the game data).
-   * @return column index
+   * @return the column index
    */
   int getColumnIndex();
+
+  /**
+   * Gets the row index of this cell.
+   * @return the row index
+   */
+  int getRowIndex();
 
   /**
    * Sets the background color on the cell.

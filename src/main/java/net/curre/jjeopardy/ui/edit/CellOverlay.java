@@ -75,7 +75,7 @@ public class CellOverlay extends JPanel {
 
     // ******* Initializing the left arrow action label in the default enabled state.
     this.removeLabel = new OverlayActionLabel(REMOVE_32, REMOVE_32_HOVER, REMOVE_32_DISABLED,
-        "jj.edit.question.remove.tooltip", this::removeQuestionRow, false, false);
+        "jj.edit.question.remove.tooltip", this::removeQuestionRow, false, true);
     this.add(this.removeLabel);
     this.add(Box.createRigidArea(new Dimension(1, 5)));
 

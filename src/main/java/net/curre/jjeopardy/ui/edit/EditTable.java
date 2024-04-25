@@ -479,6 +479,22 @@ public class EditTable extends JPanel implements Printable {
   }
 
   /**
+   * Decorates the hovered state of a given row.
+   * @param rowIndex index of the row to decorate
+   * @param hovered true if the row should be decorated as hovered
+   */
+  public void decorateRowHoverState(int rowIndex, boolean hovered) {
+    final int columnsCount = this.gameData.getCategoriesCount();
+    for (int ind = 0; ind < this.rows.size(); ind++) {
+      EditRow row = this.rows.get(ind);
+      boolean isHovered = hovered && rowIndex == ind;
+      for (int cellInd = 0; cellInd < columnsCount; cellInd++) {
+        row.getCellAt(cellInd).decorateHoverState(isHovered, false);
+      }
+    }
+  }
+
+  /**
    * Gets the current view mode (answers only, question and answers, etc.).
    * @return the current view mode
    */

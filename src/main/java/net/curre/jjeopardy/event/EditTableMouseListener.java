@@ -96,6 +96,8 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
           // Highlight the whole column effect on header overlay buttons.
           if (((OverlayActionLabel) e.getComponent()).isColumnHover()) {
             this.editTable.decorateColumnHoverState(cell.getColumnIndex(), true);
+          } else if (((OverlayActionLabel) e.getComponent()).isRowHover()) {
+            this.editTable.decorateRowHoverState(cell.getRowIndex(), true);
           }
         }
         cell.decorateHoverState(true, true);
@@ -117,6 +119,8 @@ public class EditTableMouseListener extends MouseAdapter implements MouseListene
           // Highlight the whole column effect on header overlay buttons.
           if (((OverlayActionLabel) e.getComponent()).isColumnHover()) {
             this.editTable.decorateColumnHoverState(cell.getColumnIndex(), false);
+          } else if (((OverlayActionLabel) e.getComponent()).isRowHover()) {
+            this.editTable.decorateRowHoverState(cell.getRowIndex(), false);
           }
         }
         cell.decorateHoverState(false, true);
