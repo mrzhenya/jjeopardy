@@ -107,6 +107,17 @@ public class EditSettingPanel extends JPanel {
   }
 
   /**
+   * Handles enabling the edit functionality on this edit table.
+   * @param actionEvent ignored
+   */
+  private void handleEnableEdit(ActionEvent actionEvent) {
+    boolean editEnabled = this.enableEditBox.isSelected();
+    this.editGameWindow.setEditEnabled(editEnabled);
+    this.editPlayersBox.setEnabled(editEnabled);
+    this.editGameInfoBox.setEnabled(editEnabled);
+  }
+
+  /**
    * Shows the player dialog to edit players for the current game.
    * @param actionEvent ignored
    */
@@ -145,16 +156,13 @@ public class EditSettingPanel extends JPanel {
     this.enableEditBox.setText(LocaleService.getString("jj.edit.setting.edit.message"));
     this.enableEditBox.setSelected(editEnabled && this.editAvailable);
     this.enableEditBox.setEnabled(this.editAvailable);
-    this.enableEditBox.addActionListener(e ->
-        this.editGameWindow.setEditEnabled(this.enableEditBox.isSelected()));
+    this.enableEditBox.addActionListener(this::handleEnableEdit);
 
     // Checkbox to edit additional game information such as the game name or description.
     this.editGameInfoBox = new JCheckBox();
     this.editGameInfoBox.setText(LocaleService.getString("jj.edit.settings.extra.message"));
     this.editGameInfoBox.setEnabled(this.editAvailable);
-    this.editGameInfoBox.addActionListener(e -> {
-      this.infoDialog.showDialog(this.editGameWindow.getGameData());
-    });
+    this.editGameInfoBox.addActionListener(e -> this.infoDialog.showDialog(this.editGameWindow.getGameData()));
 
     // Checkbox to edit game players.
     this.editPlayersBox = new JCheckBox();
