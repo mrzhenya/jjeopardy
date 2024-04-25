@@ -255,6 +255,23 @@ public class GameData implements Comparable<GameData> {
     this.categories.remove(categoryInd);
   }
 
+  /**
+   * Adds a new category (with blank questions) at the given index location.
+   * @param categoryInd index at which a new category is added
+   * @param categoryName category name
+   * @param questionText question text to initialize the questions text to
+   * @param answerText answer text to initialize the questions answer text to
+   */
+  public void addCategory(int categoryInd, String categoryName, String questionText, String answerText) {
+    List<Question> newQuestions = new ArrayList<>();
+    List<Question> questions = this.categories.get(categoryInd).getQuestions();
+    for (Question question : questions) {
+      newQuestions.add(
+          new Question(questionText, null, answerText, null, question.getPoints()));
+    }
+    Category category = new Category(categoryName, newQuestions);
+    this.categories.add(categoryInd, category);
+  }
 
   /**
    * Moves a category (with its questions) in the game data.

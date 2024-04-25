@@ -37,7 +37,7 @@ import static net.curre.jjeopardy.images.ImageEnum.*;
  *
  * @author Yevgeny Nyden
  */
-public class QuestionOverlay extends JPanel {
+public class CellOverlay extends JPanel {
 
   /** Question's category index (zero based). */
   private int categoryIndex;
@@ -71,7 +71,7 @@ public class QuestionOverlay extends JPanel {
    * @param questionIndex question index (zero based)
    * @param editTable reference to the edit table; not nullable
    */
-  public QuestionOverlay(int categoryIndex, int questionIndex, @NotNull EditTable editTable) {
+  public CellOverlay(int categoryIndex, int questionIndex, @NotNull EditTable editTable) {
     this.categoryIndex = categoryIndex;
     this.questionIndex = questionIndex;
     this.editTable = editTable;

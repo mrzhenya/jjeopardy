@@ -76,6 +76,12 @@ public enum ImageEnum {
   /** Hover remove (x) medium size icon. */
   REMOVE_32_HOVER("remove-32-hover.png"),
 
+  /** Plus one medium size icon. */
+  PLUS_ONE_32("plus_one-32.png"),
+
+  /** Hover plus one medium size icon. */
+  PLUS_ONE_32_HOVER("plus_one-32-hover.png"),
+
   /** Small success icon. */
   SUCCESS_24("success-24.png"),
 

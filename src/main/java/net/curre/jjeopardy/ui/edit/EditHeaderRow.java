@@ -32,13 +32,16 @@ import java.util.List;
  *
  * @author Yevgeny Nyden
  */
-public class EditHeader extends JPanel {
+public class EditHeaderRow extends JPanel {
 
   /** Minimum header height (in px). */
   private static final int MIN_HEIGHT = 50;
 
   /** Header padding. */
   private static final int PADDING = EditRow.BORDER_WIDTH;
+
+  /** Reference to the edit table. */
+  private final EditTable editTable;
 
   /** Ordered list of header cells. */
   private final ArrayList<EditHeaderCell> headerCells;
@@ -51,7 +54,8 @@ public class EditHeader extends JPanel {
    * @param categories an ordered list of categories to create a table header for
    * @param editTable reference to the edit table; not nullable
    */
-  public EditHeader(@NotNull List<Category> categories, EditTable editTable) {
+  public EditHeaderRow(@NotNull List<Category> categories, EditTable editTable) {
+    this.editTable = editTable;
     this.headerCells = new ArrayList<>();
     this.rowHeight = 0;
 
@@ -77,12 +81,34 @@ public class EditHeader extends JPanel {
   }
 
   /**
+   * Sets the Add Category button enabled or disabled.
+   * @param enabled true if the button should be enabled
+   */
+  public void setAddCategoryEnabled(boolean enabled) {
+    for (EditHeaderCell cell : this.headerCells) {
+      cell.setAddCategoryEnabled(enabled);
+    }
+  }
+
+  /**
    * Removes a header cell from the header.
    * @param removeInd index of the cell to remove
    */
   protected void removeCell(int removeInd) {
     EditHeaderCell cell = this.headerCells.remove(removeInd);
     this.remove(cell);
+    this.updateIndexesAndOverlays();
+  }
+
+  /**
+   * Adds a header cell ad the given index and shifts cells to the right.
+   * @param ind index at which a cell needs to be added
+   * @param categoryName category name for the column text
+   */
+  protected void addCell(int ind, String categoryName) {
+    EditHeaderCell cell = new EditHeaderCell(categoryName, ind, this.editTable);
+    this.headerCells.add(ind, cell);
+    this.add(cell, ind);
     this.updateIndexesAndOverlays();
   }
 

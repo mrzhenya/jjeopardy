@@ -38,6 +38,9 @@ public class EditRow extends JPanel {
   /** Row padding. */
   private static final int PADDING = EditRow.BORDER_WIDTH;
 
+  /** Reference to the edit table. */
+  private final EditTable editTable;
+
   /** Ordered list of cells for this row. */
   private final ArrayList<EditCell> cells;
 
@@ -50,6 +53,7 @@ public class EditRow extends JPanel {
    * @param editTable reference to the edit table
    */
   public EditRow(int rowIndex, @NotNull EditTable editTable) {
+    this.editTable = editTable;
     this.rowHeight = 0;
 
     this.setLayout(new GridLayout(1, 0));
@@ -76,6 +80,18 @@ public class EditRow extends JPanel {
   protected void removeCell(int removeInd) {
     EditCell cell = this.cells.remove(removeInd);
     this.remove(cell);
+    this.updateColumnIndexesAndOverlays();
+  }
+
+  /**
+   * Adds a new cell at the given index and shifts cells to the right.
+   * @param rowInd current row's index
+   * @param columnInd index at which to add the cell
+   */
+  protected void addCell(int rowInd, int columnInd) {
+    EditCell cell = new EditCell(columnInd, rowInd, this.editTable);
+    this.cells.add(columnInd, cell);
+    this.add(cell, columnInd);
     this.updateColumnIndexesAndOverlays();
   }
 

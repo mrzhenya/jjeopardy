@@ -57,7 +57,7 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
   private final JTextPane textPane;
 
   /** Overlay with buttons to move or delete this category. */
-  private final CategoryOverlay editOverlay;
+  private final HeaderOverlay editOverlay;
 
   /**
    * Ctor.
@@ -91,7 +91,7 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
     this.add(this.textPane, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.CENTER, TableLayout.CENTER));
 
-    this.editOverlay = new CategoryOverlay(categoryIndex, editTable);
+    this.editOverlay = new HeaderOverlay(categoryIndex, editTable);
     this.editOverlay.setVisible(false);
     if (categoryIndex == 0) {
       this.editOverlay.setLeftMoveEnabled(false);
@@ -137,6 +137,14 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
   public void updateIndexAndOverlay(int newIndex, boolean rightEnabled, boolean removeEnabled) {
     this.categoryIndex = newIndex;
     this.editOverlay.updateState(newIndex, rightEnabled, removeEnabled);
+  }
+
+  /**
+   * Sets the Add Category button enabled or disabled.
+   * @param enabled true if the button should be enabled
+   */
+  protected void setAddCategoryEnabled(boolean enabled) {
+    this.editOverlay.setAddCategoryEnabled(enabled);
   }
 
   /**

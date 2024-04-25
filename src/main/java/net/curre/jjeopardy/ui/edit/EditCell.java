@@ -105,7 +105,7 @@ public class EditCell extends JLayeredPane implements EditableCell {
   private static Border viewBorder;
 
   /** Overlay with buttons to move or erase this question. */
-  private final QuestionOverlay editOverlay;
+  private final CellOverlay editOverlay;
 
   /**
    * Ctor. Note that cell's column and row index has to be initialized by calling the
@@ -187,7 +187,7 @@ public class EditCell extends JLayeredPane implements EditableCell {
     this.addMouseMotionListener(mouseListener);
     this.addMouseListener(mouseListener);
 
-    this.editOverlay = new QuestionOverlay(columnIndex, rowIndex, editTable);
+    this.editOverlay = new CellOverlay(columnIndex, rowIndex, editTable);
     this.editOverlay.setVisible(false);
     int questionsCount = this.editTable.getGameData().getCategories().get(columnIndex).getQuestionsCount();
     if (rowIndex == 0) {

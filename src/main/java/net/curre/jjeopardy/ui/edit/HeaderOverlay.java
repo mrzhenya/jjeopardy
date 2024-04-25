@@ -16,6 +16,8 @@
 
 package net.curre.jjeopardy.ui.edit;
 
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.event.EditOverlayLabelMouseListener;
 import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
@@ -33,7 +35,7 @@ import static net.curre.jjeopardy.images.ImageEnum.*;
  *
  * @author Yevgeny Nyden
  */
-public class CategoryOverlay extends JPanel {
+public class HeaderOverlay extends JPanel {
 
   /** Category index (zero based). */
   private int categoryIndex;
@@ -59,19 +61,26 @@ public class CategoryOverlay extends JPanel {
   /** Right arrow/move mouse listener (to handle clicks and hovers). */
   private final EditOverlayLabelMouseListener rightArrowMouseListener;
 
+  /** Add category/column action label. */
+  private final JLabel addCategoryLabel;
+
   /**
    * Ctor.
    * @param categoryIndex category index (zero based)
    * @param editTable reference to the edit table; not nullable
    */
-  public CategoryOverlay(int categoryIndex, @NotNull EditTable editTable) {
+  public HeaderOverlay(int categoryIndex, @NotNull EditTable editTable) {
     this.categoryIndex = categoryIndex;
     this.editTable = editTable;
     this.setOpaque(false);
+    this.setLayout(new TableLayout(new double[][] {
+        {TableLayout.FILL, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL}, // columns
+        {TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED}})); // rows
 
     // ******* Initializing the left arrow action label in the default enabled state.
     this.leftArrowLabel = new JLabel();
-    this.add(this.leftArrowLabel);
+    this.add(this.leftArrowLabel, new TableLayoutConstraints(
+        1, 0, 1, 0, TableLayout.CENTER, TableLayout.CENTER));
     this.leftArrowMouseListener = new EditOverlayLabelMouseListener(
         ARROW_LEFT_32, ARROW_LEFT_32_HOVER, this::moveCategoryToTheLeft);
     this.leftArrowLabel.addMouseListener(this.leftArrowMouseListener);
@@ -79,24 +88,36 @@ public class CategoryOverlay extends JPanel {
 
     // ******* Initializing the left arrow action label in the default enabled state.
     this.removeLabel = new JLabel();
-    this.add(this.removeLabel);
+    this.add(this.removeLabel, new TableLayoutConstraints(
+        2, 0, 2, 0, TableLayout.CENTER, TableLayout.CENTER));
     this.removeMouseListener = new EditOverlayLabelMouseListener(REMOVE_32, REMOVE_32_HOVER, this::removeCategory);
     this.removeLabel.addMouseListener(this.removeMouseListener);
     this.setRemoveEnabled(true);
 
     // ******* Initializing the left arrow action label in the default enabled state.
     this.rightArrowLabel = new JLabel();
-    this.add(this.rightArrowLabel);
+    this.add(this.rightArrowLabel, new TableLayoutConstraints(
+        3, 0, 3, 0, TableLayout.CENTER, TableLayout.CENTER));
     this.rightArrowMouseListener = new EditOverlayLabelMouseListener(
         ARROW_RIGHT_32, ARROW_RIGHT_32_HOVER, this::moveCategoryToTheRight);
     this.rightArrowLabel.addMouseListener(this.rightArrowMouseListener);
     this.setRightMoveEnabled(true);
+
+    // ******* Initializing the left arrow action label in the default enabled state.
+    this.addCategoryLabel = new JLabel();
+    this.addCategoryLabel.setIcon(PLUS_ONE_32.toImageIcon());
+    EditOverlayLabelMouseListener plusOneMouseListener = new EditOverlayLabelMouseListener(
+        PLUS_ONE_32, PLUS_ONE_32_HOVER, this::addCategory);
+    this.addCategoryLabel.addMouseListener(plusOneMouseListener);
+    this.add(this.addCategoryLabel, new TableLayoutConstraints(
+        2, 2, 2, 2, TableLayout.CENTER, TableLayout.CENTER));
 
     // This listener is needed for the non-interrupted hover effect on the parent header cell.
     EditTableMouseListener mouseListener = this.editTable.getTableMouseListener();
     this.leftArrowLabel.addMouseListener(mouseListener);
     this.removeLabel.addMouseListener(mouseListener);
     this.rightArrowLabel.addMouseListener(mouseListener);
+    this.addCategoryLabel.addMouseListener(mouseListener);
   }
 
   /**
@@ -136,6 +157,14 @@ public class CategoryOverlay extends JPanel {
   }
 
   /**
+   * Sets the Add Category button enabled or disabled.
+   * @param enabled true if the button should be enabled
+   */
+  protected void setAddCategoryEnabled(boolean enabled) {
+    this.addCategoryLabel.setVisible(enabled);
+  }
+
+  /**
    * Updates the index of the category this overlay adds action to and the state of the
    * overlay buttons. Note that the left button will be disabled by default on the cell with index 0.
    * @param newIndex the new index of the category
@@ -171,5 +200,12 @@ public class CategoryOverlay extends JPanel {
    */
   private void moveCategoryToTheRight() {
     this.editTable.moveCategoryToTheRight(this.categoryIndex);
+  }
+
+  /**
+   * Adds a category at the current column location.
+   */
+  private void addCategory() {
+    this.editTable.addCategory(this.categoryIndex);
   }
 }

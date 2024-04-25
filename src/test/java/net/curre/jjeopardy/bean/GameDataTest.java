@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static net.curre.jjeopardy.bean.FileParsingResult.Message.*;
+import static net.curre.jjeopardy.bean.QuestionTest.assertQuestion;
 import static org.junit.Assert.*;
 
 /**
@@ -231,6 +232,52 @@ public class GameDataTest {
     data.removeCategory(0);
     assertEquals("Wrong size of categories list", 1, data.getCategories().size());
     assertEquals("Wrong name", "Category 3", data.getCategories().get(0).getName());
+  }
+
+  /** Tests addCategory by adding a category in the middle. */
+  @Test
+  public void testAddCategoryMiddle() {
+    GameData data = new GameData("", null, true);
+    List<Category> categories = new ArrayList<>();
+    categories.add(createTestCategory("Category 1"));
+    categories.add(createTestCategory("Category 2"));
+    categories.add(createTestCategory("Category 3"));
+    data.setCategories(categories);
+
+    data.addCategory(1, "Bumblebee", "Bah", "Boo");
+    assertEquals("Wrong size of categories list", 4, data.getCategories().size());
+    assertEquals("Wrong name", "Category 1", data.getCategories().get(0).getName());
+    Category category = data.getCategories().get(1);
+    assertEquals("Wrong name", "Bumblebee", category.getName());
+    assertEquals("Wrong name", "Category 2", data.getCategories().get(2).getName());
+    assertEquals("Wrong name", "Category 3", data.getCategories().get(3).getName());
+    List<Question> questions = category.getQuestions();
+    assertEquals("Wrong new category questions count", 3, questions.size());
+    assertQuestion(questions.get(0), "Bah", null, "Boo", null, 0, false);
+    assertQuestion(questions.get(1), "Bah", null, "Boo", null, 1, false);
+    assertQuestion(questions.get(2), "Bah", null, "Boo", null, 2, false);
+  }
+
+  /** Tests addCategory by adding a category at the end. */
+  @Test
+  public void testAddCategoryEnd() {
+    GameData data = new GameData("", null, true);
+    List<Category> categories = new ArrayList<>();
+    categories.add(createTestCategory("Category 1"));
+    categories.add(createTestCategory("Category 2"));
+    data.setCategories(categories);
+
+    data.addCategory(1, "Bumblebee", "Bah", "Boo");
+    assertEquals("Wrong size of categories list", 3, data.getCategories().size());
+    assertEquals("Wrong name", "Category 1", data.getCategories().get(0).getName());
+    Category category = data.getCategories().get(1);
+    assertEquals("Wrong name", "Bumblebee", category.getName());
+    assertEquals("Wrong name", "Category 2", data.getCategories().get(2).getName());
+    List<Question> questions = category.getQuestions();
+    assertEquals("Wrong new category questions count", 3, questions.size());
+    assertQuestion(questions.get(0), "Bah", null, "Boo", null, 0, false);
+    assertQuestion(questions.get(1), "Bah", null, "Boo", null, 1, false);
+    assertQuestion(questions.get(2), "Bah", null, "Boo", null, 2, false);
   }
 
   /** Tests updateBonusQuestions and related logic. */
@@ -652,7 +699,7 @@ public class GameDataTest {
   private static List<Question> createTestQuestions(int count) {
     List<Question> questions = new ArrayList<>();
     for (int i = 0; i < count; i++) {
-      questions.add(new Question("", null, "", null,0));
+      questions.add(new Question("", null, "", null, i));
     }
     return questions;
   }

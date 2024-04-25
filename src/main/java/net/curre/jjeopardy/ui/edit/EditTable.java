@@ -22,6 +22,7 @@ import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LafService;
+import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.PrintUtilities;
@@ -64,7 +65,7 @@ public class EditTable extends JPanel implements Printable {
   protected static EditableCell hoveredCell;
 
   /** Edit table header (to display game categories). */
-  private final EditHeader header;
+  private final EditHeaderRow header;
 
   /** List of edit table rows. */
   private final ArrayList<EditRow> rows;
@@ -108,7 +109,7 @@ public class EditTable extends JPanel implements Printable {
 
     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-    this.header = new EditHeader(gameData.getCategories(), this);
+    this.header = new EditHeaderRow(gameData.getCategories(), this);
     this.add(this.header);
 
     this.rows = new ArrayList<>();
@@ -116,6 +117,11 @@ public class EditTable extends JPanel implements Printable {
       EditRow row = new EditRow(ind, this);
       this.rows.add(row);
       this.add(row);
+    }
+
+    // Check if the Add Category button should be visible.
+    if (this.gameData.getCategoriesCount() + 1 >= JjDefaults.MAX_NUMBER_OF_CATEGORIES) {
+      this.header.setAddCategoryEnabled(false);
     }
 
     this.activateViewStyle();
@@ -242,6 +248,34 @@ public class EditTable extends JPanel implements Printable {
     this.refreshAndResize();
     this.scrollToTopFn.run();
     this.updateDataChanged(true);
+    this.header.setAddCategoryEnabled(true);
+  }
+
+  /**
+   * Adds a category at the given index location and shifts the categories to the right.
+   * @param categoryInd index at which a new category should be added
+   */
+  public void addCategory(int categoryInd) {
+    logger.info("Adding a new category at index " + categoryInd);
+
+    // First, update the game data.
+    String categoryName = LocaleService.getString("jj.edit.template.category");
+    this.gameData.addCategory(categoryInd, categoryName,
+        LocaleService.getString("jj.edit.template.question"),
+        LocaleService.getString("jj.edit.template.answer"));
+
+    // Update the header and row cells.
+    this.header.addCell(categoryInd, categoryName);
+    for (int ind = 0; ind < this.rows.size(); ind++) {
+      EditRow row = this.rows.get(ind);
+      row.addCell(ind, categoryInd);
+    }
+
+    // Enable the save button and check if we reached max number of categories.
+    this.enableSaveFn.run();
+    if (this.gameData.getCategoriesCount() + 1 == JjDefaults.MAX_NUMBER_OF_CATEGORIES) {
+      this.header.setAddCategoryEnabled(false);
+    }
   }
 
   /**
