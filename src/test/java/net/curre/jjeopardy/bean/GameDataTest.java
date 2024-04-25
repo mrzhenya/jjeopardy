@@ -36,6 +36,13 @@ import static org.junit.Assert.*;
  */
 public class GameDataTest {
 
+  /** Default test question text string. */
+  private static final String QUESTION_TEXT = "Que";
+
+  /** Default test question answer string. */
+  private static final String ANSWER_TEXT = "Sera";
+
+
   /** Tests initialization of the default object state. */
   @Test
   public void testDefault() {
@@ -60,8 +67,8 @@ public class GameDataTest {
   public void testCreateCopy() {
     GameData data = new GameData("TestFilePath", "TestDirPath", true);
     List<Category> categories = new ArrayList<>();
-    categories.add(createTestCategory("Category 1"));
-    categories.add(createTestCategory("Category 2"));
+    categories.add(createCategoryWithThreeQuestions("Category 1"));
+    categories.add(createCategoryWithThreeQuestions("Category 2"));
     data.setCategories(categories);
     data.setImageDownloadFailure();
 
@@ -108,8 +115,8 @@ public class GameDataTest {
   public void testCopyFrom() {
     GameData data = new GameData("TestFilePath", "TestDirPath", true);
     List<Category> categories = new ArrayList<>();
-    categories.add(createTestCategory("Category 1"));
-    categories.add(createTestCategory("Category 2"));
+    categories.add(createCategoryWithThreeQuestions("Category 1"));
+    categories.add(createCategoryWithThreeQuestions("Category 2"));
     data.setCategories(categories);
     data.setImageDownloadFailure();
 
@@ -201,9 +208,9 @@ public class GameDataTest {
   public void testSetCategories() {
     GameData data = new GameData("", null, true);
     List<Category> categories = new ArrayList<>();
-    categories.add(createTestCategory("Category 1"));
-    categories.add(createTestCategory("Category 2"));
-    categories.add(createTestCategory("Category 3"));
+    categories.add(createCategoryWithThreeQuestions("Category 1"));
+    categories.add(createCategoryWithThreeQuestions("Category 2"));
+    categories.add(createCategoryWithThreeQuestions("Category 3"));
     data.setCategories(categories);
 
     List<Category> categoriesAfter = data.getCategories();
@@ -222,9 +229,9 @@ public class GameDataTest {
   public void testRemoveCategory() {
     GameData data = new GameData("", null, true);
     List<Category> categories = new ArrayList<>();
-    categories.add(createTestCategory("Category 1"));
-    categories.add(createTestCategory("Category 2"));
-    categories.add(createTestCategory("Category 3"));
+    categories.add(createCategoryWithThreeQuestions("Category 1"));
+    categories.add(createCategoryWithThreeQuestions("Category 2"));
+    categories.add(createCategoryWithThreeQuestions("Category 3"));
     data.setCategories(categories);
 
     data.removeCategory(1);
@@ -239,9 +246,9 @@ public class GameDataTest {
   public void testAddCategoryMiddle() {
     GameData data = new GameData("", null, true);
     List<Category> categories = new ArrayList<>();
-    categories.add(createTestCategory("Category 1"));
-    categories.add(createTestCategory("Category 2"));
-    categories.add(createTestCategory("Category 3"));
+    categories.add(createCategoryWithThreeQuestions("Category 1"));
+    categories.add(createCategoryWithThreeQuestions("Category 2"));
+    categories.add(createCategoryWithThreeQuestions("Category 3"));
     data.setCategories(categories);
 
     data.addCategory(1, "Bumblebee", "Bah", "Boo");
@@ -253,9 +260,9 @@ public class GameDataTest {
     assertEquals("Wrong name", "Category 3", data.getCategories().get(3).getName());
     List<Question> questions = category.getQuestions();
     assertEquals("Wrong new category questions count", 3, questions.size());
-    assertQuestion(questions.get(0), "Bah", null, "Boo", null, 0, false);
-    assertQuestion(questions.get(1), "Bah", null, "Boo", null, 1, false);
-    assertQuestion(questions.get(2), "Bah", null, "Boo", null, 2, false);
+    assertQuestion(questions.get(0), "Bah", null, "Boo", null, 10, false);
+    assertQuestion(questions.get(1), "Bah", null, "Boo", null, 20, false);
+    assertQuestion(questions.get(2), "Bah", null, "Boo", null, 30, false);
   }
 
   /** Tests addCategory by adding a category at the end. */
@@ -263,8 +270,8 @@ public class GameDataTest {
   public void testAddCategoryEnd() {
     GameData data = new GameData("", null, true);
     List<Category> categories = new ArrayList<>();
-    categories.add(createTestCategory("Category 1"));
-    categories.add(createTestCategory("Category 2"));
+    categories.add(createCategoryWithThreeQuestions("Category 1"));
+    categories.add(createCategoryWithThreeQuestions("Category 2"));
     data.setCategories(categories);
 
     data.addCategory(1, "Bumblebee", "Bah", "Boo");
@@ -275,9 +282,63 @@ public class GameDataTest {
     assertEquals("Wrong name", "Category 2", data.getCategories().get(2).getName());
     List<Question> questions = category.getQuestions();
     assertEquals("Wrong new category questions count", 3, questions.size());
-    assertQuestion(questions.get(0), "Bah", null, "Boo", null, 0, false);
-    assertQuestion(questions.get(1), "Bah", null, "Boo", null, 1, false);
-    assertQuestion(questions.get(2), "Bah", null, "Boo", null, 2, false);
+    assertQuestion(questions.get(0), "Bah", null, "Boo", null, 10, false);
+    assertQuestion(questions.get(1), "Bah", null, "Boo", null, 20, false);
+    assertQuestion(questions.get(2), "Bah", null, "Boo", null, 30, false);
+  }
+
+  /** Tests addQuestionRow by adding a row in the middle. */
+  @Test
+  public void testAddQuestionRowMiddle() {
+    GameData data = new GameData("", null, true);
+    List<Category> categories = new ArrayList<>();
+    categories.add(createCategoryWithThreeQuestions("Category 1"));
+    categories.add(createCategoryWithThreeQuestions("Category 2"));
+    data.setCategories(categories);
+
+    data.addQuestionRow(1, "Zoo", "Zey");
+
+    assertEquals("Wrong size of categories list", 2, data.getCategories().size());
+    List<Question> questions = data.getCategories().get(0).getQuestions();
+    assertEquals("Wrong questions count", 4, questions.size());
+    assertQuestion(questions.get(0), QUESTION_TEXT, null, ANSWER_TEXT, null, 10, false);
+    assertQuestion(questions.get(1), "Zoo", null, "Zey", null, 20, false);
+    assertQuestion(questions.get(2), QUESTION_TEXT, null, ANSWER_TEXT, null, 30, false);
+    assertQuestion(questions.get(3), QUESTION_TEXT, null, ANSWER_TEXT, null, 40, false);
+
+    questions = data.getCategories().get(1).getQuestions();
+    assertEquals("Wrong questions count", 4, questions.size());
+    assertQuestion(questions.get(0), QUESTION_TEXT, null, ANSWER_TEXT, null, 10, false);
+    assertQuestion(questions.get(1), "Zoo", null, "Zey", null, 20, false);
+    assertQuestion(questions.get(2), QUESTION_TEXT, null, ANSWER_TEXT, null, 30, false);
+    assertQuestion(questions.get(3), QUESTION_TEXT, null, ANSWER_TEXT, null, 40, false);
+  }
+
+  /** Tests addQuestionRow by adding a row at the end. */
+  @Test
+  public void testAddQuestionRowEnd() {
+    GameData data = new GameData("", null, true);
+    List<Category> categories = new ArrayList<>();
+    categories.add(createCategoryWithThreeQuestions("Category 1"));
+    categories.add(createCategoryWithThreeQuestions("Category 2"));
+    data.setCategories(categories);
+
+    data.addQuestionRow(2, "Zoo", "Zey");
+
+    assertEquals("Wrong size of categories list", 2, data.getCategories().size());
+    List<Question> questions = data.getCategories().get(0).getQuestions();
+    assertEquals("Wrong questions count", 4, questions.size());
+    assertQuestion(questions.get(0), QUESTION_TEXT, null, ANSWER_TEXT, null, 10, false);
+    assertQuestion(questions.get(1), QUESTION_TEXT, null, ANSWER_TEXT, null, 20, false);
+    assertQuestion(questions.get(2), "Zoo", null, "Zey", null, 30, false);
+    assertQuestion(questions.get(3), QUESTION_TEXT, null, ANSWER_TEXT, null, 40, false);
+
+    questions = data.getCategories().get(1).getQuestions();
+    assertEquals("Wrong questions count", 4, questions.size());
+    assertQuestion(questions.get(0), QUESTION_TEXT, null, ANSWER_TEXT, null, 10, false);
+    assertQuestion(questions.get(1), QUESTION_TEXT, null, ANSWER_TEXT, null, 20, false);
+    assertQuestion(questions.get(2), "Zoo", null, "Zey", null, 30, false);
+    assertQuestion(questions.get(3), QUESTION_TEXT, null, ANSWER_TEXT, null, 40, false);
   }
 
   /** Tests updateBonusQuestions and related logic. */
@@ -346,11 +407,11 @@ public class GameDataTest {
     data.setGameDescription("Some description");
     assertFalse("Game data should not be usable", data.isGameDataUsable());
     List<Category> categories = new ArrayList<>();
-    categories.add(createTestCategory("Category 1"));
+    categories.add(createCategoryWithThreeQuestions("Category 1"));
     data.setCategories(categories);
     assertFalse("Game data should not be usable", data.isGameDataUsable());
-    categories.add(createTestCategory("Category 2"));
-    categories.add(createTestCategory("Category 3"));
+    categories.add(createCategoryWithThreeQuestions("Category 2"));
+    categories.add(createCategoryWithThreeQuestions("Category 3"));
     data.setCategories(categories);
     assertTrue("Game data should be usable", data.isGameDataUsable());
   }
@@ -674,9 +735,9 @@ public class GameDataTest {
     GameData data = new GameData("filepathdoesntmatter", null, true);
     data.setGameName("TestName");
     List<Category> categories = new ArrayList<>();
-    categories.add(createTestCategory("Category 1"));
-    categories.add(createTestCategory("Category 2"));
-    categories.add(createTestCategory("Category 3"));
+    categories.add(createCategoryWithThreeQuestions("Category 1"));
+    categories.add(createCategoryWithThreeQuestions("Category 2"));
+    categories.add(createCategoryWithThreeQuestions("Category 3"));
     data.setCategories(categories);
     data.setFileDataAcquired();
     return data;
@@ -687,7 +748,7 @@ public class GameDataTest {
    * @param name category name
    * @return a new category object
    */
-  private static Category createTestCategory(String name) {
+  private static Category createCategoryWithThreeQuestions(String name) {
     return new Category(name, createTestQuestions(3));
   }
 
@@ -699,7 +760,8 @@ public class GameDataTest {
   private static List<Question> createTestQuestions(int count) {
     List<Question> questions = new ArrayList<>();
     for (int i = 0; i < count; i++) {
-      questions.add(new Question("", null, "", null, i));
+      int points = 10 + 10 * i;
+      questions.add(new Question(QUESTION_TEXT, null, ANSWER_TEXT, null, points));
     }
     return questions;
   }

@@ -242,10 +242,11 @@ public class EditCell extends JLayeredPane implements EditableCell {
    * @param newIndex the new index of this cell
    * @param downEnabled true to enable the Down arrow button
    * @param removeEnabled true to enable the Remove row button
+   * @param addRowEnabled true to enable the Add row button
    */
-  public void updateRowIndexAndOverlay(int newIndex, boolean downEnabled, boolean removeEnabled) {
+  public void updateRowIndexAndOverlay(int newIndex, boolean downEnabled, boolean removeEnabled, boolean addRowEnabled) {
     this.rowIndex = newIndex;
-    this.editOverlay.updateState(newIndex, downEnabled, removeEnabled);
+    this.editOverlay.updateState(newIndex, downEnabled, removeEnabled, addRowEnabled);
   }
 
   /**

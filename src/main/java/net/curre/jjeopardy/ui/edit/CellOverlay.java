@@ -16,15 +16,15 @@
 
 package net.curre.jjeopardy.ui.edit;
 
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.event.EditTableMouseListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.validation.constraints.NotNull;
-import java.awt.Dimension;
 
 import static net.curre.jjeopardy.images.ImageEnum.*;
 
@@ -54,6 +54,9 @@ public class CellOverlay extends JPanel {
   /** Down arrow/move action label. */
   private final OverlayActionLabel downArrowLabel;
 
+  /** Add a new row action label. */
+  private final OverlayActionLabel addRowLabel;
+
   /**
    * Ctor.
    * @param questionIndex question index (zero based)
@@ -66,29 +69,41 @@ public class CellOverlay extends JPanel {
 
     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
     this.setOpaque(false);
+    this.setLayout(new TableLayout(new double[][] {
+        {TableLayout.FILL, TableLayout.PREFERRED, TableLayout.PREFERRED}, // columns
+        {TableLayout.FILL, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL}})); // rows
 
     // ******* Initializing the Up arrow action label in the default enabled state.
     this.upArrowLabel = new OverlayActionLabel(ARROW_UP_32, ARROW_UP_32_HOVER, ARROW_UP_32_DISABLED,
         "jj.edit.question.move.up", this::moveQuestionUp, false, false);
-    this.add(this.upArrowLabel);
-    this.add(Box.createRigidArea(new Dimension(1, 5)));
+    this.add(this.upArrowLabel, new TableLayoutConstraints(
+        2, 1, 2, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // ******* Initializing the left arrow action label in the default enabled state.
     this.removeLabel = new OverlayActionLabel(REMOVE_32, REMOVE_32_HOVER, REMOVE_32_DISABLED,
         "jj.edit.question.remove.tooltip", this::removeQuestionRow, false, true);
-    this.add(this.removeLabel);
-    this.add(Box.createRigidArea(new Dimension(1, 5)));
+    this.add(this.removeLabel, new TableLayoutConstraints(
+        2, 2, 2, 2, TableLayout.CENTER, TableLayout.CENTER));
 
     // ******* Initializing the left arrow action label in the default enabled state.
     this.downArrowLabel = new OverlayActionLabel(ARROW_DOWN_32, ARROW_DOWN_32_HOVER, ARROW_DOWN_32_DISABLED,
         "jj.edit.question.move.down", this::moveQuestionDown, false, false);
-    this.add(this.downArrowLabel);
+    this.add(this.downArrowLabel, new TableLayoutConstraints(
+        2, 3, 2, 3, TableLayout.CENTER, TableLayout.CENTER));
+
+    // ******* Initializing the left arrow action label in the default enabled state.
+    this.addRowLabel = new OverlayActionLabel(PLUS_ONE_32, PLUS_ONE_32_HOVER, PLUS_ONE_32_DISABLED,
+        "jj.edit.category.add.row", this::addQuestionRow, false, true);
+    this.add(this.addRowLabel, new TableLayoutConstraints(
+        1, 2, 1, 2, TableLayout.CENTER, TableLayout.CENTER));
+
 
     // This listener is needed for the non-interrupted hover effect on the parent header cell.
     EditTableMouseListener mouseListener = this.editTable.getTableMouseListener();
     this.upArrowLabel.addMouseListener(mouseListener);
     this.removeLabel.addMouseListener(mouseListener);
     this.downArrowLabel.addMouseListener(mouseListener);
+    this.addRowLabel.addMouseListener(mouseListener);
   }
 
   /**
@@ -116,6 +131,14 @@ public class CellOverlay extends JPanel {
   }
 
   /**
+   * Enables/disables the Add row action on this overlay.
+   * @param isEnabled true if Add row should be enabled
+   */
+  public void setAddRowEnabled(boolean isEnabled) {
+    this.addRowLabel.setEnabled(isEnabled);
+  }
+
+  /**
    * Updates the category (column) index of this overlay.
    * @param categoryIndex the new category index
    */
@@ -129,12 +152,14 @@ public class CellOverlay extends JPanel {
    * @param newIndex the new index of the question
    * @param downEnabled true to enable the Down arrow button
    * @param removeEnabled true to enable the Remove row action
+   * @param addRowEnabled true to enable the Add row action
    */
-  protected void updateState(int newIndex, boolean downEnabled, boolean removeEnabled) {
+  protected void updateState(int newIndex, boolean downEnabled, boolean removeEnabled, boolean addRowEnabled) {
     this.questionIndex = newIndex;
     this.setUpMoveEnabled(newIndex != 0);
     this.setDownMoveEnabled(downEnabled);
     this.setRemoveEnabled(removeEnabled);
+    this.setAddRowEnabled(addRowEnabled);
   }
 
   /**
@@ -152,6 +177,13 @@ public class CellOverlay extends JPanel {
         LocaleService.getString("jj.edit.question.remove.title"),
         LocaleService.getString("jj.edit.question.remove.message"),
         () -> this.editTable.removeQuestionRow(this.questionIndex), null);
+  }
+
+  /**
+   * Adds a new row of questions.
+   */
+  private void addQuestionRow() {
+    this.editTable.addQuestionRow(this.questionIndex);
   }
 
   /**

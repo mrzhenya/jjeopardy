@@ -281,15 +281,43 @@ public class EditTable extends JPanel implements Printable {
       row.addCell(ind, categoryInd);
     }
 
-    // Enable the save button and check if we reached max number of categories.
-    this.enableSaveFn.run();
+    // Check if we reached max number of categories.
     if (this.gameData.getCategoriesCount() + 1 == JjDefaults.MAX_NUMBER_OF_CATEGORIES) {
       this.header.setAddCategoryEnabled(false);
     }
 
     // Now refresh the UI.
+    this.enableSaveFn.run();
     this.refreshAndResize();
     this.scrollToTopFn.run();
+    this.updateDataChanged(true);
+  }
+
+  /**
+   * Adds a new row of questions and shifts question rows down.
+   * @param rowInd index at which a new row is added
+   */
+  public void addQuestionRow(int rowInd) {
+    logger.info("Adding a new row at index " + rowInd);
+
+    // First, update the game data.
+    this.gameData.addQuestionRow(rowInd,
+        LocaleService.getString("jj.edit.template.question"),
+        LocaleService.getString("jj.edit.template.answer"));
+
+    // Update the edit table rows.
+    EditRow row = new EditRow(rowInd, this);
+    this.rows.add(rowInd, row);
+    this.add(row, /* account for the header */ 1 + rowInd);
+
+    // Check if we reached max number of rows/questions.
+    for (int ind = 0; ind < this.gameData.getCategoriesCount(); ind++) {
+      this.updateCellIndexes(ind);
+    }
+
+    // Now refresh the UI.
+    this.enableSaveFn.run();
+    this.refreshAndResize();
     this.updateDataChanged(true);
   }
 
@@ -603,11 +631,11 @@ public class EditTable extends JPanel implements Printable {
    */
   private void updateCellIndexes(int columnInd) {
     boolean removeEnabled = this.rows.size() > JjDefaults.MIN_NUMBER_OF_QUESTIONS;
+    boolean addRowEnabled = this.rows.size() < JjDefaults.MAX_NUMBER_OF_QUESTIONS;
     for (int rowInd = 0; rowInd < this.rows.size(); rowInd++) {
       EditRow row = this.rows.get(rowInd);
       boolean downEnabled = rowInd + 1 < this.rows.size();
-      row.updateRowIndexesAndOverlays(columnInd, rowInd, downEnabled, removeEnabled);
+      row.updateRowIndexesAndOverlays(columnInd, rowInd, downEnabled, removeEnabled, addRowEnabled);
     }
-
   }
 }

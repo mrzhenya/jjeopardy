@@ -274,6 +274,35 @@ public class GameData implements Comparable<GameData> {
   }
 
   /**
+   * Adds a new question row at the given index and shifts other questions down.
+   * Question points are also updated as a result - we retain the same question sequence
+   * and assign the last row an estimated value. We assume the game has a minimum number
+   * of questions.
+   * @param rowInd index at which a new row of questions is to be added
+   * @param questionText question text to initialize the questions text to
+   * @param answerText answer text to initialize the questions answer text to
+   */
+  public void addQuestionRow(int rowInd, String questionText, String answerText) {
+    for (Category category : this.categories) {
+      // Assign the new question the points value from the original question at this position.
+      final int points = category.getQuestion(rowInd).getPoints();
+      category.getQuestions().add(
+          rowInd, new Question(questionText, null, answerText, null, points));
+
+      // Shift the points down.
+      final int lastRowInd = category.getQuestionsCount() - 1;
+      for (int ind = rowInd + 1; ind < lastRowInd; ind++) {
+        category.getQuestion(ind).setPoints(category.getQuestion(ind + 1).getPoints());
+      }
+
+      // Estimate the points value for the last question.
+      int lastRowPoints = category.getQuestion(lastRowInd).getPoints() +
+          (category.getQuestion(lastRowInd - 1).getPoints() - category.getQuestion(lastRowInd - 2).getPoints());
+      category.getQuestion(lastRowInd).setPoints(lastRowPoints);
+    }
+  }
+
+  /**
    * Moves a category (with its questions) in the game data.
    * @param categoryInd index of the category to move (zero based)
    * @param toRight true if the index of the category should be increased; false if decreased
