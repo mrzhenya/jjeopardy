@@ -330,12 +330,7 @@ public class EditTable extends JPanel implements Printable {
     Question questionFrom = category.getQuestion(questionInd);
     Question questionTo = category.getQuestion(questionInd - 1);
     questionFrom.swapQuestion(questionTo);
-    // TODO - factor out common code
-    for (int ind = 0; ind < this.rows.size(); ind++) {
-      EditRow row = this.rows.get(ind);
-      boolean downEnabled = ind + 1 < this.rows.size();
-      row.updateRowIndexesAndOverlays(categoryIndex, ind, downEnabled, true);
-    }
+    this.updateCellIndexes(categoryIndex);
 
     // Now refresh the UI.
     this.refreshAndResize();
@@ -357,13 +352,8 @@ public class EditTable extends JPanel implements Printable {
     // Update the rows.
     this.remove(this.rows.get(questionInd));
     this.rows.remove(questionInd);
-    boolean removeEnabled = this.rows.size() > JjDefaults.MIN_NUMBER_OF_QUESTIONS;
     for (int colInd = 0; colInd < this.gameData.getCategoriesCount(); colInd++) {
-      for (int ind = 0; ind < this.rows.size(); ind++) {
-        EditRow row = this.rows.get(ind);
-        boolean downEnabled = ind + 1 < this.rows.size();
-        row.updateRowIndexesAndOverlays(colInd, ind, downEnabled, removeEnabled);
-      }
+      this.updateCellIndexes(colInd);
     }
 
     // Now refresh the UI.
@@ -387,11 +377,7 @@ public class EditTable extends JPanel implements Printable {
     Question questionFrom = category.getQuestion(questionInd);
     Question questionTo = category.getQuestion(questionInd + 1);
     questionFrom.swapQuestion(questionTo);
-    for (int ind = 0; ind < this.rows.size(); ind++) {
-      EditRow row = this.rows.get(ind);
-      boolean downEnabled = ind + 1 < this.rows.size();
-      row.updateRowIndexesAndOverlays(categoryIndex, ind, downEnabled, true);
-    }
+    this.updateCellIndexes(categoryIndex);
 
     // Now refresh the UI.
     this.refreshAndResize();
@@ -410,7 +396,7 @@ public class EditTable extends JPanel implements Printable {
 
     double scaleFactor = printWidth / (double) panelSize.width;
     Object[] messageArgs = new Object[] {pageIndex + 1};
-    // Create a copy of the graphics so we don't affect the one given to us.
+    // Create a copy of the graphics, so we don't affect the one given to us.
     Graphics2D g2d = (Graphics2D) graphics.create();
     if (pageIndex >= this.computeNumberOfPrintPages(g2d, messageArgs, printHeight, scaleFactor)) {
       return NO_SUCH_PAGE;
@@ -423,7 +409,7 @@ public class EditTable extends JPanel implements Printable {
     g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
 
     // First, print the footer if specified, which is printed at the bottom
-    // of the imageable area w/o any affect on the current g2d context.
+    // of the imageable area w/o any effect on the current g2d context.
     availableHeight -= PrintUtilities.printFooter(g2d, this.printFooter, messageArgs, pageFormat);
 
     // Next, print the header if specified, which is printed at the top of the
@@ -593,5 +579,19 @@ public class EditTable extends JPanel implements Printable {
     line.setBackground(Color.BLACK);
     line.print(g2d);
     g2d.translate(0, EMPHASIS_LINE_HEIGHT);
+  }
+
+  /**
+   * Updates indexes on row cells and their overlays.
+   * @param columnInd column index
+   */
+  private void updateCellIndexes(int columnInd) {
+    boolean removeEnabled = this.rows.size() > JjDefaults.MIN_NUMBER_OF_QUESTIONS;
+    for (int rowInd = 0; rowInd < this.rows.size(); rowInd++) {
+      EditRow row = this.rows.get(rowInd);
+      boolean downEnabled = rowInd + 1 < this.rows.size();
+      row.updateRowIndexesAndOverlays(columnInd, rowInd, downEnabled, removeEnabled);
+    }
+
   }
 }
