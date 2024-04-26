@@ -117,22 +117,28 @@ public class EditTable extends JPanel implements Printable {
     int colorChange = lafTheme.isDarkTheme() ? 30 : -30;
     cellHoveredBackground = LafService.createAdjustedColor(cellBackground, colorChange);
 
-      this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+    this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
+    // TODO These checks should be done elsewhere, and we shouldn't repeat them
     this.header = new EditHeaderRow(gameData.getCategories(), this);
+    // Check if the Add Category button should be visible.
+    // TODO - what about remove category button?
+    if (this.gameData.getCategoriesCount() + 1 >= JjDefaults.MAX_NUMBER_OF_CATEGORIES) {
+      this.header.setAddCategoryEnabled(false);
+    }
     this.add(this.header);
 
+    // TODO - reuse some common code
     this.rows = new ArrayList<>();
+    if (this.gameData.getCategoryQuestionsCount() + 1 >= JjDefaults.MAX_NUMBER_OF_QUESTIONS) {
+      this.header.setAddCategoryEnabled(false);
+    }
     for (int ind = 0; ind < gameData.getCategoryQuestionsCount(); ind++) {
       EditRow row = new EditRow(ind, this);
       this.rows.add(row);
       this.add(row);
     }
 
-    // Check if the Add Category button should be visible.
-    if (this.gameData.getCategoriesCount() + 1 >= JjDefaults.MAX_NUMBER_OF_CATEGORIES) {
-      this.header.setAddCategoryEnabled(false);
-    }
 
     this.activateViewStyle();
   }
@@ -632,6 +638,9 @@ public class EditTable extends JPanel implements Printable {
   private void updateCellIndexes(int columnInd) {
     boolean removeEnabled = this.rows.size() > JjDefaults.MIN_NUMBER_OF_QUESTIONS;
     boolean addRowEnabled = this.rows.size() < JjDefaults.MAX_NUMBER_OF_QUESTIONS;
+    if (!addRowEnabled) {
+      System.out.println("- - - - - disable for columnInd " + columnInd);
+    }
     for (int rowInd = 0; rowInd < this.rows.size(); rowInd++) {
       EditRow row = this.rows.get(rowInd);
       boolean downEnabled = rowInd + 1 < this.rows.size();
