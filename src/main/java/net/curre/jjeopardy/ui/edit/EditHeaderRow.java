@@ -91,13 +91,23 @@ public class EditHeaderRow extends JPanel {
   }
 
   /**
+   * Sets the Remove Category button enabled or disabled.
+   * @param enabled true if the button should be enabled
+   */
+  public void setRemoveCategoryEnabled(boolean enabled) {
+    for (EditHeaderCell cell : this.headerCells) {
+      cell.setRemoveCategoryEnabled(enabled);
+    }
+  }
+
+  /**
    * Removes a header cell from the header.
    * @param removeInd index of the cell to remove
    */
   protected void removeCell(int removeInd) {
     EditHeaderCell cell = this.headerCells.remove(removeInd);
     this.remove(cell);
-    this.updateIndexesAndOverlays();
+    this.updateIndexesAndActions();
   }
 
   /**
@@ -109,7 +119,7 @@ public class EditHeaderRow extends JPanel {
     EditHeaderCell cell = new EditHeaderCell(categoryName, ind, this.editTable);
     this.headerCells.add(ind, cell);
     this.add(cell, ind);
-    this.updateIndexesAndOverlays();
+    this.updateIndexesAndActions();
   }
 
   /**
@@ -124,7 +134,7 @@ public class EditHeaderRow extends JPanel {
 
     this.remove(cell);
     this.add(cell, newInd);
-    this.updateIndexesAndOverlays();
+    this.updateIndexesAndActions();
   }
 
   /**
@@ -167,16 +177,17 @@ public class EditHeaderRow extends JPanel {
   }
 
   /**
-   * Updates the relative index of each cell and their overlays. Depending on the
-   * position of the cell, some move buttons will be disabled. Also, when we reach
-   * min number of categories (header cells), remove button gets disabled.
+   * Updates the relative index of each cell and the action button enabled/disabled
+   * state overlays (right, left, remove, add).
    */
-  private void updateIndexesAndOverlays() {
+  protected void updateIndexesAndActions() {
+    int categoriesCount = this.editTable.getGameData().getCategoriesCount();
+    boolean addEnabled = categoriesCount < JjDefaults.MAX_NUMBER_OF_CATEGORIES;
+    boolean removeEnabled = categoriesCount > JjDefaults.MIN_NUMBER_OF_CATEGORIES;
     final int cellCount = this.headerCells.size();
-    final boolean removeEnabled = cellCount > JjDefaults.MIN_NUMBER_OF_CATEGORIES;
     for (int ind = 0; ind < cellCount; ind++) {
       boolean rightEnabled = ind + 1 < cellCount;
-      this.headerCells.get(ind).updateIndexAndOverlay(ind, rightEnabled, removeEnabled);
+      this.headerCells.get(ind).updateIndexAndOverlay(ind, rightEnabled, removeEnabled, addEnabled);
     }
   }
 }

@@ -167,14 +167,13 @@ public class EditRow extends JPanel {
   }
 
   /**
-   * Updates the relative row index of each cell and its overlays. Depending on the
-   * position of the cell, some move buttons will be disabled.
+   * Updates the relative row index of each cell and the actions (move, remove, add).
    * @param categoryIndex category (column) index cell to update the row index on
    * @param rowIndex current row index
    * @param downEnabled true if the down button should be enabled
    * @param addRowEnabled true if the Add row button should be enabled
    */
-  protected void updateRowIndexesAndOverlays(
+  protected void updateRowIndexesAndActions(
       int categoryIndex, int rowIndex, boolean downEnabled, boolean removeEnabled, boolean addRowEnabled) {
     EditCell cell = this.cells.get(categoryIndex);
     cell.updateRowIndexAndOverlay(rowIndex, downEnabled, removeEnabled, addRowEnabled);

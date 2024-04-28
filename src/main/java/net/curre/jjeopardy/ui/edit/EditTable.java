@@ -119,26 +119,22 @@ public class EditTable extends JPanel implements Printable {
 
     this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-    // TODO These checks should be done elsewhere, and we shouldn't repeat them
+    // Create a header an initialize the action button states.
     this.header = new EditHeaderRow(gameData.getCategories(), this);
-    // Check if the Add Category button should be visible.
-    // TODO - what about remove category button?
-    if (this.gameData.getCategoriesCount() + 1 >= JjDefaults.MAX_NUMBER_OF_CATEGORIES) {
-      this.header.setAddCategoryEnabled(false);
-    }
+    this.updateHeaderActionButtons();
     this.add(this.header);
 
-    // TODO - reuse some common code
+    // Create rows and initialize the action button states.
     this.rows = new ArrayList<>();
-    if (this.gameData.getCategoryQuestionsCount() + 1 >= JjDefaults.MAX_NUMBER_OF_QUESTIONS) {
-      this.header.setAddCategoryEnabled(false);
-    }
-    for (int ind = 0; ind < gameData.getCategoryQuestionsCount(); ind++) {
-      EditRow row = new EditRow(ind, this);
+    for (int columnInd = 0; columnInd < gameData.getCategoryQuestionsCount(); columnInd++) {
+      EditRow row = new EditRow(columnInd, this);
       this.rows.add(row);
       this.add(row);
     }
-
+    // Update cell action button enabled/disabled state.
+    for (int columnInd = 0; columnInd < gameData.getCategoryQuestionsCount(); columnInd++) {
+      this.updateCellIndexesAndActions(columnInd);
+    }
 
     this.activateViewStyle();
   }
@@ -288,9 +284,7 @@ public class EditTable extends JPanel implements Printable {
     }
 
     // Check if we reached max number of categories.
-    if (this.gameData.getCategoriesCount() + 1 == JjDefaults.MAX_NUMBER_OF_CATEGORIES) {
-      this.header.setAddCategoryEnabled(false);
-    }
+    this.updateHeaderActionButtons();
 
     // Now refresh the UI.
     this.enableSaveFn.run();
@@ -318,7 +312,7 @@ public class EditTable extends JPanel implements Printable {
 
     // Check if we reached max number of rows/questions.
     for (int ind = 0; ind < this.gameData.getCategoriesCount(); ind++) {
-      this.updateCellIndexes(ind);
+      this.updateCellIndexesAndActions(ind);
     }
 
     // Now refresh the UI.
@@ -364,7 +358,7 @@ public class EditTable extends JPanel implements Printable {
     Question questionFrom = category.getQuestion(questionInd);
     Question questionTo = category.getQuestion(questionInd - 1);
     questionFrom.swapQuestion(questionTo);
-    this.updateCellIndexes(categoryIndex);
+    this.updateCellIndexesAndActions(categoryIndex);
 
     // Now refresh the UI.
     this.refreshAndResize();
@@ -387,7 +381,7 @@ public class EditTable extends JPanel implements Printable {
     this.remove(this.rows.get(questionInd));
     this.rows.remove(questionInd);
     for (int colInd = 0; colInd < this.gameData.getCategoriesCount(); colInd++) {
-      this.updateCellIndexes(colInd);
+      this.updateCellIndexesAndActions(colInd);
     }
 
     // Now refresh the UI.
@@ -411,7 +405,7 @@ public class EditTable extends JPanel implements Printable {
     Question questionFrom = category.getQuestion(questionInd);
     Question questionTo = category.getQuestion(questionInd + 1);
     questionFrom.swapQuestion(questionTo);
-    this.updateCellIndexes(categoryIndex);
+    this.updateCellIndexesAndActions(categoryIndex);
 
     // Now refresh the UI.
     this.refreshAndResize();
@@ -635,16 +629,23 @@ public class EditTable extends JPanel implements Printable {
    * Updates indexes on row cells and their overlays.
    * @param columnInd column index
    */
-  private void updateCellIndexes(int columnInd) {
-    boolean removeEnabled = this.rows.size() > JjDefaults.MIN_NUMBER_OF_QUESTIONS;
-    boolean addRowEnabled = this.rows.size() < JjDefaults.MAX_NUMBER_OF_QUESTIONS;
-    if (!addRowEnabled) {
-      System.out.println("- - - - - disable for columnInd " + columnInd);
-    }
+  private void updateCellIndexesAndActions(int columnInd) {
+    int questionsCount = this.gameData.getCategories().get(columnInd).getQuestionsCount();
+    boolean removeEnabled = questionsCount > JjDefaults.MIN_NUMBER_OF_QUESTIONS;
+    boolean addRowEnabled = questionsCount < JjDefaults.MAX_NUMBER_OF_QUESTIONS;
     for (int rowInd = 0; rowInd < this.rows.size(); rowInd++) {
       EditRow row = this.rows.get(rowInd);
       boolean downEnabled = rowInd + 1 < this.rows.size();
-      row.updateRowIndexesAndOverlays(columnInd, rowInd, downEnabled, removeEnabled, addRowEnabled);
+      row.updateRowIndexesAndActions(columnInd, rowInd, downEnabled, removeEnabled, addRowEnabled);
     }
+  }
+
+  /**
+   * Updates the header action buttons (add/remove category).
+   */
+  private void updateHeaderActionButtons() {
+    int categoriesCount = this.gameData.getCategoriesCount();
+    this.header.setAddCategoryEnabled(categoriesCount < JjDefaults.MAX_NUMBER_OF_CATEGORIES);
+    this.header.setRemoveCategoryEnabled(categoriesCount > JjDefaults.MIN_NUMBER_OF_CATEGORIES);
   }
 }

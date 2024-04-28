@@ -136,12 +136,15 @@ public class HeaderOverlay extends JPanel {
    * @param newIndex the new index of the category
    * @param rightEnabled true to enable the right arrow button
    * @param removeEnabled true to enable the remove button
+   * @param addEnabled true to enable the add button
    */
-  protected void updateState(int newIndex, boolean rightEnabled, boolean removeEnabled) {
+  protected void updateState(
+          int newIndex, boolean rightEnabled, boolean removeEnabled, boolean addEnabled) {
     this.categoryIndex = newIndex;
     this.setLeftMoveEnabled(newIndex != 0);
     this.setRemoveEnabled(removeEnabled);
     this.setRightMoveEnabled(rightEnabled);
+    this.setAddCategoryEnabled(addEnabled);
   }
 
   /**

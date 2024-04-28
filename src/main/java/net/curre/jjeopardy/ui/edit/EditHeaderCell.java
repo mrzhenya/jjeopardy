@@ -141,10 +141,12 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
    * @param newIndex the new index of this cell
    * @param rightEnabled true to enable the right arrow button
    * @param removeEnabled true to enable the remove button
+   * @param addEnabled true to enable the add button
    */
-  public void updateIndexAndOverlay(int newIndex, boolean rightEnabled, boolean removeEnabled) {
+  public void updateIndexAndOverlay(
+          int newIndex, boolean rightEnabled, boolean removeEnabled, boolean addEnabled) {
     this.columnIndex = newIndex;
-    this.editOverlay.updateState(newIndex, rightEnabled, removeEnabled);
+    this.editOverlay.updateState(newIndex, rightEnabled, removeEnabled, addEnabled);
   }
 
   /**
@@ -153,6 +155,14 @@ public class EditHeaderCell extends JLayeredPane implements EditableCell {
    */
   protected void setAddCategoryEnabled(boolean enabled) {
     this.editOverlay.setAddCategoryEnabled(enabled);
+  }
+
+  /**
+   * Sets the Remove Category button enabled or disabled.
+   * @param enabled true if the button should be enabled
+   */
+  protected void setRemoveCategoryEnabled(boolean enabled) {
+    this.editOverlay.setRemoveEnabled(enabled);
   }
 
   /**
