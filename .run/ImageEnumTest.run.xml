@@ -1,6 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="ImageEnumTest" type="JUnit" factoryName="JUnit">
-    <module name="gs-maven" />
+    <module name="jjeopardy" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="ALTERNATIVE_JRE_PATH" value="openjdk-22" />
     <option name="PACKAGE_NAME" value="net.curre.jjeopardy.images" />
     <option name="MAIN_CLASS_NAME" value="net.curre.jjeopardy.images.ImageEnumTest" />
     <option name="METHOD_NAME" value="" />
