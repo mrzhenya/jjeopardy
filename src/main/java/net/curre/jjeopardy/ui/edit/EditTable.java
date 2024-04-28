@@ -132,7 +132,7 @@ public class EditTable extends JPanel implements Printable {
       this.add(row);
     }
     // Update cell action button enabled/disabled state.
-    for (int columnInd = 0; columnInd < gameData.getCategoryQuestionsCount(); columnInd++) {
+    for (int columnInd = 0; columnInd < gameData.getCategoriesCount(); columnInd++) {
       this.updateCellIndexesAndActions(columnInd);
     }
 
