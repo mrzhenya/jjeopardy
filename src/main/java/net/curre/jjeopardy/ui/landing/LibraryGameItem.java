@@ -29,17 +29,19 @@ import net.curre.jjeopardy.ui.edit.EditGameWindow;
 import net.curre.jjeopardy.ui.edit.EditTableMode;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.JjDefaults;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.validation.constraints.NotNull;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Represents a library row item.
@@ -47,6 +49,9 @@ import java.awt.event.MouseEvent;
  * @author Yevgeny Nyden
  */
 public class LibraryGameItem extends JPanel {
+
+  /** Private class logger. */
+  private static final Logger logger = LogManager.getLogger(LibraryGameItem.class.getName());
 
   /** Reference to the game's data. */
   private final GameData gameData;
@@ -64,7 +69,7 @@ public class LibraryGameItem extends JPanel {
     LafTheme lafTheme = this.lafService.getCurrentLafTheme();
     Font font = lafTheme.getDialogTextFont();
     this.setLayout(new TableLayout(new double[][] {
-        {10, 30, 10, 250, 5, 435, 10, TableLayout.FILL, 5, 40, 5, 24, 5, 40, 5, 30, 5, 30, 10}, // columns
+        {10, 30, 10, 240, 5, 410, 10, TableLayout.FILL, 5, 40, 5, 24, 5, 40, 5, 30, 5, 30, 5, 30, 10}, // columns
         {3, 30, 3}})); // rows
     this.setMaximumSize(new Dimension(JjDefaults.LANDING_UI_WIDTH, 36));
 
@@ -109,6 +114,12 @@ public class LibraryGameItem extends JPanel {
     this.add(dimensionLabel, new TableLayoutConstraints(
         13, 1, 13, 1, TableLayout.CENTER, TableLayout.CENTER));
 
+    // Show game directory button.
+    JButton dirLabel = new ItemIconButton(null, ImageEnum.OPEN_FILE_24, ImageEnum.OPEN_FILE_24_HOVER,
+        LocaleService.getString("jj.library.dir.button"),this::showGameDirectory);
+    this.add(dirLabel, new TableLayoutConstraints(
+        15, 1, 15, 1, TableLayout.CENTER, TableLayout.CENTER));
+
     // Game edit button (to edit game information).
     JButton editLabel = new ItemIconButton(null, ImageEnum.EDIT_24, ImageEnum.EDIT_24_HOVER,
         LocaleService.getString("jj.library.info.button"), () -> {
@@ -116,13 +127,13 @@ public class LibraryGameItem extends JPanel {
       frame.setVisible(true);
     });
     this.add(editLabel, new TableLayoutConstraints(
-        15, 1, 15, 1, TableLayout.CENTER, TableLayout.CENTER));
+        17, 1, 17, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Remove game button.
     JButton trashLabel = new ItemIconButton(null, ImageEnum.TRASH_24, ImageEnum.TRASH_24_HOVER,
         LocaleService.getString("jj.file.info.remove.message"), this::handleDeleteGameItem);
     this.add(trashLabel, new TableLayoutConstraints(
-        17, 1, 17, 1, TableLayout.CENTER, TableLayout.CENTER));
+        19, 1, 19, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // Adding mouse hover and click actions.
     this.addMouseListener(new GameItemMouseAdapter());
@@ -182,5 +193,17 @@ public class LibraryGameItem extends JPanel {
       UiService uiService = AppRegistry.getInstance().getUiService();
       uiService.showGameInfoDialog(LibraryGameItem.this.gameData, null);
     }
+  }
+
+  /**
+   * Opens the game bundle directory in the system file browser.
+   */
+  private void showGameDirectory() {
+    File directory = new File(this.gameData.getBundlePath());
+      try {
+          Desktop.getDesktop().open(directory);
+      } catch (IOException e) {
+          logger.error("Unable to show game directory", e);
+      }
   }
 }
