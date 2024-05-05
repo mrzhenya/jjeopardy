@@ -88,11 +88,6 @@ public class EditGameWindow extends JDialog {
 
     this.setTitle(this.gameData.getGameName());
     this.addWindowListener(new ClosingWindowListener(this::handleWindowClosing));
-    this.addComponentListener(new ComponentAdapter() {
-      public void componentResized(ComponentEvent e) {
-        EditGameWindow.this.table.refreshAndResize();
-      }
-    });
 
     Settings settings = AppRegistry.getInstance().getSettingsService().getSettings();
     this.setSize(settings.getEditGameWindowWidth(), settings.getEditGameWindowHeight());
@@ -123,7 +118,15 @@ public class EditGameWindow extends JDialog {
     contentPane.add(panelWrap, new TableLayoutConstraints(
         0, 2, 0, 2, TableLayout.CENTER, TableLayout.CENTER));
 
-    this.table.refreshAndResize();
+    // Resize the table and add a listener to update it on window resize events.
+    SwingUtilities.invokeLater(() -> {
+      EditGameWindow.this.table.refreshAndResize();
+      this.addComponentListener(new ComponentAdapter() {
+        public void componentResized(ComponentEvent e) {
+          EditGameWindow.this.table.refreshAndResize();
+        }
+      });
+    });
   }
 
   /**
@@ -199,7 +202,7 @@ public class EditGameWindow extends JDialog {
     Registry registry = AppRegistry.getInstance();
     SettingsService settingsService = registry.getSettingsService();
     settingsService.updateEditGameWindowSize(this.getWidth(), this.getHeight());
-    this.table.refreshAndResize();
+//    this.table.refreshAndResize();
     settingsService.persistSettings();
 
     if (this.dataChanged) {
