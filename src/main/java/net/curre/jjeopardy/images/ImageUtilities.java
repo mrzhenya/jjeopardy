@@ -201,7 +201,7 @@ public class ImageUtilities {
       }
     }
     if (imageIcon == null) {
-      label.setIcon(ImageEnum.IMAGE_FAILURE_64.toImageIcon());
+      label.setIcon(imagePath == null ? null : ImageEnum.IMAGE_FAILURE_64.toImageIcon());
       return false;
     } else {
       int iconHeight = imageIcon.getIconHeight();
