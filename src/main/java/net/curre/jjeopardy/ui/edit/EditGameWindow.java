@@ -113,10 +113,10 @@ public class EditGameWindow extends JDialog {
 
     // Print and edit settings panels centered horizontally.
     JPanel panelWrap = new JPanel();
-    PrintSettingPanel printPanel = new PrintSettingPanel(this.table, editTableMode);
-    panelWrap.add(printPanel);
     this.editSettingsPanel = new EditSettingPanel(this, editEnabled);
     panelWrap.add(this.editSettingsPanel);
+    PrintSettingPanel printPanel = new PrintSettingPanel(this.table, editTableMode);
+    panelWrap.add(printPanel);
     contentPane.add(panelWrap, new TableLayoutConstraints(
         0, 2, 0, 2, TableLayout.CENTER, TableLayout.CENTER));
 
