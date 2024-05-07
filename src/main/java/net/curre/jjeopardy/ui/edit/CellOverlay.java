@@ -176,7 +176,7 @@ public class CellOverlay extends JPanel {
     AppRegistry.getInstance().getUiService().showConfirmationDialog(
         LocaleService.getString("jj.edit.question.remove.title"),
         LocaleService.getString("jj.edit.question.remove.message"),
-        () -> this.editTable.removeQuestionRow(this.questionIndex), null);
+        () -> this.editTable.removeQuestionRow(this.questionIndex), null,null);
   }
 
   /**

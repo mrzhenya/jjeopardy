@@ -154,7 +154,7 @@ public abstract class BasicDialog extends JDialog {
   protected JButton createDefaultButton(String textOrNull) {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     JButton button = new JButton();
-    ClickAndKeyAction.createAndAddAction(button, this::handleButtonAction);
+    ClickAndKeyAction.createAndAddAction(button, this::closeAndDisposeDialog);
     button.setText(textOrNull == null ? LocaleService.getString("jj.dialog.button.ok") : textOrNull);
     button.setFont(lafTheme.getButtonFont());
     return button;
@@ -231,7 +231,7 @@ public abstract class BasicDialog extends JDialog {
    * this dialog instance. Feel free to override with another handler (e.g.
    * to keep the dialog instance in the memory).
    */
-  private void handleButtonAction() {
+  protected void closeAndDisposeDialog() {
     this.setVisible(false);
     this.dispose();
   }

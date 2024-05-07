@@ -527,6 +527,7 @@ public class GameDataService {
       // Now, overwrite the game file with the updated game data.
       try {
         XmlFileUtilities.createGameFile(gameData, gameData.getFilePath());
+        gameData.setGameDataNotNew();
       } catch (IOException e) {
         logger.error("Unable to create a game file " + gameData.getFilePath());
       }
@@ -549,6 +550,38 @@ public class GameDataService {
   }
 
   /**
+   * Creates a new game and initializes it to the minimum categories/questions.
+   * The game bundle path will be in the game library directory. The name of the directory
+   * and game file will be taken after the game name. If the directory already exist, the
+   * new directory name will be made unique by appending a unique integer.
+   * @param gameName name for the new game
+   * @param gameDescription description for the new game
+   * @return the newly created game data
+   */
+  public GameData createNewGame(@NotNull String gameName, String gameDescription) {
+    // Create a safe name that is going to be used for game bundle directory name and the file name.
+    String nameWoExtension = gameName.replaceAll("\\s+", "_").replaceAll("\\W+", "");
+
+    // If the directory already exist, create a unique directory name.
+    Path libGamesDir = Paths.get(getGameLibraryDirectoryPath());
+    String bundlePathNoExtension = libGamesDir.toString() + File.separatorChar + nameWoExtension;
+    File bundleDir = new File(bundlePathNoExtension + BUNDLE_EXTENSION);
+    for (int ind = 0; bundleDir.exists(); ind++) {
+      bundleDir = new File(bundlePathNoExtension + ind + BUNDLE_EXTENSION);
+    }
+    if (!bundleDir.mkdir()) {
+      logger.error("Unable to create a bundle directory for the new game");
+    }
+
+    // Create a basic game data initialized with default minimum categories/questions
+    // and save it in a game file in the library folder.
+    File gameFilepath = new File(bundleDir.getAbsolutePath() + File.separatorChar + nameWoExtension + ".xml");
+    GameData gameData = new GameData(gameFilepath.getAbsolutePath(), bundleDir.getAbsolutePath(), true);
+    gameData.initializeNewGameData(gameName, gameDescription);
+    return gameData;
+  }
+
+  /**
    * Returns an absolute path to the game library folder (under game settings).
    * Note, that the path may not exist yet.
    * @return absolute path to the games folder
@@ -561,7 +594,7 @@ public class GameDataService {
    * Updates library games when a new game was added to the library folder.
    * @param gameData game data
    */
-  private void updateLibraryGames(GameData gameData) {
+  public void updateLibraryGames(GameData gameData) {
     this.libraryGames.add(gameData);
     Collections.sort(this.libraryGames);
   }

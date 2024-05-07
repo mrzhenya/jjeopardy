@@ -23,11 +23,15 @@ import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.awt.Component;
 
 /**
@@ -37,28 +41,38 @@ import java.awt.Component;
  */
 public class ConfirmDialog extends BasicDialog {
 
+  /** Private class logger. */
+  private static final Logger logger = LogManager.getLogger(ConfirmDialog.class.getName());
+
   /** Dialog title/header. */
-  private final String title;
+  private final @NotNull String title;
 
   /** Dialog message. */
-  private final String message;
+  private final @NotNull String message;
 
   /** Handler for the Yes action. */
-  private final Runnable yesHandler;
+  private final @NotNull Runnable yesHandler;
+
+  /** Handler for the No action. */
+  private final @Null Runnable noHandler;
 
   /**
    * Creates a modal confirmation dialog.
    * @param title the title
    * @param message the text message
    * @param yesHandler handler for the Yes action
+   * @param noHandler handler for the No action (optional)
    */
-  public ConfirmDialog(String title, String message, Runnable yesHandler) {
+  public ConfirmDialog(@NotNull String title, @NotNull String message,
+                       @NotNull Runnable yesHandler, @Null Runnable noHandler) {
     this.title = title;
     this.message = message;
     this.yesHandler = yesHandler;
+    this.noHandler = noHandler;
     this.initializeDialog(title, ImageEnum.QUESTION_BLUE_64);
   }
 
+  /** @inheritDoc */
   @Override
   public Component getHeaderComponent() {
     JLabel label = new JLabel(this.title);
@@ -66,6 +80,7 @@ public class ConfirmDialog extends BasicDialog {
     return label;
   }
 
+  /** @inheritDoc */
   @Override
   public Component getContentComponent() {
     return this.createTextArea(this.message, 1);
@@ -89,7 +104,10 @@ public class ConfirmDialog extends BasicDialog {
     panel.add(yesButton, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.CENTER, TableLayout.CENTER));
 
-    JButton defaultButton = createDefaultButton(LocaleService.getString("jj.dialog.button.no"));
+    JButton defaultButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(defaultButton, this::handleNoAction);
+    defaultButton.setText(LocaleService.getString("jj.dialog.button.no"));
+    defaultButton.setFont(lafTheme.getButtonFont());
     panel.add(defaultButton, new TableLayoutConstraints(
         2, 0, 2, 0, TableLayout.CENTER, TableLayout.CENTER));
     SwingUtilities.invokeLater(defaultButton::requestFocus);
@@ -97,11 +115,22 @@ public class ConfirmDialog extends BasicDialog {
   }
 
   /**
-   * Handles the yes action.
+   * Handles the Yes action.
    */
   private void handleYesAction() {
+    logger.info("Handling the Yes action");
     this.yesHandler.run();
-    this.setVisible(false);
-    this.dispose();
+    super.closeAndDisposeDialog();
+  }
+
+  /**
+   * Handles the default/No action.
+   */
+  private void handleNoAction() {
+    logger.info("Handling the default/No action");
+    if (this.noHandler != null) {
+      this.noHandler.run();
+    }
+    super.closeAndDisposeDialog();
   }
 }

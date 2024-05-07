@@ -161,7 +161,7 @@ public class HeaderOverlay extends JPanel {
     AppRegistry.getInstance().getUiService().showConfirmationDialog(
         LocaleService.getString("jj.edit.category.remove.title"),
         LocaleService.getString("jj.edit.category.remove.message"),
-        () -> this.editTable.removeCategory(this.categoryIndex), null);
+        () -> this.editTable.removeCategory(this.categoryIndex), null, null);
   }
 
   /**

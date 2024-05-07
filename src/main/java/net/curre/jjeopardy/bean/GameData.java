@@ -62,7 +62,13 @@ public class GameData implements Comparable<GameData> {
    * Indicates that game file was opened and parsed successfully.
    * False indicates that no data in this object besides the file name is set.
    */
-  private boolean isFileDataAcquired;
+  private boolean fileDataAcquired;
+
+  /** Indicates that game data was just created and has not been saved to the disk yet. */
+  private boolean newGameData;
+
+  /** Indicates that some images failed to download. */
+  private boolean failedImageDownload;
 
   /** Game name parsed from the file. */
   private String gameName;
@@ -82,9 +88,6 @@ public class GameData implements Comparable<GameData> {
   /** Optional bonus questions. */
   private final List<Question> bonusQuestions;
 
-  /** Indicates that some images failed to download. */
-  private boolean failedImageDownload;
-
   /**
    * Ctor.
    * @param filePath absolute path to the XML game file
@@ -95,34 +98,23 @@ public class GameData implements Comparable<GameData> {
     this.filePath = filePath;
     this.bundlePath = bundleOrNull;
     this.nativeData = isNativeData;
-    this.isFileDataAcquired = false;
+    this.fileDataAcquired = false;
+    this.newGameData = false; // default case - data to be acquired from file
+    this.failedImageDownload = false;
     this.gameName = null;
     this.gameDescription = null;
     this.categories = new ArrayList<>();
     this.playerNames = new ArrayList<>();
     this.bonusQuestions = new ArrayList<>();
-    this.failedImageDownload = false;
   }
 
   /**
    * Creates a copy/clone of this game data.
    * @return a new game data object identical to this game data
    */
-  public GameData createCopy() {
+  public @NotNull GameData createCopy() {
     GameData gameData = new GameData(this.filePath, this.bundlePath, this.nativeData);
-    gameData.isFileDataAcquired = this.isFileDataAcquired;
-    gameData.failedImageDownload = this.failedImageDownload;
-    gameData.gameName = this.gameName;
-    gameData.gameDescription = this.gameDescription;
-    gameData.categories.clear();;
-    for (Category category : this.categories) {
-      gameData.categories.add(category.createCopy());
-    }
-    gameData.setPlayersNames(this.playerNames);
-    gameData.bonusQuestions.clear();
-    for (Question question : this.bonusQuestions) {
-      gameData.bonusQuestions.add(question.createCopy());
-    }
+    gameData.copyFrom(this);
     return gameData;
   }
 
@@ -130,11 +122,13 @@ public class GameData implements Comparable<GameData> {
    * Initializes this game data with the data from the passed gameData.
    * @param gameData game data to copy
    */
-  public void copyFrom(GameData gameData) {
+  public void copyFrom(@NotNull GameData gameData) {
     this.filePath = gameData.filePath;
     this.bundlePath = gameData.bundlePath;
     this.nativeData = gameData.nativeData;
-    this.isFileDataAcquired = gameData.isFileDataAcquired;
+    this.fileDataAcquired = gameData.fileDataAcquired;
+    this.newGameData = gameData.newGameData;
+    this.failedImageDownload = gameData.failedImageDownload;
     this.gameName = gameData.gameName;
     this.gameDescription = gameData.getGameDescription();
     this.categories.clear();
@@ -146,7 +140,6 @@ public class GameData implements Comparable<GameData> {
     for (Question question : gameData.bonusQuestions) {
       this.bonusQuestions.add(question.createCopy());
     }
-    this.failedImageDownload = gameData.failedImageDownload;
   }
 
   /**
@@ -190,6 +183,22 @@ public class GameData implements Comparable<GameData> {
    */
   public void changeToNativeData() {
     this.nativeData = true;
+  }
+
+  /**
+   * Marks this game data with an image download failure bit. This indicates that
+   * some images (one or more) failed to download.
+   */
+  public void setImageDownloadFailure() {
+    this.failedImageDownload = true;
+  }
+
+  /**
+   * Determines if there was an image file download failure.
+   * @return true if one or more images for this game data failed to download
+   */
+  public boolean isImageDownloadFailure() {
+    return this.failedImageDownload;
   }
 
   /**
@@ -376,22 +385,6 @@ public class GameData implements Comparable<GameData> {
     this.bonusQuestions.addAll(bonusQuestions);
   }
 
-  /**
-   * Marks this game data with an image download failure bit. This indicates that
-   * some images (one or more) failed to download.
-   */
-  public void setImageDownloadFailure() {
-    this.failedImageDownload = true;
-  }
-
-  /**
-   * Determines if there was an image file download failure.
-   * @return true if one or more images for this game data failed to download
-   */
-  public boolean isImageDownloadFailure() {
-    return this.failedImageDownload;
-  }
-
   /** @inheritDoc */
   @SuppressWarnings("NullableProblems")
   @Override
@@ -541,10 +534,63 @@ public class GameData implements Comparable<GameData> {
   }
 
   /**
+   * Gets the file data acquired flag on this game data.
+   * @return true if the file data was acquired; false if otherwise
+   */
+  public boolean isFileDataAcquired() {
+    return this.fileDataAcquired;
+  }
+
+  /**
    * Sets the file data acquired flag on this game data.
    */
   public void setFileDataAcquired() {
-    this.isFileDataAcquired = true;
+    this.fileDataAcquired = true;
+  }
+
+  /**
+   * Determines if the game data was just created and has no game file
+   * saved on disk yet.
+   * @return true if there is no game file yet; false if otherwise
+   */
+  public boolean isGameDataNew() {
+    return this.newGameData;
+  }
+
+  /**
+   * Marks this game data as not new anymore, meaning that there is a corresponding file on the disk.
+   */
+  public void setGameDataNotNew() {
+    this.newGameData = false;
+  }
+
+  /**
+   * Initializes this game data with a minimum default number of questions/categories.
+   * Each question is initialized with a default template string. The data is marked as
+   * new, meaning that there is no corresponding file on the filesystem yet.
+   * @param gameName the game name
+   * @param gameDescription the game description
+   */
+  public void initializeNewGameData(String gameName, String gameDescription) {
+    this.newGameData = true;
+    this.fileDataAcquired = true;
+    this.setGameName(gameName);
+    this.setGameDescription(gameDescription);
+
+    this.categories.clear();
+    for (int catIndex = 0; catIndex < JjDefaults.MIN_NUMBER_OF_CATEGORIES; catIndex++) {
+      List<Question> questions = new ArrayList<>();
+      for (int questionInd = 0; questionInd < JjDefaults.MIN_NUMBER_OF_QUESTIONS; questionInd++) {
+        int points = (questionInd + 1) * JjDefaults.QUESTION_POINTS_MULTIPLIER;
+        Question question = new Question(
+                LocaleService.getString("jj.game.question.placeholder"), null,
+                LocaleService.getString("jj.game.answer.placeholder"), null, points);
+        questions.add(question);
+      }
+      Category category = new Category(
+              LocaleService.getString("jj.category.name", String.valueOf(catIndex + 1)), questions);
+      this.categories.add(category);
+    }
   }
 
   /**
@@ -571,7 +617,7 @@ public class GameData implements Comparable<GameData> {
     result.setGameData(this);
 
     // First, check if the game file was located and parsed successfully.
-    if (!this.isFileDataAcquired) {
+    if (!this.fileDataAcquired) {
       result.addErrorMessage(MSG_PARSING);
       return result;
     }

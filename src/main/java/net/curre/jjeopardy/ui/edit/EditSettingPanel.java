@@ -162,7 +162,8 @@ public class EditSettingPanel extends JPanel {
     this.editGameInfoBox = new JCheckBox();
     this.editGameInfoBox.setText(LocaleService.getString("jj.edit.settings.extra.message"));
     this.editGameInfoBox.setEnabled(this.editAvailable);
-    this.editGameInfoBox.addActionListener(e -> this.infoDialog.showDialog(this.editGameWindow.getGameData()));
+    this.editGameInfoBox.addActionListener(e -> this.infoDialog.showDialog(
+            this.editGameWindow.getGameData().getGameName(), this.editGameWindow.getGameData().getGameDescription()));
 
     // Checkbox to edit game players.
     this.editPlayersBox = new JCheckBox();

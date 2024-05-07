@@ -18,7 +18,6 @@ package net.curre.jjeopardy.ui.edit;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.dialog.EditBaseDialog;
@@ -85,12 +84,13 @@ public class EditInfoDialog extends EditBaseDialog {
 
   /**
    * Updates the game info in the dialog and shows the dialog.
-   * @param gameData current game data
+   * @param gameName current game name
+   * @param gameDescription current description of the game
    */
-  public void showDialog(@NotNull GameData gameData) {
+  public void showDialog(String gameName, String gameDescription) {
     logger.info("Showing the dialog");
-    this.gameNamePane.setText(gameData.getGameName());
-    this.gameDescriptionPane.setText(gameData.getGameDescription());
+    this.gameNamePane.setText(gameName);
+    this.gameDescriptionPane.setText(gameDescription);
     super.setVisible(true);
   }
 

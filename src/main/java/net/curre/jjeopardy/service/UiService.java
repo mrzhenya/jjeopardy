@@ -32,6 +32,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.awt.Component;
 
 /**
@@ -63,12 +64,15 @@ public class UiService {
    * Displays a simple info dialog.
    * @param title the title text
    * @param message text content for the dialog
-   * @param yesHandler handler for the Yes action
+   * @param yesHandler handler for the Yes action (required)
+   * @param noHandler handler for the No action (optional)
    * @param parentComponent reference to the relative parent for component position
    */
-  public void showConfirmationDialog(String title, String message, Runnable yesHandler, Component parentComponent) {
+  public void showConfirmationDialog(@NotNull String title, String message,
+                                     @NotNull Runnable yesHandler, @Null Runnable noHandler,
+                                     Component parentComponent) {
     logger.info("Showing confirmation dialog: " + title);
-    ConfirmDialog dialog = new ConfirmDialog(title, message, yesHandler);
+    ConfirmDialog dialog = new ConfirmDialog(title, message, yesHandler, noHandler);
     dialog.showDialog(parentComponent);
   }
 

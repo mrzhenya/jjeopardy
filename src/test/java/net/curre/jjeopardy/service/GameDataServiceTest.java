@@ -18,11 +18,15 @@ package net.curre.jjeopardy.service;
 
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Player;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,12 +46,21 @@ public class GameDataServiceTest {
    */
   private GameDataService testGameService;
 
+  /** Absolute path to the test settings folder. */
+  private String testSettingsPath;
+
   /**
    * Initializes the state before each test run.
    */
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   @Before
-  public void init() {
+  public void init() throws IOException {
     this.testGameService = new GameDataService();
+    File testLibraryDir = new File("target" + File.separatorChar + "test" + File.separatorChar + "games");
+    testLibraryDir.mkdirs();
+    FileUtils.cleanDirectory(testLibraryDir);
+
+    this.testSettingsPath = new File("target" + File.separatorChar + "test").getAbsolutePath();
   }
 
   /**
@@ -139,6 +152,67 @@ public class GameDataServiceTest {
     assertPlayer("Wrong player 0", players.get(0), 0, "One", 0);
     assertPlayer("Wrong player 1", players.get(1), 1, "Two", 0);
     assertPlayer("Wrong player 2", players.get(2), 2, "Three", 0);
+  }
+
+  /**
+   * Tests createNewGame.
+   */
+  @Test
+  public void testCreateNewGame() {
+    GameData data;
+    try (MockedStatic<SettingsService> utilities = Mockito.mockStatic(SettingsService.class)) {
+      utilities.when(SettingsService::getVerifiedSettingsDirectoryPath).thenReturn(this.testSettingsPath);
+      data = this.testGameService.createNewGame("MamaMia", "HereIGoAgain");
+    }
+
+    assertNotNull("Game data is null", data);
+    assertEquals("Wrong game name", "MamaMia", data.getGameName());
+    assertEquals("Wrong game description", "HereIGoAgain", data.getGameDescription());
+
+    assertTrue("Wrong nativeData", data.isNativeData());
+    assertTrue("Wrong fileDataAcquired", data.isFileDataAcquired());
+    assertTrue("Wrong newGameData", data.isGameDataNew());
+    assertFalse("Wrong imageDownloadFailure", data.isImageDownloadFailure());
+
+    assertEquals("Wrong file path",
+            this.getTestLibraryPath() + "MamaMia.jj" + File.separatorChar + "MamaMia.xml", data.getFilePath());
+    assertEquals("Wrong bundle path",
+            this.getTestLibraryPath() + "MamaMia.jj", data.getBundlePath());
+  }
+
+  /**
+   * Tests createNewGame while a bundle with the same name already existing.
+   */
+  @Test
+  public void testCreateNewGame_bundleExist() {
+    GameData data;
+    try (MockedStatic<SettingsService> utilities = Mockito.mockStatic(SettingsService.class)) {
+      utilities.when(SettingsService::getVerifiedSettingsDirectoryPath).thenReturn(this.testSettingsPath);
+      this.testGameService.createNewGame("MamaMia", "HereIGoAgain");
+      data = this.testGameService.createNewGame("MamaMia", "HereIGoAgain");
+    }
+
+    assertEquals("Wrong file path",
+            this.getTestLibraryPath() + "MamaMia0.jj" + File.separatorChar + "MamaMia.xml", data.getFilePath());
+    assertEquals("Wrong bundle path",
+            this.getTestLibraryPath() + "MamaMia0.jj", data.getBundlePath());
+  }
+
+  /**
+   * Tests createNewGame while sanitizing directory/file name.
+   */
+  @Test
+  public void testCreateNewGame_sanitizeName() {
+    GameData data;
+    try (MockedStatic<SettingsService> utilities = Mockito.mockStatic(SettingsService.class)) {
+      utilities.when(SettingsService::getVerifiedSettingsDirectoryPath).thenReturn(this.testSettingsPath);
+      data = this.testGameService.createNewGame("Ma.ma/ Mia\\7", "HereIGoAgain");
+    }
+
+    assertEquals("Wrong file path",
+            this.getTestLibraryPath() + "Mama_Mia7.jj" + File.separatorChar + "Mama_Mia7.xml", data.getFilePath());
+    assertEquals("Wrong bundle path",
+            this.getTestLibraryPath() + "Mama_Mia7.jj", data.getBundlePath());
   }
 
   /**
@@ -265,6 +339,14 @@ public class GameDataServiceTest {
     GameData gameData = this.testGameService.parseGameFileOrBundle(file.getAbsolutePath());
     assertNotNull("Parsing result should not be null", gameData);
     return gameData;
+  }
+
+  /**
+   * Gets the test games library path.
+   * @return test games library path with a trailing slash.
+   */
+  private String getTestLibraryPath() {
+    return this.testSettingsPath + File.separatorChar + "games" + File.separatorChar;
   }
 
   /**

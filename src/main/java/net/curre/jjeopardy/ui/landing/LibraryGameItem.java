@@ -153,8 +153,7 @@ public class LibraryGameItem extends JPanel {
     AppRegistry.getInstance().getUiService().showConfirmationDialog(
         LocaleService.getString("jj.dialog.delete.game.title"),
         LocaleService.getString("jj.dialog.delete.game.msg"),
-        LibraryGameItem.this::deleteGame,
-        null);
+        LibraryGameItem.this::deleteGame, null, null);
   }
 
   /**

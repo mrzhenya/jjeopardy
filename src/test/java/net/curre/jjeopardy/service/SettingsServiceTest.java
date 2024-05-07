@@ -36,10 +36,10 @@ import static org.junit.Assert.*;
 public class SettingsServiceTest {
 
   /** Path to the test settings directory. */
-  private static final String TEST_SETTINGS_PATH = "target/test/settings/";
+  private static final String TEST_SETTINGS_PATH = "target" + File.separatorChar + "test" + File.separatorChar + "settings";
 
   /** Default test settings last current directory. */
-  private static final String DEFAULT_LAST_CURRENT_DIR = "some/test/directory/";
+  private static final String DEFAULT_LAST_CURRENT_DIR = "some" + File.separatorChar + "test" + File.separatorChar + "directory";
 
   /** Default test settings game window height. */
   private static final int DEFAULT_GAME_WINDOW_HEIGHT = 1444;
