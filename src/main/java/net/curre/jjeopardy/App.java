@@ -88,7 +88,6 @@ public class App {
         .withPattern("%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n")
         .withConfiguration(config).build();
     String logFilePath = SettingsService.getVerifiedSettingsDirectoryPath() + File.separatorChar + LOG_FILENAME;
-    System.out.println("logFilePath = " + logFilePath);
     FileAppender.Builder builder = FileAppender.newBuilder();
     builder.withFileName(logFilePath)
         .withAppend(false)
