@@ -131,6 +131,7 @@ public class GameDataTest {
 
     assertEquals("Wrong game name", "MyVeryNew", data.getGameName());
     assertEquals("Wrong game description", "MyDescription", data.getGameDescription());
+    assertTrue("Game data should be usable", data.isGameDataUsable());
 
     List<Category> categories = data.getCategories();
     assertNotNull("List of copied categories should not be null", categories);

@@ -58,7 +58,7 @@ import java.util.Objects;
 public class GameDataService {
 
   /** Extension of the game bundle directory. */
-  private static final String BUNDLE_EXTENSION = ".jj";
+  protected static final String BUNDLE_EXTENSION = ".jj";
 
   /** Private class logger. */
   private static final Logger logger = LogManager.getLogger(GameDataService.class.getName());
@@ -291,9 +291,7 @@ public class GameDataService {
     if (gameData.isNativeData()) {
       // For the native data, check if the bundle or game file exist in the library.
       if (gameData.getBundlePath() == null) {
-        File originalFile = new File(gameData.getFilePath());
-        File destFile = new File(libGamesDir.toString() + File.separatorChar + originalFile.getName());
-        return destFile.exists();
+        return createBundlePathFromGameFile(gameData.getFilePath()).exists();
       } else {
         File originalDir = new File(gameData.getBundlePath());
         File destDir = new File(libGamesDir.toString() + File.separatorChar + originalDir.getName());
@@ -301,11 +299,7 @@ public class GameDataService {
       }
     } else {
       // For non-native data, check for the library directory named the same as the file name (w/o extension).
-      File originalFile = new File(gameData.getFilePath());
-      String nameWoExtension = FilenameUtils.removeExtension(originalFile.getName());
-      File destDir = new File(
-          libGamesDir.toString() + File.separatorChar + nameWoExtension + BUNDLE_EXTENSION);
-      return destDir.exists();
+      return createBundlePathFromGameFile(gameData.getFilePath()).exists();
     }
   }
 
@@ -343,25 +337,35 @@ public class GameDataService {
     boolean isGameAdded = false;
     String gameFilePath = null;
     String gameBundlePath = null;
-    Path libGamesDir = Paths.get(getGameLibraryDirectoryPath());
     if (gameData.getBundlePath() == null) {
-      // If game is a single (native format) file, copy the file to the game library folder.
-      File originalFile = new File(gameData.getFilePath());
-      File destFile = new File(libGamesDir.toString() + File.separatorChar + originalFile.getName());
-      if (!destFile.exists()) {
-        FileUtils.copyFile(originalFile, destFile);
-        gameFilePath = destFile.getAbsolutePath();
-        isGameAdded = true;
+      // If game is a single (native format) file, create a game bundle directory
+      // in the library folder and copy the game file there.
+      File bundlePath = createBundlePathFromGameFile(gameData.getFilePath());
+      if (bundlePath.exists()) {
+        logger.error("File copy error: bundle directory already exists: " + bundlePath.getAbsolutePath());
+        return;
       }
+      bundlePath.mkdir();
+
+      // Copy the file to the newly created bundle directory.
+      File originalFile = new File(gameData.getFilePath());
+      File destFile = new File(bundlePath.getAbsolutePath() + File.separatorChar + originalFile.getName());
+      FileUtils.copyFile(originalFile, destFile);
+      gameFilePath = destFile.getAbsolutePath();
+      isGameAdded = true;
+
     } else {
       // If game has a bundle directory, check if the directory exists in the library.
+      Path libGamesDir = Paths.get(getGameLibraryDirectoryPath());
       File bundleDir = new File(gameData.getBundlePath());
       File destDir = new File(libGamesDir.toString() + File.separatorChar + bundleDir.getName());
-      if (!destDir.exists()) {
+      if (destDir.exists()) {
+        logger.error("Bundle copy error: bundle directory already exists: " + destDir.getAbsolutePath());
+      } else {
         // Create a bundle directory in the library folder and copy all content there.
         destDir.mkdir();
-        for (File gameItem : Objects.requireNonNull(bundleDir.listFiles())) {
-          File destFile = new File(destDir.toString() + File.separatorChar + gameItem.getName());
+        for (File gameItem : Objects.requireNonNull(new File(gameData.getBundlePath()).listFiles())) {
+          File destFile = new File(destDir.getAbsolutePath() + File.separatorChar + gameItem.getName());
           FileUtils.copyFile(gameItem, destFile);
           if (StringUtils.endsWithIgnoreCase(gameItem.getName(), ".xml")) {
             gameFilePath = destFile.getAbsolutePath();
@@ -404,7 +408,7 @@ public class GameDataService {
           progressDialog.incrementProgress(1);
 
           // First, update game file path on the current game data.
-          String destFilePath = destDir.toString() + File.separatorChar + nameWoExtension + ".xml";
+          String destFilePath = destDir.getAbsolutePath() + File.separatorChar + nameWoExtension + ".xml";
           gameData.setGameFilePaths(destFilePath, destDir.getAbsolutePath());
 
           failedUrls = downloadImagesAndFinishGameCopy(gameData, destFilePath, progressDialog);
@@ -615,5 +619,19 @@ public class GameDataService {
           AppRegistry.getInstance().getLandingUi()
       );
     }
+  }
+
+  /**
+   * Creates file object that represents the game bundle directory in the library
+   * given a game absolute file path. The directory name is going to be the same
+   * as the file name with a different extension.
+   * @param gameFilepath game file path
+   * @return File that represent a library game bundle directory
+   */
+  private File createBundlePathFromGameFile(String gameFilepath) {
+    File originalFile = new File(gameFilepath);
+    String nameWoExtension = FilenameUtils.removeExtension(originalFile.getName());
+    Path libGamesDir = Paths.get(getGameLibraryDirectoryPath());
+    return new File(libGamesDir.toString() + File.separatorChar + nameWoExtension + BUNDLE_EXTENSION);
   }
 }

@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.curre.jjeopardy.TestSettings.VALID_DATA_PATH;
+import static net.curre.jjeopardy.service.GameDataService.BUNDLE_EXTENSION;
 import static org.junit.Assert.*;
 
 /**
@@ -39,6 +41,7 @@ import static org.junit.Assert.*;
  *
  * @author Yevgeny Nyden
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class GameDataServiceTest {
 
   /**
@@ -49,6 +52,9 @@ public class GameDataServiceTest {
   /** Absolute path to the test settings folder. */
   private String testSettingsPath;
 
+  /** Absolute path to the test library folder. */
+  private String testLibraryPath;
+
   /**
    * Initializes the state before each test run.
    */
@@ -56,11 +62,11 @@ public class GameDataServiceTest {
   @Before
   public void init() throws IOException {
     this.testGameService = new GameDataService();
-    File testLibraryDir = new File("target" + File.separatorChar + "test" + File.separatorChar + "games");
-    testLibraryDir.mkdirs();
-    FileUtils.cleanDirectory(testLibraryDir);
-
     this.testSettingsPath = new File("target" + File.separatorChar + "test").getAbsolutePath();
+    File testLibraryFile = new File(this.testSettingsPath + File.separatorChar + "games");
+    testLibraryFile.mkdirs();
+    FileUtils.cleanDirectory(testLibraryFile);
+    this.testLibraryPath = testLibraryFile.getAbsolutePath();
   }
 
   /**
@@ -175,9 +181,9 @@ public class GameDataServiceTest {
     assertFalse("Wrong imageDownloadFailure", data.isImageDownloadFailure());
 
     assertEquals("Wrong file path",
-            this.getTestLibraryPath() + "MamaMia.jj" + File.separatorChar + "MamaMia.xml", data.getFilePath());
+            this.getTestLibraryPath("MamaMia.jj" + File.separatorChar + "MamaMia.xml"), data.getFilePath());
     assertEquals("Wrong bundle path",
-            this.getTestLibraryPath() + "MamaMia.jj", data.getBundlePath());
+            this.getTestLibraryPath("MamaMia.jj"), data.getBundlePath());
   }
 
   /**
@@ -193,9 +199,9 @@ public class GameDataServiceTest {
     }
 
     assertEquals("Wrong file path",
-            this.getTestLibraryPath() + "MamaMia0.jj" + File.separatorChar + "MamaMia.xml", data.getFilePath());
+            this.getTestLibraryPath("MamaMia0.jj" + File.separatorChar + "MamaMia.xml"), data.getFilePath());
     assertEquals("Wrong bundle path",
-            this.getTestLibraryPath() + "MamaMia0.jj", data.getBundlePath());
+            this.getTestLibraryPath("MamaMia0.jj"), data.getBundlePath());
   }
 
   /**
@@ -210,9 +216,9 @@ public class GameDataServiceTest {
     }
 
     assertEquals("Wrong file path",
-            this.getTestLibraryPath() + "Mama_Mia7.jj" + File.separatorChar + "Mama_Mia7.xml", data.getFilePath());
+            this.getTestLibraryPath("Mama_Mia7.jj" + File.separatorChar + "Mama_Mia7.xml"), data.getFilePath());
     assertEquals("Wrong bundle path",
-            this.getTestLibraryPath() + "Mama_Mia7.jj", data.getBundlePath());
+            this.getTestLibraryPath("Mama_Mia7.jj"), data.getBundlePath());
   }
 
   /**
@@ -256,7 +262,7 @@ public class GameDataServiceTest {
    */
   @Test
   public void testLoadGameDataValidDefault() {
-    loadGameTestFile(XmlParsingServiceTest.PATH_VALID + "default.xml");
+    loadGameTestFile(VALID_DATA_PATH + "default.xml");
 
     // There should still be no players.
     List<Player> players = this.testGameService.getCurrentPlayers();
@@ -269,11 +275,11 @@ public class GameDataServiceTest {
    */
   @Test
   public void testLoadGameBundleReadingFromFile() {
-    GameData gameData = loadGameTestFile(XmlParsingServiceTest.PATH_VALID + "/test-bundle.jj/test-bundle.xml");
+    GameData gameData = loadGameTestFile(VALID_DATA_PATH + "/test-bundle.jj/test-bundle.xml");
     assertEquals("Wrong file path",
-            new File(XmlParsingServiceTest.PATH_VALID + "/test-bundle.jj/test-bundle.xml").getAbsolutePath(), gameData.getFilePath());
+            new File(VALID_DATA_PATH + "/test-bundle.jj/test-bundle.xml").getAbsolutePath(), gameData.getFilePath());
     assertEquals("Wrong bundle directory",
-        new File(XmlParsingServiceTest.PATH_VALID + "/test-bundle.jj").getAbsolutePath(), gameData.getBundlePath());
+        new File(VALID_DATA_PATH + "/test-bundle.jj").getAbsolutePath(), gameData.getBundlePath());
 
     XmlParsingServiceTest.assertDefaultValidData(gameData, "valid-default", "test-description",
             10, 20, 30, 0, 0);
@@ -285,11 +291,11 @@ public class GameDataServiceTest {
    */
   @Test
   public void testLoadGameBundleReadingFromDirectory() {
-    GameData gameData = loadGameTestFile(XmlParsingServiceTest.PATH_VALID + "/test-bundle.jj");
+    GameData gameData = loadGameTestFile(VALID_DATA_PATH + "/test-bundle.jj");
     assertEquals("Wrong file path",
-            new File(XmlParsingServiceTest.PATH_VALID + "/test-bundle.jj/test-bundle.xml").getAbsolutePath(), gameData.getFilePath());
+            new File(VALID_DATA_PATH + "/test-bundle.jj/test-bundle.xml").getAbsolutePath(), gameData.getFilePath());
     assertEquals("Wrong bundle directory",
-            new File(XmlParsingServiceTest.PATH_VALID + "/test-bundle.jj").getAbsolutePath(), gameData.getBundlePath());
+            new File(VALID_DATA_PATH + "/test-bundle.jj").getAbsolutePath(), gameData.getBundlePath());
 
     XmlParsingServiceTest.assertDefaultValidData(gameData, "valid-default", "test-description",
             10, 20, 30, 0, 0);
@@ -308,6 +314,121 @@ public class GameDataServiceTest {
     assertNull("Bundle directory should be null", gameData.getBundlePath());
     assertEquals("Wrong game name", "Test Jlabs Game", gameData.getGameName());
     // No more testing is necessary, we got the file (more tests are in HtmlParsingServiceTest).
+  }
+
+  /**
+   * Tests gameExistsInLibrary with a non-native single game file.
+   */
+  @Test
+  public void testGameExistsInLibrary_nonNative() {
+    try (MockedStatic<SettingsService> utilities = Mockito.mockStatic(SettingsService.class)) {
+      utilities.when(SettingsService::getVerifiedSettingsDirectoryPath).thenReturn(this.testSettingsPath);
+
+      // First check for the game not existing.
+      String filePath = getTestLibraryPath("bambarbia.html");
+      GameData data = new GameData(filePath, null, false);
+      assertFalse("Game should not exist", this.testGameService.gameExistsInLibrary(data));
+      data = new GameData("bambarbia.html", null, false);
+      assertFalse("Game should not exist", this.testGameService.gameExistsInLibrary(data));
+
+      // Now, create a bundle directory and test again.
+      File file = new File(getTestLibraryPath("bambarbia" + BUNDLE_EXTENSION));
+      file.mkdir();
+      data = new GameData("bambarbia.html", null, false);
+      assertTrue("Game should exist", this.testGameService.gameExistsInLibrary(data));
+      data = new GameData("boo" + File.separatorChar + "bambarbia.html", null, false);
+      assertTrue("Game should exist", this.testGameService.gameExistsInLibrary(data));
+    }
+  }
+
+  /**
+   * Tests gameExistsInLibrary with a native data single game file.
+   */
+  @Test
+  public void testGameExistsInLibrary_nativeWithoutBundle() {
+    try (MockedStatic<SettingsService> utilities = Mockito.mockStatic(SettingsService.class)) {
+      utilities.when(SettingsService::getVerifiedSettingsDirectoryPath).thenReturn(this.testSettingsPath);
+
+      // First check for the game not existing.
+      String filePath = getTestLibraryPath("karamba.xml");
+      GameData data = new GameData(filePath, null, true);
+      assertFalse("Game should not exist", this.testGameService.gameExistsInLibrary(data));
+      data = new GameData("karamba.xml", null, true);
+      assertFalse("Game should not exist", this.testGameService.gameExistsInLibrary(data));
+
+      // Now, create a bundle directory and test again.
+      File file = new File(getTestLibraryPath("karamba" + BUNDLE_EXTENSION));
+      file.mkdir();
+      data = new GameData("karamba.xml", null, true);
+      assertTrue("Game should exist", this.testGameService.gameExistsInLibrary(data));
+      data = new GameData("boo" + File.separatorChar + "karamba.xml", null, true);
+      assertTrue("Game should exist", this.testGameService.gameExistsInLibrary(data));
+    }
+  }
+
+  /**
+   * Tests gameExistsInLibrary with a native data game file in a bundle.
+   */
+  @Test
+  public void testGameExistsInLibrary_nativeWithBundle() {
+    try (MockedStatic<SettingsService> utilities = Mockito.mockStatic(SettingsService.class)) {
+      utilities.when(SettingsService::getVerifiedSettingsDirectoryPath).thenReturn(this.testSettingsPath);
+
+      // First check for the game not existing.
+      File bundlePath = new File(getTestLibraryPath("korrida" + BUNDLE_EXTENSION));
+      String filePath = bundlePath.toString() + File.separatorChar + "korrida.xml";
+      GameData data = new GameData(filePath, bundlePath.getAbsolutePath(), true);
+      assertFalse("Game should not exist", this.testGameService.gameExistsInLibrary(data));
+
+      // Now, create a bundle directory and test again.
+      bundlePath.mkdir();
+      data = new GameData("korrida.xml", bundlePath.getAbsolutePath(), true);
+      assertTrue("Game should exist", this.testGameService.gameExistsInLibrary(data));
+      data = new GameData("boo" + File.separatorChar + "korrida.xml", bundlePath.getAbsolutePath(), true);
+      assertTrue("Game should exist", this.testGameService.gameExistsInLibrary(data));
+    }
+  }
+
+  /**
+   * Tests addGameToLibrary while copying a single xml file.
+   */
+  @Test
+  public void testAddGameToLibrary_nativeSingleFile() {
+    try (MockedStatic<SettingsService> utilities = Mockito.mockStatic(SettingsService.class)) {
+      utilities.when(SettingsService::getVerifiedSettingsDirectoryPath).thenReturn(this.testSettingsPath);
+      GameData data = new GameData(VALID_DATA_PATH + "default.xml", null, true);
+
+      this.testGameService.addGameToLibrary(data);
+
+      // Verify the game is copied.
+      File bundlePath = new File(getTestLibraryPath("default" + BUNDLE_EXTENSION));
+      assertTrue("Game was not created", bundlePath.exists());
+      File filePath = new File(bundlePath.getAbsolutePath() + File.separatorChar + "default.xml");
+      assertTrue("Game file was not copied", filePath.exists());
+    }
+  }
+
+  /**
+   * Tests addGameToLibrary while copying a game bundle.
+   */
+  @Test
+  public void testAddGameToLibrary_nativeBundle() {
+    try (MockedStatic<SettingsService> utilities = Mockito.mockStatic(SettingsService.class)) {
+      utilities.when(SettingsService::getVerifiedSettingsDirectoryPath).thenReturn(this.testSettingsPath);
+      GameData data = new GameData(
+          VALID_DATA_PATH + "test-bundle.jj" + File.separatorChar + "test-bundle.xml",
+          VALID_DATA_PATH + "test-bundle.jj", true);
+
+      this.testGameService.addGameToLibrary(data);
+
+      // Verify the game is copied.
+      File bundlePath = new File(getTestLibraryPath("test-bundle" + BUNDLE_EXTENSION));
+      assertTrue("Game was not created", bundlePath.exists());
+      File filePath = new File(bundlePath.getAbsolutePath() + File.separatorChar + "test-bundle.xml");
+      assertTrue("Game file was not copied", filePath.exists());
+      File imgPath = new File(bundlePath.getAbsolutePath() + File.separatorChar + "image.png");
+      assertTrue("Test image was not copied", imgPath.exists());
+    }
   }
 
   /**
@@ -342,11 +463,12 @@ public class GameDataServiceTest {
   }
 
   /**
-   * Gets the test games library path.
+   * Gets the test games library path to the game file or directory.
+   * @param gamePath game path
    * @return test games library path with a trailing slash.
    */
-  private String getTestLibraryPath() {
-    return this.testSettingsPath + File.separatorChar + "games" + File.separatorChar;
+  private String getTestLibraryPath(String gamePath) {
+    return this.testLibraryPath + File.separatorChar + gamePath;
   }
 
   /**

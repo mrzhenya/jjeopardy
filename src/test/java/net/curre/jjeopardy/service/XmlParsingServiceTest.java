@@ -16,6 +16,7 @@
 
 package net.curre.jjeopardy.service;
 
+import net.curre.jjeopardy.TestSettings;
 import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Question;
@@ -35,12 +36,6 @@ import static org.junit.Assert.*;
  */
 public class XmlParsingServiceTest {
 
-  /** Path to valid data test game files. */
-  protected static final String PATH_VALID = "src/test/resources/valid-data/";
-
-  /** Path to invalid data test game files. */
-  private static final String PATH_INVALID = "src/test/resources/invalid-data/";
-
   /**
    * Reference to the XML parsing service to test on each run.
    */
@@ -59,9 +54,9 @@ public class XmlParsingServiceTest {
    */
   @Test
   public void testParseXmlGameDataValidDefault() {
-    GameData gameData = parseXmlGameTestFile(PATH_VALID + "default.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.VALID_DATA_PATH + "default.xml");
     assertEquals("Wrong file path",
-        new File(PATH_VALID + "default.xml").getAbsolutePath(), gameData.getFilePath());
+        new File(TestSettings.VALID_DATA_PATH + "default.xml").getAbsolutePath(), gameData.getFilePath());
 
     assertDefaultValidData(gameData, "valid-default", "test-description",
         10, 20, 30, 0, 0);
@@ -74,10 +69,10 @@ public class XmlParsingServiceTest {
    */
   @Test
   public void testParseXmlGameDataValidOnlyImages() {
-    GameData gameData = parseXmlGameTestFile(PATH_VALID + "only-images.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.VALID_DATA_PATH + "only-images.xml");
     assertNotNull("Game data should not be null", gameData);
     assertEquals("Wrong file path",
-        new File(PATH_VALID + "only-images.xml").getAbsolutePath(), gameData.getFilePath());
+        new File(TestSettings.VALID_DATA_PATH + "only-images.xml").getAbsolutePath(), gameData.getFilePath());
 
     assertNotNull("Null categories", gameData.getCategories());
     assertEquals("Wrong categories number", 3, gameData.getCategories().size());
@@ -98,7 +93,7 @@ public class XmlParsingServiceTest {
   @Test
   public void testParseXmlGameDataValidNoScores() {
     // The same default data is expected but question points should be initialized to defaults.
-    GameData gameData = parseXmlGameTestFile(PATH_VALID + "no-scores.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.VALID_DATA_PATH + "no-scores.xml");
     assertDefaultValidData(gameData, "valid-no-scores", null,
             50, 100, 150, 0, 0);
     assertTrue("Game data should be usable", gameData.isGameDataUsable());
@@ -107,7 +102,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from a valid game file with valid number of players. */
   @Test
   public void testParseXmlGameDataValidWithEnoughPlayers() {
-    GameData gameData = parseXmlGameTestFile(PATH_VALID + "with-enough-players.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.VALID_DATA_PATH + "with-enough-players.xml");
     assertDefaultValidData(gameData, "valid-with-enough-players", null,
             10, 20, 30, 3, 0);
     List<String> playerNames = gameData.getPlayerNames();
@@ -120,7 +115,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from a valid game file with not enough players. */
   @Test
   public void testParseXmlGameDataValidNotEnoughPlayers() {
-    GameData gameData = parseXmlGameTestFile(PATH_VALID + "not-enough-players.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.VALID_DATA_PATH + "not-enough-players.xml");
     assertDefaultValidData(gameData, "valid-not-enough-players", null,
             10, 20, 30, 1, 0);
     assertTrue("Game data should be usable", gameData.isGameDataUsable());
@@ -129,7 +124,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from a valid game file but with too many players. */
   @Test
   public void testParseXmlGameDataValidTooManyPlayers() {
-    GameData gameData = parseXmlGameTestFile(PATH_VALID + "too-many-players.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.VALID_DATA_PATH + "too-many-players.xml");
 
     // Extra players are ignored.
     assertDefaultValidData(gameData, "valid-too-many-players", null,
@@ -147,7 +142,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from a valid game file but with a lot of leading/trailing whitespace. */
   @Test
   public void testParseXmlGameDataValidLotsOfWhitespace() {
-    GameData gameData = parseXmlGameTestFile(PATH_VALID + "lots-of-whitespace.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.VALID_DATA_PATH + "lots-of-whitespace.xml");
 
     // Extra players are ignored.
     assertDefaultValidData(gameData, "valid-lots-of-whitespace", null,
@@ -163,9 +158,9 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from a valid game file with a question as a list of items. */
   @Test
   public void testParseXmlGameDataValidItemsList() {
-    GameData gameData = parseXmlGameTestFile(PATH_VALID + "items-list.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.VALID_DATA_PATH + "items-list.xml");
     assertEquals("Wrong file path",
-        new File(PATH_VALID + "items-list.xml").getAbsolutePath(), gameData.getFilePath());
+        new File(TestSettings.VALID_DATA_PATH + "items-list.xml").getAbsolutePath(), gameData.getFilePath());
     assertTrue("Game data should be usable", gameData.isGameDataUsable());
 
     List<Category> categories = gameData.getCategories();
@@ -183,7 +178,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from a valid game file with enough bonus questions. */
   @Test
   public void testParseXmlGameDataValidWithEnoughBonusQuestions() {
-    GameData gameData = parseXmlGameTestFile(PATH_VALID + "with-enough-bonus-questions.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.VALID_DATA_PATH + "with-enough-bonus-questions.xml");
     assertDefaultValidData(gameData, "valid-with-enough-bonus-questions", null,
             10, 20, 30, 0, 3);
     List<Question> bonusQuestions = gameData.getBonusQuestions();
@@ -197,7 +192,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from a valid game file with not enough bonus questions. */
   @Test
   public void testParseXmlGameDataValidNotEnoughBonusQuestions() {
-    GameData gameData = parseXmlGameTestFile(PATH_VALID + "not-enough-bonus-questions.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.VALID_DATA_PATH + "not-enough-bonus-questions.xml");
 
     // Bonus questions should not be parsed because they are too few for the number of players.
     assertDefaultValidData(gameData, "valid-not-enough-bonus-questions", null,
@@ -208,7 +203,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid game file with not enough categories. */
   @Test
   public void testParseXmlGameDataInvalidTooFewCategories() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "too-few-categories.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "too-few-categories.xml");
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
@@ -216,7 +211,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid game file with not enough questions. */
   @Test
   public void testParseXmlGameDataInvalidTooFewQuestions() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "too-few-questions.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "too-few-questions.xml");
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
@@ -227,7 +222,7 @@ public class XmlParsingServiceTest {
    */
   @Test
   public void testParseXmlGameDataInvalidNotEvenQuestions() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "not-even-questions.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "not-even-questions.xml");
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
@@ -235,7 +230,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid not-XML file. */
   @Test
   public void testParseXmlGameDataInvalidNotXml() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "not-xml-format.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "not-xml-format.xml");
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
@@ -243,7 +238,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid game file w/o game name. */
   @Test
   public void testParseXmlGameDataInvalidNoGameName() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "no-game-name.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "no-game-name.xml");
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
@@ -251,7 +246,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid game file with blank game name. */
   @Test
   public void testParseXmlGameDataInvalidGameNameBlank() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "blank-game-name.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "blank-game-name.xml");
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
@@ -259,7 +254,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid game file with blank category name. */
   @Test
   public void testParseXmlGameDataInvalidCategoryNameBlank() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "blank-category-name.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "blank-category-name.xml");
     // Two errors - one for empty category, another one for not enough categories parsed
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
@@ -268,7 +263,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid game file w/o category name. */
   @Test
   public void testParseXmlGameDataInvalidNoCategoryName() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "no-category-name.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "no-category-name.xml");
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
@@ -276,7 +271,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid game file with one blank question. */
   @Test
   public void testParseXmlGameDataInvalidOneQuestionBlank() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "one-question-blank.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "one-question-blank.xml");
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
@@ -284,7 +279,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid game file with one blank answer. */
   @Test
   public void testParseXmlGameDataInvalidOneAnswerBlank() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "one-answer-blank.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "one-answer-blank.xml");
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
@@ -292,7 +287,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid game file with a missing answer. */
   @Test
   public void testParseXmlGameDataInvalidMissingAnswer() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "missing-one-answer.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "missing-one-answer.xml");
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
@@ -300,7 +295,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid game file with too many questions. */
   @Test
   public void testParseXmlGameDataInvalidTooManyQuestions() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "too-many-questions.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "too-many-questions.xml");
     assertNotNull("Game data should not be null", gameData);
     assertFalse("Game data should not be usable", gameData.isGameDataUsable());
   }
@@ -308,7 +303,7 @@ public class XmlParsingServiceTest {
   /** Tests loading game data from an invalid game file with too many categories. */
   @Test
   public void testParseXmlGameDataInvalidTooManyCategories() {
-    GameData gameData = parseXmlGameTestFile(PATH_INVALID + "too-many-categories.xml");
+    GameData gameData = parseXmlGameTestFile(TestSettings.INVALID_DATA_PATH + "too-many-categories.xml");
     assertNotNull("Game data should not be null", gameData);
     assertTrue("Game data should be usable", gameData.isGameDataUsable());
   }
