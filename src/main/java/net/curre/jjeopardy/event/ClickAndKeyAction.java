@@ -43,7 +43,6 @@ public class ClickAndKeyAction extends AbstractAction implements KeyListener {
   public static void createAndAddAction(@NotNull JButton button, Runnable actionHandler) {
     ClickAndKeyAction action = new ClickAndKeyAction(actionHandler);
     button.setAction(action);
-    button.addKeyListener(action);
   }
 
   /** Runnable to execute on action. */
