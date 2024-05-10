@@ -39,6 +39,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.validation.constraints.NotNull;
 import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -186,11 +187,37 @@ public class LandingUi extends JFrame {
    * Updates game library UI after new games are added.
    */
   public void updateLibrary() {
-    this.libraryPanel.removeAll();
-    for (GameData game : AppRegistry.getInstance().getGameDataService().getLibraryGames()) {
-      // Assume the data has already been validated to be usable.
-      this.libraryPanel.add(new LibraryGameItem(game));
+    List<GameData> games = AppRegistry.getInstance().getGameDataService().getLibraryGames();
+
+    // First, check if any items should be removed.
+    List<LibraryGameItem> itemsToRemove = new ArrayList<>();
+    for (Component component : this.libraryPanel.getComponents()) {
+      LibraryGameItem item = (LibraryGameItem) component;
+      boolean gameExist = false;
+      for (GameData game : games) {
+        if (item.gameEquals(game)) {
+          gameExist = true;
+          break;
+        }
+      }
+      if (!gameExist) {
+        itemsToRemove.add(item);
+      }
     }
+    for (LibraryGameItem item : itemsToRemove) {
+      this.libraryPanel.remove(item);
+    }
+
+    // Now, check if any new items should be added; assume library
+    // games and game library items on the panel are both sorted.
+    for (int ind = 0; ind < games.size(); ind++) {
+      GameData game = games.get(ind);
+      LibraryGameItem item = (LibraryGameItem) this.libraryPanel.getComponent(ind);
+      if (!item.gameEquals(game)) {
+        this.libraryPanel.add(new LibraryGameItem(game), ind);
+      }
+    }
+
     this.libraryPanel.revalidate();
     this.libraryPanel.repaint();
   }

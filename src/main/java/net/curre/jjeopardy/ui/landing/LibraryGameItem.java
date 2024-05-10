@@ -157,6 +157,15 @@ public class LibraryGameItem extends JPanel {
   }
 
   /**
+   * Checks if the given game is the one contained in this library item.
+   * @param game game to check
+   * @return true if this game library item contains the passed game
+   */
+  public boolean gameEquals(GameData game) {
+    return this.gameData == game;
+  }
+
+  /**
    * Handler for the mouse actions.
    */
   private class GameItemMouseAdapter extends MouseAdapter {
