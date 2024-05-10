@@ -58,6 +58,7 @@ public class GameInfoDialog extends BasicDialog {
     this.initializeDialog(gameData.getGameName(), gameData.getGameSizeIconLarge());
   }
 
+  /** @inheritDoc */
   @Override
   public Component getHeaderComponent() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
@@ -71,6 +72,7 @@ public class GameInfoDialog extends BasicDialog {
     return headerPanel;
   }
 
+  /** @inheritDoc */
   @Override
   public Component getContentComponent() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
@@ -110,6 +112,7 @@ public class GameInfoDialog extends BasicDialog {
    * Gets the button panel.
    * @return panel with buttons for this dialog.
    */
+  @Override
   public Component getButtonComponent() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int padding = lafTheme.getPanelPadding();

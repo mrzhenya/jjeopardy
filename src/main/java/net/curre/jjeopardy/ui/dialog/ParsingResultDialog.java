@@ -55,6 +55,7 @@ public class ParsingResultDialog extends BasicDialog {
     this.initializeDialog(result.getResulTitleShort(), icon);
   }
 
+  /** @inheritDoc */
   @Override
   public Component getHeaderComponent() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
@@ -71,6 +72,7 @@ public class ParsingResultDialog extends BasicDialog {
     return headerPanel;
   }
 
+  /** @inheritDoc */
   @Override
   public Component getContentComponent() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
@@ -94,6 +96,7 @@ public class ParsingResultDialog extends BasicDialog {
    * Gets the button panel.
    * @return panel with buttons for this dialog
    */
+  @Override
   public Component getButtonComponent() {
     Registry registry = AppRegistry.getInstance();
     LafTheme lafTheme = registry.getLafService().getCurrentLafTheme();

@@ -18,6 +18,7 @@ package net.curre.jjeopardy.ui.edit;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.event.TabKeyListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.dialog.EditBaseDialog;
@@ -27,12 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
+import javax.swing.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
-import java.awt.Font;
+import java.awt.*;
 
 /**
  * A dialog to edit additional game information such as game name and description.
@@ -136,6 +135,8 @@ public class EditInfoDialog extends EditBaseDialog {
     bodyPanel.add(nameLabel, new TableLayoutConstraints(
         0, 0, 0, 0, TableLayout.FULL, TableLayout.CENTER));
     this.gameNamePane = new JTextPane();
+    TabKeyListener tabKeyListener = new TabKeyListener();
+    this.gameNamePane.addKeyListener(tabKeyListener);
     bodyPanel.add(this.gameNamePane, new TableLayoutConstraints(
         0, 2, 0, 2, TableLayout.FULL, TableLayout.CENTER));
 
@@ -146,6 +147,7 @@ public class EditInfoDialog extends EditBaseDialog {
     bodyPanel.add(descriptionLabel, new TableLayoutConstraints(
         0, 4, 0, 4, TableLayout.FULL, TableLayout.CENTER));
     this.gameDescriptionPane = new JTextPane();
+    this.gameDescriptionPane.addKeyListener(tabKeyListener);
     bodyPanel.add(this.gameDescriptionPane, new TableLayoutConstraints(
         0, 6, 0, 6, TableLayout.FULL, TableLayout.FULL));
 

@@ -93,6 +93,9 @@ public class QuestionPane extends JPanel {
   /** Answer's yes/no buttons panel. */
   private JPanel answerYesNoButtonsPanel;
 
+  /** Reference to the close button on the answer pane. */
+  private JButton closeButton;
+
   /**
    * Ctor.
    * @param questionDialog reference to the question dialog
@@ -273,11 +276,11 @@ public class QuestionPane extends JPanel {
         0, 1, 0, 1, TableLayout.FULL, TableLayout.FULL));
 
     // ******** Close dialog button.
-    JButton closeButton = new JButton();
-    ClickAndKeyAction.createAndAddAction(closeButton, this::handleCloseDialogAction);
-    closeButton.setFont(lafTheme.getButtonFont());
-    closeButton.setText(LocaleService.getString("jj.game.question.buttons.close.name"));
-    answerPanel.add(closeButton, new TableLayoutConstraints(
+    this.closeButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(this.closeButton, this::handleCloseDialogAction);
+    this.closeButton.setFont(lafTheme.getButtonFont());
+    this.closeButton.setText(LocaleService.getString("jj.game.question.buttons.close.name"));
+    answerPanel.add(this.closeButton, new TableLayoutConstraints(
         0, 3, 0, 3, TableLayout.CENTER, TableLayout.CENTER));
 
     return answerPanel;
@@ -407,6 +410,7 @@ public class QuestionPane extends JPanel {
   private void switchToRegularAnswerCard() {
     CardLayout clay = (CardLayout) this.getLayout();
     clay.show(this, CARD_ANSWER_ID);
+    SwingUtilities.invokeLater(() -> QuestionPane.this.closeButton.requestFocus());
   }
 
   /**

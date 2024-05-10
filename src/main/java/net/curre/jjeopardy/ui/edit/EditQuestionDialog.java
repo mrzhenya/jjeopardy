@@ -21,6 +21,7 @@ import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.bean.Category;
 import net.curre.jjeopardy.bean.GameData;
 import net.curre.jjeopardy.bean.Question;
+import net.curre.jjeopardy.event.TabKeyListener;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
@@ -186,6 +187,7 @@ public class EditQuestionDialog extends EditBaseDialog {
 
     // ******* Question points text pane.
     this.pointsPane = new JTextPane();
+    this.pointsPane.addKeyListener(new TabKeyListener());
     UiService.addAlignCenterToTextPane(this.pointsPane);
     this.pointsPane.setText(String.valueOf(this.cell.getQuestion().getPoints()));
     this.pointsPane.setFont(pointsLabelFont);
@@ -222,6 +224,7 @@ public class EditQuestionDialog extends EditBaseDialog {
     Question question = this.cell.getQuestion();
     this.questionPane = new JTextPane();
     this.questionPane.setText(question.getQuestion());
+    this.questionPane.addKeyListener(new TabKeyListener());
     this.questionImagePicker = new ImagePickerPanel(question.getQuestionImage(), this.editTable.getGameBundlePath());
     return createQuestionAnswerPanelHelper(
         "jj.editdialog.question.title", this.questionPane, this.questionImagePicker);
@@ -236,6 +239,7 @@ public class EditQuestionDialog extends EditBaseDialog {
     Question question = this.cell.getQuestion();
     this.answerPane = new JTextPane();
     this.answerPane.setText(question.getAnswer());
+    this.answerPane.addKeyListener(new TabKeyListener());
     this.answerImagePicker = new ImagePickerPanel(question.getAnswerImage(), this.editTable.getGameBundlePath());
     return createQuestionAnswerPanelHelper(
         "jj.editdialog.answer.title", this.answerPane, this.answerImagePicker);

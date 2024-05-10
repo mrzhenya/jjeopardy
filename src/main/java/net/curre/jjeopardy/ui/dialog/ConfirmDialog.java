@@ -90,6 +90,7 @@ public class ConfirmDialog extends BasicDialog {
    * Gets the button panel.
    * @return panel with buttons for this dialog.
    */
+  @Override
   public Component getButtonComponent() {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     final int padding = lafTheme.getPanelPadding();
@@ -112,6 +113,12 @@ public class ConfirmDialog extends BasicDialog {
         2, 0, 2, 0, TableLayout.CENTER, TableLayout.CENTER));
     SwingUtilities.invokeLater(defaultButton::requestFocus);
     return panel;
+  }
+
+  /** @inheritDoc */
+  @Override
+  public void handleEscKeyPress() {
+    this.handleNoAction();
   }
 
   /**

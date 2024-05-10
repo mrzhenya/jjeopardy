@@ -24,13 +24,11 @@ import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 import net.curre.jjeopardy.util.Utilities;
 
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.validation.constraints.NotNull;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 /**
  * Base dialog for editing game information such as question, players, etc.
@@ -48,6 +46,22 @@ public abstract class EditBaseDialog extends JDialog {
     this.setModal(true);
     this.setAlwaysOnTop(true);
     this.setResizable(false);
+  }
+
+  /** Installs the ESC key handler. */
+  @Override
+  protected JRootPane createRootPane() {
+    KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+    JRootPane rootPane = new JRootPane();
+
+    ActionListener actionListener = actionEvent -> EditBaseDialog.this.handleEscKeyPress();
+    rootPane.registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+    return rootPane;
+  }
+
+  /** Handles ESC key press event. */
+  protected void handleEscKeyPress() {
+    this.handleCancelAction();
   }
 
   /**

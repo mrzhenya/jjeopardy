@@ -30,15 +30,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.BorderFactory;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.validation.constraints.NotNull;
 import java.awt.Container;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 /**
@@ -175,6 +173,17 @@ public class EditGameWindow extends JDialog {
     this.editSettingsPanel.enableSaveButton();
   }
 
+  /** Installs the ESC key handler. */
+  @Override
+  protected JRootPane createRootPane() {
+    KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+    JRootPane rootPane = new JRootPane();
+
+    ActionListener actionListener = actionEvent -> EditGameWindow.this.handleWindowClosing();
+    rootPane.registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+    return rootPane;
+  }
+
   /**
    * Saves the game data to the disk. The original game data is also updated.
    */
@@ -232,5 +241,7 @@ public class EditGameWindow extends JDialog {
           LocaleService.getString("jj.editdialog.unsaved.message"),
           this::saveGameData, this::maybeRemoveGameData, this);
     }
+    this.setVisible(false);
+    this.dispose();
   }
 }

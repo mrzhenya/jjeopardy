@@ -18,6 +18,7 @@ package net.curre.jjeopardy.ui.edit;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import net.curre.jjeopardy.event.TabKeyListener;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.ui.dialog.EditBaseDialog;
@@ -27,9 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextPane;
+import javax.swing.*;
 import java.awt.Font;
 
 /**
@@ -61,6 +60,7 @@ public class EditCategoryDialog extends EditBaseDialog {
 
     this.categoryNamePane = new JTextPane();
     this.categoryNamePane.setText(editHeaderCell.getCategoryName());
+    this.categoryNamePane.addKeyListener(new TabKeyListener());
     this.headerLabel = new JLabel();
     this.headerLabel.setText(
         LocaleService.getString("jj.editinfo.category.message",

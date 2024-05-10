@@ -19,6 +19,7 @@ package net.curre.jjeopardy.ui.dialog;
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
+import net.curre.jjeopardy.event.ClosingWindowListener;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.LocaleService;
@@ -28,10 +29,13 @@ import net.curre.jjeopardy.util.Utilities;
 
 import javax.swing.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 /**
  * Represents a baseclass for a basic modal dialog.
@@ -89,6 +93,7 @@ public abstract class BasicDialog extends JDialog {
     this.setTitle(title);
     this.setResizable(false);
     this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+    this.addWindowListener(new ClosingWindowListener(this::closeAndDisposeDialog));
 
     // Setting the dialog layout.
     int columnShift = 0;
@@ -147,15 +152,31 @@ public abstract class BasicDialog extends JDialog {
    */
   public abstract Component getContentComponent();
 
+  /** Handles the ESC key press. */
+  protected void handleEscKeyPress() {
+    this.closeAndDisposeDialog();
+  }
+
+  /** Installs the ESC key handler. */
+  @Override
+  protected JRootPane createRootPane() {
+    KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+    JRootPane rootPane = new JRootPane();
+
+    ActionListener actionListener = actionEvent -> BasicDialog.this.handleEscKeyPress();
+    rootPane.registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+    return rootPane;
+  }
+
   /**
    * Creates default OK button.
    * @return default button
    */
-  protected JButton createDefaultButton(String textOrNull) {
+  protected JButton createDefaultButton(@Null String text) {
     LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
     JButton button = new JButton();
     ClickAndKeyAction.createAndAddAction(button, this::closeAndDisposeDialog);
-    button.setText(textOrNull == null ? LocaleService.getString("jj.dialog.button.ok") : textOrNull);
+    button.setText(text == null ? LocaleService.getString("jj.dialog.button.ok") : text);
     button.setFont(lafTheme.getButtonFont());
     return button;
   }
@@ -194,7 +215,6 @@ public abstract class BasicDialog extends JDialog {
     int textAreaHeight = HELPER_TEXT_PANE.getPreferredSize().height + TEXT_BOTTOM_PADDING;
 
     // Determine the approximate minimum height of the text pane.
-//    int textAreaHeight = UiService.getHeightOfTextArea(this, font, message, TEXT_COLUMN_WIDTH, 3);
     if (textAreaHeight > MAX_TEXT_AREA_HEIGHT) {
       textAreaHeight = MAX_TEXT_AREA_HEIGHT;
     }
