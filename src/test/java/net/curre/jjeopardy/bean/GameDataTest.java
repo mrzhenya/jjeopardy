@@ -64,6 +64,20 @@ public class GameDataTest {
     assertFalse("Should not be enough players", data.hasEnoughPlayers());
   }
 
+  /** Tests the equals method. */
+  @Test
+  public void testEquals() {
+    GameData data1 = new GameData("TestFilePath", "TestDirPath", false);
+    assertEquals("Game datas should be equal", data1, data1);
+    GameData data2 = new GameData("TestFilePath", "TestDirPath", false);
+    assertEquals("Game datas should be equal", data1, data2);
+
+    GameData data3 = new GameData("TestFilePath_NOT", "TestDirPath", false);
+    assertNotEquals("Game datas should not be equal", data1, data3);
+    GameData data4 = new GameData("TestFilePath", "TestDirPath_NOT", false);
+    assertNotEquals("Game datas should not be equal", data1, data4);
+  }
+
   /** Tests createCopy. */
   @Test
   public void testCreateCopy() {

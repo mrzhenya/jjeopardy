@@ -130,7 +130,7 @@ public class ParsingResultDialog extends BasicDialog {
   private void addGameToLibrary() {
     Registry registry = AppRegistry.getInstance();
     registry.getGameDataService().addGameToLibrary(this.result.getGameData());
-    registry.getLandingUi().updateLibrary();
+    registry.getLandingUi().updateLibrary(null);
     this.setVisible(false);
     this.dispose();
   }

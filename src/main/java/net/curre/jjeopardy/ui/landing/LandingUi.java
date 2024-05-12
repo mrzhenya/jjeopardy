@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -185,8 +186,9 @@ public class LandingUi extends JFrame {
 
   /**
    * Updates game library UI after new games are added.
+   * @param gameData a single game data to update the inner UI for (optional)
    */
-  public void updateLibrary() {
+  public void updateLibrary(@Null GameData gameData) {
     List<GameData> games = AppRegistry.getInstance().getGameDataService().getLibraryGames();
 
     // First, check if any items should be removed.
@@ -215,6 +217,17 @@ public class LandingUi extends JFrame {
       LibraryGameItem item = (LibraryGameItem) this.libraryPanel.getComponent(ind);
       if (!item.gameEquals(game)) {
         this.libraryPanel.add(new LibraryGameItem(game), ind);
+      }
+    }
+
+    // If a specific game item needs to be updated, it's updated here.
+    // This is the case when game properties were edited and need to be refreshed on the UI.
+    if (gameData != null) {
+      for (Component component : this.libraryPanel.getComponents()) {
+        LibraryGameItem item = (LibraryGameItem) component;
+        if (item.gameEquals(gameData)) {
+          item.updateContent();
+        }
       }
     }
 

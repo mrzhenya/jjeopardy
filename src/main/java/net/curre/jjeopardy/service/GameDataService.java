@@ -442,7 +442,7 @@ public class GameDataService {
     XmlFileUtilities.createGameFile(gameData, destFilePath);
     gameData.changeToNativeData();
     updateLibraryGames(gameData);
-    AppRegistry.getInstance().getLandingUi().updateLibrary();
+    AppRegistry.getInstance().getLandingUi().updateLibrary(null);
 
     return imageUrls;
   }

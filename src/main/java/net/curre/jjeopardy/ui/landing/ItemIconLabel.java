@@ -21,6 +21,7 @@ import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.ui.laf.theme.LafTheme;
 
 import javax.swing.JLabel;
+import javax.validation.constraints.Null;
 import java.awt.Font;
 
 /**
@@ -30,21 +31,44 @@ import java.awt.Font;
  */
 public class ItemIconLabel extends JLabel {
 
+  /** Default ctor. */
+  public ItemIconLabel() {
+    LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
+    Font font = lafTheme.getDialogTextFont();
+    this.setFont(font);
+  }
+
   /**
    * Ctor.
-   * @param textOrNull text for the label or null if no text is present
+   * @param text text for the label or null if no text is present
    * @param icon icon to use
    * @param tooltip tooltip text
    */
-  public ItemIconLabel(String textOrNull, ImageEnum icon, String tooltip) {
-    if (textOrNull != null) {
-      LafTheme lafTheme = AppRegistry.getInstance().getLafService().getCurrentLafTheme();
-      Font font = lafTheme.getDialogTextFont();
-      this.setFont(font);
-      this.setText(textOrNull);
-    }
+  public ItemIconLabel(@Null String text, ImageEnum icon, String tooltip) {
+    this();
+    this.updateContent(text, icon, tooltip);
+  }
 
-    this.setIcon(icon.toImageIcon());
+  /**
+   * Updates the UI.
+   * @param text text for the label or null if no text is present
+   * @param imageEnum image enum
+   * @param tooltip tooltip text
+   */
+  public void updateContent(String text, ImageEnum imageEnum, String tooltip) {
+    if (text != null) {
+      this.setText(text);
+    }
+    this.setIcon(imageEnum.toImageIcon());
     this.setToolTipText(tooltip);
+  }
+
+  /**
+   * Clears the UI of this item label.
+   */
+  public void clearContent() {
+    this.setText(null);
+    this.setIcon(null);
+    this.setToolTipText(null);
   }
 }

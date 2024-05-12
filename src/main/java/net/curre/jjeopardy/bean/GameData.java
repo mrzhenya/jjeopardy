@@ -108,6 +108,17 @@ public class GameData implements Comparable<GameData> {
     this.bonusQuestions = new ArrayList<>();
   }
 
+  /** @inheritDoc */
+  @Override
+  public boolean equals(Object other) {
+    if (!(other instanceof GameData)) {
+      return false;
+    }
+    GameData otherData = (GameData) other;
+    return StringUtils.equals(this.filePath, otherData.filePath) &&
+        StringUtils.equals(this.bundlePath, otherData.bundlePath);
+  }
+
   /**
    * Creates a copy/clone of this game data.
    * @return a new game data object identical to this game data

@@ -200,7 +200,7 @@ public class EditGameWindow extends JDialog {
 
     // If the game is in the library, update the library.
     if (gameService.isLibraryGame(this.gameData)) {
-      AppRegistry.getInstance().getLandingUi().updateLibrary();
+      AppRegistry.getInstance().getLandingUi().updateLibrary(this.gameData);
     }
   }
 
