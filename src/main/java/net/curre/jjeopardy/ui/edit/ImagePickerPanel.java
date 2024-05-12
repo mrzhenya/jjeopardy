@@ -37,6 +37,8 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 import javax.validation.constraints.NotNull;
 import java.awt.Dimension;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -156,7 +158,8 @@ public class ImagePickerPanel extends JPanel {
     if (imageFilepath != null) {
       this.imageInputField.setText(imageFilepath);
     }
-    this.imageInputField.addKeyListener(new ImageInputFieldKeyListener(this));
+    this.imageInputField.addKeyListener(new ImageInputFieldKeyListener());
+    this.imageInputField.addFocusListener(new InputFieldFocusListener());
     inputPanel.add(this.imageInputField, new TableLayoutConstraints(
         3, 1, 3, 1, TableLayout.FULL, TableLayout.CENTER));
 
@@ -222,7 +225,7 @@ public class ImagePickerPanel extends JPanel {
   }
 
   /**
-   * Tried to load a new image file into the dialog.
+   * Tries to load a new image file into the dialog.
    * @param filePath file path to load or null to clear the image
    */
   private void loadNewImageFile(String filePath) {
@@ -280,18 +283,7 @@ public class ImagePickerPanel extends JPanel {
   /**
    * Key listener to handle Enter press on the image filename input field.
    */
-  private static class ImageInputFieldKeyListener implements KeyListener {
-
-    /** Reference to the image picker panel. */
-    private final ImagePickerPanel imagePickerPanel;
-
-    /**
-     * Ctor.
-     * @param imagePickerPanel reference to the image picker panel
-     */
-    public ImageInputFieldKeyListener(ImagePickerPanel imagePickerPanel) {
-      this.imagePickerPanel = imagePickerPanel;
-    }
+  private class ImageInputFieldKeyListener implements KeyListener {
 
     /** Does nothing. */
     @Override
@@ -304,13 +296,28 @@ public class ImagePickerPanel extends JPanel {
     @Override
     public void keyPressed(@NotNull KeyEvent e) {
       if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-        String filePath = StringUtils.trimToNull(this.imagePickerPanel.imageInputField.getText());
-        this.imagePickerPanel.loadNewImageFile(filePath);
+        String filePath = StringUtils.trimToNull(ImagePickerPanel.this.imageInputField.getText());
+        ImagePickerPanel.this.loadNewImageFile(filePath);
       }
     }
 
     /** Does nothing. */
     @Override
     public void keyReleased(KeyEvent e) {}
+  }
+
+  /** Focus listener to update the image label on input field focus lost event. */
+  private class InputFieldFocusListener implements FocusListener {
+
+    /** Does nothing. */
+    @Override
+    public void focusGained(FocusEvent e) {}
+
+    /** @inheritDoc */
+    @Override
+    public void focusLost(FocusEvent e) {
+      String filePath = StringUtils.trimToNull(ImagePickerPanel.this.imageInputField.getText());
+      ImagePickerPanel.this.loadNewImageFile(filePath);
+    }
   }
 }
