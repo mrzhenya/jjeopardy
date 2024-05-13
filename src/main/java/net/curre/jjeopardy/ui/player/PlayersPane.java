@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.validation.constraints.NotNull;
 import java.awt.Component;
 import java.util.ArrayList;
@@ -40,16 +41,20 @@ public class PlayersPane extends JPanel {
   /** Private class logger. */
   private static final Logger logger = LogManager.getLogger(PlayersPane.class.getName());
 
+  /** Reference to the parent player dialog. */
+  private final PlayerDialog playerDialog;
+
   /** Container (ONLY!) for the player item components. */
   private final JPanel containerPane;
 
   /** Ctor. */
-  public PlayersPane() {
+  public PlayersPane(PlayerDialog playerDialog) {
     super(new TableLayout(new double[][] {
       {10, TableLayout.FILL, 10},  // columns
       {15, TableLayout.PREFERRED, TableLayout.FILL, 10} // rows
     }));
 
+    this.playerDialog = playerDialog;
     this.containerPane = new JPanel();
     this.containerPane.setLayout(new BoxLayout(this.containerPane, BoxLayout.Y_AXIS));
     this.add(this.containerPane, new TableLayoutConstraints(
@@ -85,9 +90,11 @@ public class PlayersPane extends JPanel {
       return;
     }
 
-    this.containerPane.add(new PlayerItem(playerNameOrNull, nextPlayerIndex, this));
+    PlayerItem playerItem = new PlayerItem(playerNameOrNull, nextPlayerIndex, this);
+    this.containerPane.add(playerItem);
     this.updateButtonState();
     this.revalidate();
+    SwingUtilities.invokeLater(playerItem::focusPlayerInputField);
   }
 
   /**
@@ -103,6 +110,7 @@ public class PlayersPane extends JPanel {
     }
 
     this.updateButtonState();
+    SwingUtilities.invokeLater(this.playerDialog::focusSaveButton);
   }
 
   /**
@@ -165,6 +173,11 @@ public class PlayersPane extends JPanel {
     this.updateButtonState();
   }
 
+  /** Requests the focus to be transferred to the first player's input field. */
+  protected void focusFirstPlayerInputField() {
+    ((PlayerItem) this.containerPane.getComponent(0)).focusPlayerInputField();
+  }
+
   /**
    * Initializes the players pane with default empty player lines.
    */
@@ -172,6 +185,7 @@ public class PlayersPane extends JPanel {
     for (int ind = 0; ind < JjDefaults.MIN_NUMBER_OF_PLAYERS; ind++) {
       this.addNewPlayerItem(null);
     }
+    SwingUtilities.invokeLater(this::focusFirstPlayerInputField);
   }
 
   /**

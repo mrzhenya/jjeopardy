@@ -30,7 +30,6 @@ import javax.swing.*;
 import javax.validation.constraints.NotNull;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.List;
@@ -50,6 +49,9 @@ public class PlayerDialog extends JDialog {
 
   /** Code to run when players have been updated (on a valid Save button action). */
   private final Runnable updatePlayersFn;
+
+  /** Reference to the save button. */
+  private JButton saveButton;
 
   /**
    * Ctor.
@@ -77,6 +79,7 @@ public class PlayerDialog extends JDialog {
   public void showDialog(@NotNull List<String> playerNames) {
     this.playersPane.updatePlayersPane(playerNames);
     super.setVisible(true);
+    SwingUtilities.invokeLater(() -> this.playersPane.focusFirstPlayerInputField());
   }
 
   /**
@@ -99,6 +102,11 @@ public class PlayerDialog extends JDialog {
     return rootPane;
   }
 
+  /** Requests focus to be transferred to the save button. */
+  protected void focusSaveButton() {
+    this.saveButton.requestFocus();
+  }
+
   /**
    * Initializes the dialog's UI components.
    */
@@ -118,7 +126,7 @@ public class PlayerDialog extends JDialog {
       1, 1, 1, 1, TableLayout.CENTER, TableLayout.CENTER));
 
     // ******* Players pane.
-    this.playersPane = new PlayersPane();
+    this.playersPane = new PlayersPane(this);
     this.add(this.playersPane, new TableLayoutConstraints(
       1, 3, 1, 3, TableLayout.CENTER, TableLayout.CENTER));
 
@@ -131,11 +139,11 @@ public class PlayerDialog extends JDialog {
     buttonPanel.add(deleteAllButton);
 
     // ******* Save button.
-    JButton saveButton = new JButton();
-    ClickAndKeyAction.createAndAddAction(saveButton, this::handleSavePlayersAction);
-    saveButton.setFont(font);
-    saveButton.setText(LocaleService.getString("jj.dialog.button.save"));
-    buttonPanel.add(saveButton);
+    this.saveButton = new JButton();
+    ClickAndKeyAction.createAndAddAction(this.saveButton, this::handleSavePlayersAction);
+    this.saveButton.setFont(font);
+    this.saveButton.setText(LocaleService.getString("jj.dialog.button.save"));
+    buttonPanel.add(this.saveButton);
 
     this.add(buttonPanel, new TableLayoutConstraints(
       1, 5, 1, 5, TableLayout.CENTER, TableLayout.CENTER));

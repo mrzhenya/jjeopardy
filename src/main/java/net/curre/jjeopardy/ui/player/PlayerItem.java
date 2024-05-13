@@ -18,7 +18,6 @@ package net.curre.jjeopardy.ui.player;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
-import net.curre.jjeopardy.App;
 import net.curre.jjeopardy.event.ClickAndKeyAction;
 import net.curre.jjeopardy.service.LocaleService;
 import org.apache.logging.log4j.LogManager;
@@ -162,5 +161,10 @@ class PlayerItem extends JPanel {
   protected void handleRemovePlayerAction() {
     logger.info("Removing player.");
     this.playersPane.removePlayerItem(this.playerIndex);
+  }
+
+  /** Requests the focus to be transferred to the test input field. */
+  protected void focusPlayerInputField() {
+    this.inputField.requestFocus();
   }
 }
