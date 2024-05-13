@@ -20,6 +20,7 @@ import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import net.curre.jjeopardy.bean.Player;
 import net.curre.jjeopardy.bean.Question;
+import net.curre.jjeopardy.event.ClosingWindowListener;
 import net.curre.jjeopardy.images.ImageEnum;
 import net.curre.jjeopardy.service.AppRegistry;
 import net.curre.jjeopardy.service.GameDataService;
@@ -80,7 +81,7 @@ public class QuestionDialog extends JDialog {
   /** Current player index (used for bonus questions). */
   private int currBonusPlayerIndex;
 
-  /** List of current bonus questions (initialized when bonus questions session starts. */
+  /** List of current bonus questions (initialized when bonus questions session starts). */
   private List<Question> currBonusQuestions;
 
   /** Ctor. */
@@ -92,6 +93,7 @@ public class QuestionDialog extends JDialog {
 
     this.setResizable(false);
     this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+    this.addWindowListener(new ClosingWindowListener(this::handleWindowClosing));
 
     this.initComponents();
 
@@ -131,10 +133,9 @@ public class QuestionDialog extends JDialog {
   }
 
   /**
-   * Hides this dialog.
+   * Resets the state of the question dialog and closes it.
    */
-  public void hideQuestionDialog() {
-    // TODO - why there are two ways to hide the dialog?
+  public void resetAndCloseQuestionDialog() {
     this.questionPane.clearTextAndImageLabels();
     this.questionPane.showAnswer();
     this.titlePanel.reset();
@@ -214,6 +215,13 @@ public class QuestionDialog extends JDialog {
     this.timeLabel.stopTimer();
   }
 
+  /** Handles question dialog closing event. */
+  private void handleWindowClosing() {
+    if (this.questionPane.isAnswerCardShown()) {
+      this.resetAndCloseQuestionDialog();
+    }
+  }
+
   /**
    * Asks a bonus question. Stops if there are no more questions to offer
    * or if there are no more non-asked players to ask.
@@ -278,7 +286,6 @@ public class QuestionDialog extends JDialog {
     timerPanel.setLayout(new TableLayout(new double[][] {
       {TableLayout.FILL, TableLayout.PREFERRED, TableLayout.FILL}, // columns
       {TableLayout.FILL, TableLayout.PREFERRED, 10, TableLayout.PREFERRED, TableLayout.FILL}})); // rows
-
 
     // Timer label.
     timeLabel.setText("00");

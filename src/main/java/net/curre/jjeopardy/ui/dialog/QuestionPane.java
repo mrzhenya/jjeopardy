@@ -54,6 +54,9 @@ public class QuestionPane extends JPanel {
   /** String unique ID to use with CardLayout for the bonus answer card. */
   private static final String CARD_BONUS_ANSWER_ID = "bonusAnswer";
 
+  /** Identifies currently displayed card. */
+  private String currentCard;
+
   /** Vertical padding for the text field (e.g. where question or answer if displayed). */
   private static final int TEXT_PANE_V_PADDING = 40;
 
@@ -109,6 +112,7 @@ public class QuestionPane extends JPanel {
     // The question card.
     JPanel questionPanel = this.createQuestionPanel();
     this.add(questionPanel, CARD_QUESTION_ID);
+    this.currentCard = CARD_QUESTION_ID;
 
     // The bonus into panel.
     JPanel bonusQuestionPanel = this.createBonusIntroPanel();
@@ -147,6 +151,7 @@ public class QuestionPane extends JPanel {
     }
     CardLayout clay = (CardLayout) this.getLayout();
     clay.show(this, CARD_QUESTION_ID);
+    this.currentCard = CARD_QUESTION_ID;
     SwingUtilities.invokeLater(this.questionDialog::pack);
   }
 
@@ -157,6 +162,7 @@ public class QuestionPane extends JPanel {
     this.questionDialog.pack();
     CardLayout clay = (CardLayout) this.getLayout();
     clay.show(this, CARD_BONUS_INTRO_ID);
+    this.currentCard = CARD_BONUS_INTRO_ID;
   }
 
   /**
@@ -185,6 +191,14 @@ public class QuestionPane extends JPanel {
     this.answerImageLabel.setPreferredSize(new Dimension(0, 0));
     this.bonusAnswerLabel.setText("");
     this.bonusAnswerImageLabel.setIcon(null);
+  }
+
+  /**
+   * Determines if answer is shown.
+   * @return true if the current view displays the answer; false if otherwise
+   */
+  protected boolean isAnswerCardShown() {
+    return this.currentCard.equals(CARD_ANSWER_ID);
   }
 
   /**
@@ -392,7 +406,7 @@ public class QuestionPane extends JPanel {
    * Handles closing of the question dialog.
    */
   private void handleCloseDialogAction() {
-    this.questionDialog.hideQuestionDialog();
+    this.questionDialog.resetAndCloseQuestionDialog();
   }
 
   /**
@@ -410,6 +424,7 @@ public class QuestionPane extends JPanel {
   private void switchToRegularAnswerCard() {
     CardLayout clay = (CardLayout) this.getLayout();
     clay.show(this, CARD_ANSWER_ID);
+    this.currentCard = CARD_ANSWER_ID;
     SwingUtilities.invokeLater(() -> QuestionPane.this.closeButton.requestFocus());
   }
 
@@ -419,6 +434,7 @@ public class QuestionPane extends JPanel {
   private void switchToBonusAnswerCard() {
     CardLayout clay = (CardLayout) this.getLayout();
     clay.show(this, CARD_BONUS_ANSWER_ID);
+    this.currentCard = CARD_BONUS_ANSWER_ID;
   }
 
   /**
