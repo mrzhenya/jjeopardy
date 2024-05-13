@@ -1,0 +1,214 @@
+This is a basic manual test plan that helps to verify most of the
+intrinsic functionality of the game.
+
+
+Play game functionality
+============================================================
+
+1. Play a simple game
+ - from the landing view Load game file - valid single xml game - src/test/resources/valid-data/default.xml
+   Expect: the game is loaded successfully and the game name shows on the landing view
+ - choose to Add players (add two and save)
+   Expect: name of the players are displayed on the landing view
+ - start the game
+   Expect: the game window to be loaded
+ - select questions and answer them in different ways
+   Expect: the players scores to be updated accordingly
+ - When all questions are answered, click on End Game
+   Expect: the final dialog is displayed showing the winning player
+
+2. Verify answering questions functionality
+ - start to play a game
+ - when answering a question choose add points to a single player
+   Expect: the time stops, the player is added points, and the answer is shown
+ - when answering a question choose to wait until the time expires
+   Expect: the time goes to zero and the dialog remains to be open
+ - when answering a question choose to subtract points from more then 1 player
+   Expect: points subtracted from multiple players
+ - when answering a question first choose to subtract points and then add
+   Expect: both subtraction and addition to happen
+ - when answering a question, click Show answer
+   Expect: the time stop and the answer is shown
+ - try closing the dialog via the close window button
+   Expect: the dialog should only close when the answer is displayed
+
+3. Verify the game reset
+ - start playing a game
+ - answer a few questions to make some players change score
+ - choose to Restart the Game (click the button)
+   Expect: the game to be reset (scores go to zero and all questions come up as unanswered)
+
+
+Test the player dialog
+============================================================
+
+1. Choose to update the players
+Expect: the player dialog to open with the existing players (or empty if no players are set)
+
+2. Add players, keep adding until the plus button disappears
+Expect: able to add up to 6 players and no more
+
+3. Remove players, keep removing until the minus button disappears
+Expect: able to remove players until two players remain
+
+4. Close the players dialog by clicking X and open it again
+ - add more players, and close the dialog
+Expect: the new players should not be saved
+
+5. Open the players dialog again and choose to Delete All players
+Expect: the dialog to close and the players are erased from the landing view
+
+6. Open the players dialog, add many player with very long names, save
+Expect: the players names wrap to the next lines and not cut off
+
+7. Open the players dialog, enter only two players, and the rest make empty, click Save
+Expect: only two players get saved
+
+8. Open the players dialog, enter more players and choose to close X without saving
+Expect: no new players to be saved
+
+
+Load different games and view them in the edit window
+============================================================
+
+1. Load a new game, and choose to print it (in the Game menu)
+Expect: the game is successfully displayed in the edit window
+
+2. Continue loading games and viewing them in the edit window
+Expect: no errors
+
+3. On some game choose to add them to the library
+Expect: game parsing dialog to show details about the game and the game is added to the library
+
+4. Choose to Add to the library that's already been added
+Expect: the Add to library button to be disabled
+
+
+Test library games
+============================================================
+
+1. Open the Library and hover over the line items and their icons
+Expect: line items to highlight and hover tooltips to appear accordingly (on every icon)
+
+2. Choose to Show Game Directory (click on the folder icon)
+Expect: file browser to open in the game bundle directory
+
+3. Choose to delete a game, and then choose No
+Expect: game not to be deleted
+
+4. Choose to delete a game and confirm it
+Expect: the game to be removed from the library
+
+5. Choose to load a game
+Expect: the game to be displayer on the landing view
+
+6. Choose to edit a game
+Expect: the game to be loaded in the edit game window
+
+
+Test the edit game window
+============================================================
+
+1. Choose to edit a library game
+Expect: the game to be loaded to the edit game window
+
+2. In the edit game window, choose to move categories (table header arrow buttons)
+Expect: columns/categories to be moved appropriately
+
+3. Choose to remove categories (click X on the table headers)
+Expect: columns/categories are deleted as appropriate
+
+4. Choose to update the category name by clicking on a header field
+Expect: the header/category name to be updates
+
+5. Choose to move questions up and down (arrow buttons on the questions)
+Expect: the questions to be moved
+
+6. Choose to update questions by clicking on a question
+6.1 update text fields
+6.2 update images with a local image path (using a file chooser dialog)
+6.3 update images with a local image path by pasting a path
+6.4 update images with an http path
+6.5 update the points value (points should be updated on all questions in the same row)
+Expect: the question is updated as appropriate
+
+7. Choose to update additional game information (a checkbox in the Edit settings menu group)
+Expect: game name and description to be updated as appropriate
+
+8. Check the library game items are updated after a game is edited in the edit game window
+ - choose to edit a game in the library
+ - change name, description, number of questions and categories, etc.
+ - save the game and check the corresponding library game item
+Expect: the library game item for the edited game to be updated accordingly
+
+9. Add or modify players for a game
+ - choose to edit a game in the library
+ - choose to edit players (checkbox in the Edit settings menu group)
+ - save the changes
+Expect: the players to be updated on the game (on the library game item)
+
+10. Test the game data is saved in memory and on disc after editing a game
+ - choose to edit a game in the library
+ - make a number of edits
+ - save and close the edit window
+ - choose to edit a game
+ - verify the changes
+ - close the edit window and the app
+ - open the app and choose to edit the same game
+ - verify the changes
+Expect: the changes to persist after the edit window close and app restart
+
+
+Verify the print functionality
+============================================================
+
+1. Printing answers via the settings menu
+ - open the app and load a game (via the Load button)
+ - choose to print the answers via the Print Answers settings menu
+ - click Print in the Print setting menu group
+ - choose appropriate print settings
+Expect: the edit window defaults to displaying answers only and the game answers sheet to be printed
+
+2. Printing full game
+ - open the app and choose to edit a game in the library
+ - choose to print the game (Print button in the Print settings menu group)
+ - choose appropriate print settings
+Expect: the edit window defaults to displaying questions and answers; and the full game information to be printed
+
+3. Verify other print settings work
+ - choose different headers and footers
+ - choose to print w/o header or/and footer
+ - choose to print questions only
+ - choose portrait and landscape orientation
+ - choose to print a very large game (that spans multiple pages)
+ - choose to print a game with images
+Expect: all to work perfectly
+
+
+Test game settings
+============================================================
+
+1. Theme settings
+ - change the theme settings and verify different views of the game
+   Expect: things to look OK :)
+
+2. Sound settings
+ - change the sound settings and verify it works
+   Expect: intro sound only to play when All sounds are enabled
+   Expect: no sound when the No sound is selected
+   Expect: only sound effects during the game are player when Only sound effects are enabled
+
+ 3. Locale settings
+ - change the Language setting to a different one
+   Expect: a dialog to be shown to restart the game
+ - play the game, edit game, navigate through the UI
+   Expect: the new language strings to be shown properly
+
+4. About menu
+ - click the About menu item
+   Expect: the about dialog to be shown
+
+5. Exit
+ - click the Exit menu item
+   Expect: the game terminate
+
