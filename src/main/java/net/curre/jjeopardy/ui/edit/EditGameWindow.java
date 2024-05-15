@@ -26,6 +26,7 @@ import net.curre.jjeopardy.service.GameDataService;
 import net.curre.jjeopardy.service.LocaleService;
 import net.curre.jjeopardy.service.Registry;
 import net.curre.jjeopardy.service.SettingsService;
+import net.curre.jjeopardy.ui.dialog.ProgressDialog;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,7 +51,7 @@ public class EditGameWindow extends JDialog {
   /** Private class logger. */
   private static final Logger logger = LogManager.getLogger(EditGameWindow.class.getName());
 
-  /** Reference to the game data we are editing or printing (a copu of the original). */
+  /** Reference to the game data we are editing or printing (a copy of the original). */
   private final GameData gameData;
 
   /** Reference to the original game data we are editing or printing. */
@@ -191,17 +192,23 @@ public class EditGameWindow extends JDialog {
     logger.info("Saving game data");
     this.dataChanged = false;
     GameDataService gameService = AppRegistry.getInstance().getGameDataService();
-    if (this.gameData.isGameDataNew()) {
+    boolean dataNew = this.gameData.isGameDataNew();
+    if (dataNew) {
       logger.info("Adding a new game to the library");
       gameService.updateLibraryGames(this.gameData);
     }
-    gameService.saveGameData(this.gameData, this);
-    this.originalGameData.copyFrom(this.gameData);
+    ProgressDialog progressDialog = new ProgressDialog(this,
+        LocaleService.getString("jj.dialog.save.title"),
+        LocaleService.getString("jj.dialog.save.header"));
+    progressDialog.start(() -> {
+      gameService.saveGameData(this.gameData, progressDialog);
+      this.originalGameData.copyFrom(this.gameData);
 
-    // If the game is in the library, update the library.
-    if (gameService.isLibraryGame(this.gameData)) {
-      AppRegistry.getInstance().getLandingUi().updateLibrary(this.gameData);
-    }
+      // If the game is in the library, update the library.
+      if (!dataNew && gameService.isLibraryGame(this.gameData)) {
+        AppRegistry.getInstance().getLandingUi().updateLibrary(this.gameData);
+      }
+    });
   }
 
   /**
@@ -211,7 +218,7 @@ public class EditGameWindow extends JDialog {
    */
   protected void maybeRemoveGameData() {
     if (this.gameData.isGameDataNew()) {
-      logger.info("Cleaning up unneeded new game: " + this.gameData.getBundlePath());
+      logger.info("Cleaning up unneeded new game: {}", this.gameData.getBundlePath());
         try {
             FileUtils.deleteDirectory(new File(this.gameData.getBundlePath()));
         } catch (Exception e) {

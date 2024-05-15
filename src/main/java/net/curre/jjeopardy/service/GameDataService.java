@@ -22,7 +22,6 @@ import net.curre.jjeopardy.bean.Question;
 import net.curre.jjeopardy.games.DefaultGames;
 import net.curre.jjeopardy.images.ImageUtilities;
 import net.curre.jjeopardy.ui.dialog.ProgressDialog;
-import net.curre.jjeopardy.ui.edit.EditGameWindow;
 import net.curre.jjeopardy.util.JjDefaults;
 import net.curre.jjeopardy.util.XmlFileUtilities;
 import org.apache.commons.io.FileUtils;
@@ -222,11 +221,11 @@ public class GameDataService {
   public static void copyDefaultGamesToLibraryIfNeeded() {
     Path gamesDir = Paths.get(getGameLibraryDirectoryPath());
     if (Files.exists(gamesDir)) {
-      logger.info("It appears that the library games were copied already to: " + gamesDir);
+      logger.info("It appears that the library games were copied already to: {}", gamesDir);
       // If the games directory exists, assume the files have been copied there already.
       return;
     }
-    logger.info("Copying the library games to: " + gamesDir);
+    logger.info("Copying the library games to: {}", gamesDir);
     try {
       gamesDir.toFile().mkdir();
       DefaultGames.copyDefaultLibraryGames(gamesDir);
@@ -312,7 +311,7 @@ public class GameDataService {
   public void addGameToLibrary(@NotNull GameData gameData) {
     if (!gameData.isGameDataUsable()) {
       // Don't add unusable games.
-      logger.warn("Trying to add unusable game to the library: " + gameData.getFilePath());
+      logger.warn("Trying to add unusable game to the library: {}", gameData.getFilePath());
     }
     try {
       if (gameData.isNativeData()) {
@@ -342,7 +341,7 @@ public class GameDataService {
       // in the library folder and copy the game file there.
       File bundlePath = createBundlePathFromGameFile(gameData.getFilePath());
       if (bundlePath.exists()) {
-        logger.error("File copy error: bundle directory already exists: " + bundlePath.getAbsolutePath());
+        logger.error("File copy error: bundle directory already exists: {}", bundlePath.getAbsolutePath());
         return;
       }
       bundlePath.mkdir();
@@ -360,7 +359,7 @@ public class GameDataService {
       File bundleDir = new File(gameData.getBundlePath());
       File destDir = new File(libGamesDir.toString() + File.separatorChar + bundleDir.getName());
       if (destDir.exists()) {
-        logger.error("Bundle copy error: bundle directory already exists: " + destDir.getAbsolutePath());
+        logger.error("Bundle copy error: bundle directory already exists: {}", destDir.getAbsolutePath());
       } else {
         // Create a bundle directory in the library folder and copy all content there.
         destDir.mkdir();
@@ -489,7 +488,7 @@ public class GameDataService {
       // Try to parse a game-native bundle directory.
       File[] files = Objects.requireNonNull(gameFile.listFiles());
       if (files.length == 0) {
-        logger.warn("No files are found in bundle directory: " + fileName);
+        logger.warn("No files are found in bundle directory: {}", fileName);
       }
       for (File bundleFile : files) {
         if (StringUtils.endsWithIgnoreCase(bundleFile.getName(), ".xml")) {
@@ -504,7 +503,7 @@ public class GameDataService {
     } else if (StringUtils.endsWithIgnoreCase(gameFile.getName(), ".html")) {
       return this.htmlParser.parseJeopardyLabsHtmlFile(fileName);
     } else {
-      logger.warn("Unsupported game file extension, ignoring file: " + fileName);
+      logger.warn("Unsupported game file extension, ignoring file: {}", fileName);
     }
 
     return new GameData(fileName, null, false);
@@ -513,31 +512,26 @@ public class GameDataService {
   /**
    * Saves the passed game in the game file it corresponds to.
    * @param gameData game data to save
-   * @param editGameWindow reference to the parent game window
+   * @param progressDialog reference to the progress dialog
    */
-  public void saveGameData(GameData gameData, EditGameWindow editGameWindow) {
+  public void saveGameData(GameData gameData, ProgressDialog progressDialog) {
     assert(gameData.isNativeData());
-    ProgressDialog progressDialog = new ProgressDialog(editGameWindow,
-        LocaleService.getString("jj.dialog.save.title"),
-        LocaleService.getString("jj.dialog.save.header"));
-    progressDialog.start(() -> {
-      List<String> failedUrls = null;
-      // If game bundle is present, copy image files to the game bundle directory.
-      if (gameData.getBundlePath() != null) {
-        // Download the image files if any and update the image filename on the game data.
-        failedUrls = ImageUtilities.downloadImagesAndUpdatePaths(gameData, progressDialog);
-        ImageUtilities.copyImageFilesToGameBundle(gameData);
-      }
-      // Now, overwrite the game file with the updated game data.
-      try {
-        XmlFileUtilities.createGameFile(gameData, gameData.getFilePath());
-        gameData.setGameDataNotNew();
-      } catch (IOException e) {
-        logger.error("Unable to create a game file " + gameData.getFilePath());
-      }
-      progressDialog.completeAndFinish();
-      maybeShowFailedDownloadDialog(failedUrls);
-    });
+    List<String> failedUrls = null;
+    // If game bundle is present, copy image files to the game bundle directory.
+    if (gameData.getBundlePath() != null) {
+      // Download the image files if any and update the image filename on the game data.
+      failedUrls = ImageUtilities.downloadImagesAndUpdatePaths(gameData, progressDialog);
+      ImageUtilities.copyImageFilesToGameBundle(gameData);
+    }
+    // Now, overwrite the game file with the updated game data.
+    try {
+      XmlFileUtilities.createGameFile(gameData, gameData.getFilePath());
+      gameData.setGameDataNotNew();
+    } catch (IOException e) {
+      logger.error("Unable to create a game file {}", gameData.getFilePath());
+    }
+    progressDialog.completeAndFinish();
+    maybeShowFailedDownloadDialog(failedUrls);
   }
 
   /**
