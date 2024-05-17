@@ -195,7 +195,7 @@ public class EditGameWindow extends JDialog {
     boolean dataNew = this.gameData.isGameDataNew();
     if (dataNew) {
       logger.info("Adding a new game to the library");
-      gameService.updateLibraryGames(this.gameData);
+      gameService.addGameToLibrary(this.gameData);
     }
     ProgressDialog progressDialog = new ProgressDialog(this,
         LocaleService.getString("jj.dialog.save.title"),
@@ -205,7 +205,7 @@ public class EditGameWindow extends JDialog {
       this.originalGameData.copyFrom(this.gameData);
 
       // If the game is in the library, update the library.
-      if (!dataNew && gameService.isLibraryGame(this.gameData)) {
+      if (gameService.isLibraryGame(this.gameData)) {
         AppRegistry.getInstance().getLandingUi().updateLibrary(this.gameData);
       }
     });

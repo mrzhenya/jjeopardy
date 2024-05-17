@@ -227,6 +227,7 @@ public class LandingUi extends JFrame {
         LibraryGameItem item = (LibraryGameItem) component;
         if (item.gameEquals(gameData)) {
           item.updateContent();
+          break;
         }
       }
     }

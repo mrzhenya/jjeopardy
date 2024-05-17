@@ -393,12 +393,12 @@ public class GameDataServiceTest {
    * Tests addGameToLibrary while copying a single xml file.
    */
   @Test
-  public void testAddGameToLibrary_nativeSingleFile() {
+  public void testCopyAndAddGameToLibrary_nativeSingleFile() {
     try (MockedStatic<SettingsService> utilities = Mockito.mockStatic(SettingsService.class)) {
       utilities.when(SettingsService::getVerifiedSettingsDirectoryPath).thenReturn(this.testSettingsPath);
       GameData data = new GameData(VALID_DATA_PATH + "default.xml", null, true);
 
-      this.testGameService.addGameToLibrary(data);
+      this.testGameService.copyAndAddGameToLibrary(data);
 
       // Verify the game is copied.
       File bundlePath = new File(getTestLibraryPath("default" + BUNDLE_EXTENSION));
@@ -412,14 +412,14 @@ public class GameDataServiceTest {
    * Tests addGameToLibrary while copying a game bundle.
    */
   @Test
-  public void testAddGameToLibrary_nativeBundle() {
+  public void testCopyAndAddGameToLibrary_nativeBundle() {
     try (MockedStatic<SettingsService> utilities = Mockito.mockStatic(SettingsService.class)) {
       utilities.when(SettingsService::getVerifiedSettingsDirectoryPath).thenReturn(this.testSettingsPath);
       GameData data = new GameData(
           VALID_DATA_PATH + "test-bundle.jj" + File.separatorChar + "test-bundle.xml",
           VALID_DATA_PATH + "test-bundle.jj", true);
 
-      this.testGameService.addGameToLibrary(data);
+      this.testGameService.copyAndAddGameToLibrary(data);
 
       // Verify the game is copied.
       File bundlePath = new File(getTestLibraryPath("test-bundle" + BUNDLE_EXTENSION));

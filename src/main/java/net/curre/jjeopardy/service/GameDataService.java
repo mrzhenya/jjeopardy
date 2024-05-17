@@ -308,7 +308,7 @@ public class GameDataService {
    *
    * @param gameData       game to add
    */
-  public void addGameToLibrary(@NotNull GameData gameData) {
+  public void copyAndAddGameToLibrary(@NotNull GameData gameData) {
     if (!gameData.isGameDataUsable()) {
       // Don't add unusable games.
       logger.warn("Trying to add unusable game to the library: {}", gameData.getFilePath());
@@ -378,7 +378,7 @@ public class GameDataService {
     if (isGameAdded) {
       // Update game file path on the current game data.
       gameData.setGameFilePaths(gameFilePath, gameBundlePath);
-      updateLibraryGames(gameData);
+      addGameToLibrary(gameData);
     }
   }
 
@@ -440,7 +440,7 @@ public class GameDataService {
     // Now, that the game data has been updated, create a game data file.
     XmlFileUtilities.createGameFile(gameData, destFilePath);
     gameData.changeToNativeData();
-    updateLibraryGames(gameData);
+    addGameToLibrary(gameData);
     AppRegistry.getInstance().getLandingUi().updateLibrary(null);
 
     return imageUrls;
@@ -592,7 +592,7 @@ public class GameDataService {
    * Updates library games when a new game was added to the library folder.
    * @param gameData game data
    */
-  public void updateLibraryGames(GameData gameData) {
+  public void addGameToLibrary(@NotNull GameData gameData) {
     this.libraryGames.add(gameData);
     Collections.sort(this.libraryGames);
   }
