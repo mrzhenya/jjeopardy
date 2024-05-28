@@ -32,7 +32,7 @@ any game you load or that's already present in the game library.
 
 ## JeopardyLabs
 
-Even though, this project is not affiliated with the jeopardylabs.com, it supports loading games downloaded
+Even though, this project is not affiliated with the [jeopardylabs.com](https://jeopardylabs.com), it supports loading games downloaded
 from that site. To run a jeopardylabs.com game in JJeopardy, you simply need to download an HTML file from
 jeopardylabs.com and load the downloaded HTML file into JJeopardy using the Load game option and add it to 
 the JJeopardy game library. After that, you will be able to edit, print, or play the game.
